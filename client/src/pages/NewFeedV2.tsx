@@ -94,6 +94,7 @@ export default function NewFeedV2() {
     size?: string;
     rowCount?: number;
     skuCount?: number;
+    marketplace?: string;
     outputUrl?: string;
     aiChanges?: {
       titleOptimized?: number;
@@ -275,7 +276,7 @@ export default function NewFeedV2() {
       case 'upload':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left column - Upload form with futuristic styling */}
+            {/* Left column - Combined upload and marketplace form with futuristic styling */}
             <Card className="border-cyan-900/30 shadow-lg bg-slate-950 overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-950 opacity-70"></div>
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-800/10 via-transparent to-transparent"></div>
@@ -287,19 +288,19 @@ export default function NewFeedV2() {
                       <Upload className="h-4 w-4 text-slate-950" />
                     </div>
                     <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
-                      Upload Product Data
+                      Create Product Feed
                     </span>
                   </CardTitle>
                   <CardDescription className="text-slate-400 ml-11">
-                    Select a CSV file containing your product data
+                    Transform your data into marketplace-ready product feeds
                   </CardDescription>
                 </CardHeader>
                 
                 <CardContent>
-                  <Form {...uploadForm}>
-                    <form onSubmit={uploadForm.handleSubmit(handleUpload)} className="space-y-6">
+                  <Form {...feedForm}>
+                    <form onSubmit={feedForm.handleSubmit(handleSubmit)} className="space-y-6">
                       <FormField
-                        control={uploadForm.control}
+                        control={feedForm.control}
                         name="name"
                         render={({ field }) => (
                           <FormItem className="space-y-2">
@@ -317,7 +318,36 @@ export default function NewFeedV2() {
                       />
                       
                       <FormField
-                        control={uploadForm.control}
+                        control={feedForm.control}
+                        name="marketplace"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-slate-300 font-medium">Target Marketplace</FormLabel>
+                            <FormControl>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger className="bg-slate-900/60 border-slate-700/50 focus:border-cyan-700 h-11 text-slate-200">
+                                  <SelectValue placeholder="Select marketplace" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-slate-900 border-slate-700 text-slate-200">
+                                  <SelectItem value="amazon">Amazon</SelectItem>
+                                  <SelectItem value="walmart">Walmart</SelectItem>
+                                  <SelectItem value="catch">Catch/Mirkal</SelectItem>
+                                  <SelectItem value="reebelo">Reebelo</SelectItem>
+                                  <SelectItem value="meta">Meta (Facebook)</SelectItem>
+                                  <SelectItem value="tiktok">TikTok Shop</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={feedForm.control}
                         name="file"
                         render={({ field: { value, onChange, ...fieldProps } }) => (
                           <FormItem className="space-y-2">
@@ -392,15 +422,17 @@ export default function NewFeedV2() {
                         <Button
                           type="submit"
                           className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 border-0 shadow-lg shadow-blue-900/30"
-                          disabled={uploadFileMutation.isPending}
+                          disabled={submitFeedMutation.isPending}
                         >
-                          {uploadFileMutation.isPending ? (
+                          {submitFeedMutation.isPending ? (
                             <>
                               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                              Uploading...
+                              Transforming Data...
                             </>
                           ) : (
-                            'Transform Your Data'
+                            <>
+                              Transform Your Data <Wand2 className="ml-2 h-5 w-5" />
+                            </>
                           )}
                         </Button>
                       </div>
