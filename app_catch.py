@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, render_template, send_file
 from werkzeug.utils import secure_filename
 from openai import OpenAI
 from dotenv import load_dotenv
-from transform_to_tiktok import transform_to_tiktok_format
+from transform_to_catch import transform_to_catch_format
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,15 +31,15 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/')
 def index():
     """Simple HTML form for testing the CSV transformer"""
-    return render_template('tiktok_form.html')
+    return render_template('catch_form.html')
 
 @app.route('/clean-csv', methods=['POST'])
 def clean_csv():
     """
-    API endpoint to clean CSV data and transform it to TikTok catalog format.
+    API endpoint to clean CSV data and transform it to Catch Marketplace format.
     
     This endpoint receives a CSV file upload, sends the content to OpenAI for cleaning
-    and transformation, and returns the cleaned TikTok-format CSV data as a response.
+    and transformation, and returns the cleaned Catch-format CSV data as a response.
     """
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
@@ -55,8 +55,8 @@ def clean_csv():
         file.save(filepath)
         
         try:
-            # Transform the CSV to TikTok format
-            output_path = transform_to_tiktok_format(filepath)
+            # Transform the CSV to Catch format
+            output_path = transform_to_catch_format(filepath)
             
             if output_path and os.path.exists(output_path):
                 # Return the transformed file
@@ -86,5 +86,5 @@ def server_error(error):
     return jsonify({"error": "Server error"}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8006))
+    port = int(os.environ.get('PORT', 8083))
     app.run(host='0.0.0.0', port=port, debug=True)

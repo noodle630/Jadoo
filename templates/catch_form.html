@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Catch Marketplace Format Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #00aaa7;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-top: 20px;
+            color: #444;
+        }
+        form {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #00aaa7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #008e8c;
+        }
+        pre {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+        .header-logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Catch Marketplace Format Converter</h1>
+        
+        <p>Convert your product data to Catch/Mirkal marketplace format with the help of AI.</p>
+        
+        <h2>Upload your CSV file:</h2>
+        <form action="/clean-csv" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".csv" required>
+            <button type="submit">Transform to Catch Format</button>
+        </form>
+        
+        <h2>What this does:</h2>
+        <ul>
+            <li>Transforms your product data to Catch Marketplace format</li>
+            <li>Maps your current fields to Catch's required fields</li>
+            <li>Cleans and standardizes the data to comply with Catch's requirements</li>
+            <li>Ensures all required fields are present and properly formatted</li>
+        </ul>
+        
+        <h2>Required Fields for Catch Marketplace:</h2>
+        <pre>category, internal-sku, title, product-description, brand, image-1, 
+contains-button-cell-batteries, uid</pre>
+        
+        <h2>How it works:</h2>
+        <ol>
+            <li>Upload your CSV file containing product data</li>
+            <li>Our AI analyzes your data and maps it to Catch's format</li>
+            <li>The system generates a properly formatted CSV ready for Catch Marketplace</li>
+            <li>Download the transformed file and upload it to your Catch seller account</li>
+        </ol>
+        
+        <div class="footer">
+            <a href="/">Back to All Marketplaces</a> | Powered by OpenAI GPT-4o
+        </div>
+    </div>
+</body>
+</html>

@@ -48,7 +48,7 @@ def clean_csv():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
         
-    if file and file.filename.endswith('.csv'):
+    if file and file.filename and file.filename.endswith('.csv'):
         # Save the uploaded file
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
