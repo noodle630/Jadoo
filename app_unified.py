@@ -453,13 +453,17 @@ def create_tiktok_prompt(data_info, data_sample, sample_rows):
 @app.route('/')
 def index():
     """Landing page showing options for different marketplaces"""
-    return render_template('marketplace_selector.html', marketplaces=MARKETPLACES)
+    import datetime
+    current_year = datetime.datetime.now().year
+    return render_template('marketplace_selector.html', marketplaces=MARKETPLACES, current_year=current_year)
     
 @app.route('/history')
 def history():
     """View transformation history"""
+    import datetime
+    current_year = datetime.datetime.now().year
     transformations = get_recent_transformations(limit=50)
-    return render_template('history.html', history=transformations)
+    return render_template('history.html', history=transformations, current_year=current_year)
     
 @app.route('/download/<filename>')
 def download_file(filename):
@@ -478,9 +482,11 @@ def download_file(filename):
 @app.route('/templates')
 def templates():
     """View transformation templates"""
+    import datetime
+    current_year = datetime.datetime.now().year
     from db_utils import get_templates
     templates_data = get_templates()
-    return render_template('templates.html', templates=templates_data)
+    return render_template('templates.html', templates=templates_data, current_year=current_year)
 
 @app.route('/marketplace/<marketplace_key>')
 def marketplace_form(marketplace_key):

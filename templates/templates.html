@@ -1,190 +1,374 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Saved Templates - Product Feed Manager</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformation Templates</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
+        :root {
+            --amazon-color: #ff9900;
+            --amazon-hover: #e68a00;
+            --walmart-color: #0071ce;
+            --walmart-hover: #005ea6;
+            --catch-color: #00a1e0;
+            --catch-hover: #0086b6;
+            --meta-color: #1877f2;
+            --meta-hover: #166fe5;
+            --tiktok-color: #fe2c55;
+            --tiktok-hover: #e52a4f;
+            --reebelo-color: #6e43c4;
+            --reebelo-hover: #5a37a0;
         }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        h1 {
-            color: #555;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+        
+        header {
+            background-color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
+        
+        .logo {
+            font-size: 24px;
             font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
         }
-        tr:hover {
-            background-color: #f9f9f9;
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
         }
-        .header-nav {
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        nav li {
+            margin-left: 20px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #333;
+        }
+        
+        .page-title {
+            margin-bottom: 30px;
+        }
+        
+        .templates-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-        .header-nav a {
-            text-decoration: none;
-            color: #555;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
         }
-        .header-nav a:hover {
-            background-color: #f2f2f2;
+        
+        .template-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
         }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 14px;
-            color: #777;
+        
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
-        .marketplace-badge {
+        
+        .template-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        
+        .template-header h3 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+        }
+        
+        .template-marketplace {
             display: inline-block;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
             color: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
         }
+        
         .amazon {
-            background-color: #ff9900;
+            background-color: var(--amazon-color);
         }
-        .reebelo {
-            background-color: #4052b5;
-        }
+        
         .walmart {
-            background-color: #0071ce;
+            background-color: var(--walmart-color);
         }
+        
         .catch {
-            background-color: #00aaa7;
+            background-color: var(--catch-color);
         }
+        
         .meta {
-            background-color: #1877f2;
+            background-color: var(--meta-color);
         }
+        
         .tiktok {
-            background-color: #000000;
+            background-color: var(--tiktok-color);
         }
+        
+        .reebelo {
+            background-color: var(--reebelo-color);
+        }
+        
+        .template-content {
+            padding: 20px;
+            flex: 1;
+        }
+        
+        .mapping-preview {
+            margin-top: 15px;
+        }
+        
+        .mapping-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .mapping-source {
+            color: #666;
+            margin-right: 15px;
+            position: relative;
+            flex: 1;
+        }
+        
+        .mapping-source::after {
+            content: "→";
+            position: absolute;
+            right: 0;
+            color: #aaa;
+        }
+        
+        .mapping-target {
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .template-footer {
+            padding: 15px 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .template-meta {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .template-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
         .btn {
             display: inline-block;
-            padding: 5px 10px;
-            background-color: #f2f2f2;
-            color: #555;
+            padding: 8px 16px;
+            border-radius: 5px;
             text-decoration: none;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            margin-right: 5px;
-        }
-        .btn:hover {
-            background-color: #e5e5e5;
-        }
-        .btn-primary {
-            background-color: #4a6cf7;
-            color: white;
-            border-color: #3a5ce7;
-        }
-        .btn-primary:hover {
-            background-color: #3a5ce7;
-        }
-        .btn-danger {
-            background-color: #f44336;
-            color: white;
-            border-color: #d32f2f;
-        }
-        .btn-danger:hover {
-            background-color: #d32f2f;
-        }
-        .date-time {
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
             font-size: 14px;
+        }
+        
+        .btn-primary {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a7cd1;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #ddd;
             color: #666;
         }
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #777;
+        
+        .btn-outline:hover {
+            border-color: #bbb;
+            color: #444;
         }
-        .empty-state p {
-            margin-bottom: 20px;
+        
+        .empty-templates {
+            text-align: center;
+            padding: 50px 0;
+            color: #888;
+        }
+        
+        .empty-templates h3 {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .start-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .start-link:hover {
+            background-color: #3a7cd1;
+        }
+        
+        footer {
+            background-color: #fff;
+            padding: 30px 0;
+            margin-top: 60px;
+            border-top: 1px solid #eee;
+        }
+        
+        footer p {
+            text-align: center;
+            margin: 0;
+            color: #999;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-nav">
-            <h1>Saved Templates</h1>
-            <a href="/">Back to Home</a>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/static/logo.svg" alt="Product Feed Transformer Logo">
+                Product Feed Transformer
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/history">History</a></li>
+                    <li><a href="/templates" class="active">Templates</a></li>
+                </ul>
+            </nav>
         </div>
+    </header>
 
-        {% if templates and templates|length > 0 %}
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Template Name</th>
-                    <th>Marketplace</th>
-                    <th>Created</th>
-                    <th>Last Updated</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for template in templates %}
-                <tr>
-                    <td>{{ template.id }}</td>
-                    <td>{{ template.name }}</td>
-                    <td>
-                        <span class="marketplace-badge {{ template.marketplace.split()[0].lower() }}">
-                            {{ template.marketplace }}
-                        </span>
-                    </td>
-                    <td class="date-time">{{ template.created_at.strftime('%Y-%m-%d') }}</td>
-                    <td class="date-time">{{ template.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                    <td>
-                        <a href="/templates/{{ template.id }}/use" class="btn btn-primary">Use</a>
-                        <a href="/templates/{{ template.id }}/edit" class="btn">Edit</a>
-                        <a href="/templates/{{ template.id }}/delete" class="btn btn-danger" 
-                           onclick="return confirm('Are you sure you want to delete this template?')">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="container">
+        <div class="templates-header">
+            <h1 class="page-title">Transformation Templates</h1>
+            <a href="#" class="btn btn-primary">New Template</a>
+        </div>
+        
+        {% if templates %}
+        <div class="templates-grid">
+            {% for template in templates %}
+            <div class="template-card">
+                <div class="template-header">
+                    <span class="template-marketplace {{ template.marketplace.lower() }}">
+                        {{ template.marketplace }}
+                    </span>
+                    <h3>{{ template.name }}</h3>
+                </div>
+                <div class="template-content">
+                    <div class="mapping-preview">
+                        {% if template.mappings|length > 0 %}
+                            {% for mapping in template.mappings[:3] %}
+                            <div class="mapping-item">
+                                <div class="mapping-source">{{ mapping.source_field }}</div>
+                                <div class="mapping-target">{{ mapping.target_field }}</div>
+                            </div>
+                            {% endfor %}
+                            {% if template.mappings|length > 3 %}
+                            <div class="mapping-item" style="color: #aaa; text-align: center;">
+                                + {{ template.mappings|length - 3 }} more fields
+                            </div>
+                            {% endif %}
+                        {% else %}
+                            <div style="color: #aaa; text-align: center;">No field mappings defined</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="template-footer">
+                    <div class="template-meta">
+                        Used {{ template.usage_count }} times
+                    </div>
+                    <div class="template-actions">
+                        <a href="/templates/{{ template.id }}/edit" class="btn btn-outline">Edit</a>
+                        <a href="/templates/{{ template.id }}/use" class="btn btn-primary">Use Template</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
         {% else %}
-        <div class="empty-state">
-            <h2>No templates yet</h2>
-            <p>You haven't saved any field mapping templates yet. Templates will appear here after you save them.</p>
-            <a href="/" class="btn btn-primary">Go to Transformations</a>
+        <div class="empty-templates">
+            <h3>No templates yet</h3>
+            <p>Save transformation mappings as templates to reuse them in the future.</p>
+            <p>Templates will automatically remember your field mappings for each marketplace.</p>
+            <a href="/" class="start-link">Create Your First Template</a>
         </div>
         {% endif %}
-
-        <div class="footer">
-            <p>Product Feed Manager - Powered by OpenAI GPT-4o</p>
-        </div>
     </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; {{ current_year if current_year else '2023' }} Product Feed Transformer. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

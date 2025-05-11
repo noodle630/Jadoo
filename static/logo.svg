@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="40px" viewBox="0 0 200 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Product Feed Transformer Logo</title>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="gradient">
+            <stop stop-color="#4A90E2" offset="0%"></stop>
+            <stop stop-color="#7C4DFF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(0, 0)">
+            <!-- App Icon -->
+            <rect x="0" y="0" width="40" height="40" rx="8" fill="url(#gradient)"></rect>
+            <path d="M8,8 L32,8 L32,12 L8,12 Z" fill="white"></path>
+            <path d="M8,16 L32,16 L32,20 L8,20 Z" fill="white" opacity="0.8"></path>
+            <path d="M8,24 L32,24 L32,28 L8,28 Z" fill="white" opacity="0.6"></path>
+            <path d="M20,24 L30,32 L10,32 Z" fill="white"></path>
+            
+            <!-- Text -->
+            <text font-family="Arial, sans-serif" font-weight="bold" font-size="16" fill="#333333">
+                <tspan x="48" y="20">Product Feed</tspan>
+            </text>
+            <text font-family="Arial, sans-serif" font-weight="bold" font-size="16" fill="url(#gradient)">
+                <tspan x="48" y="36">Transformer</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

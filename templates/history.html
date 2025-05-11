@@ -1,176 +1,316 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Transformation History - Product Feed Manager</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformation History</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
+        :root {
+            --amazon-color: #ff9900;
+            --amazon-hover: #e68a00;
+            --walmart-color: #0071ce;
+            --walmart-hover: #005ea6;
+            --catch-color: #00a1e0;
+            --catch-hover: #0086b6;
+            --meta-color: #1877f2;
+            --meta-hover: #166fe5;
+            --tiktok-color: #fe2c55;
+            --tiktok-hover: #e52a4f;
+            --reebelo-color: #6e43c4;
+            --reebelo-hover: #5a37a0;
         }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        h1 {
-            color: #555;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+        
+        header {
+            background-color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-        .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .success {
-            background-color: #e6f7e6;
-            color: #2e7d32;
-        }
-        .warning {
-            background-color: #fff8e1;
-            color: #ff8f00;
-        }
-        .error {
-            background-color: #ffebee;
-            color: #c62828;
-        }
-        .header-nav {
+        
+        header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
         }
-        .header-nav a {
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        nav li {
+            margin-left: 20px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #333;
+        }
+        
+        .page-title {
+            margin-bottom: 30px;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .history-table th,
+        .history-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
             color: #555;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
         }
-        .header-nav a:hover {
-            background-color: #f2f2f2;
+        
+        .history-table tr:last-child td {
+            border-bottom: none;
         }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 14px;
-            color: #777;
+        
+        .history-table tr:hover {
+            background-color: #f9f9f9;
         }
+        
         .marketplace-badge {
             display: inline-block;
             padding: 5px 10px;
             border-radius: 4px;
-            font-size: 14px;
+            color: white;
+            font-size: 12px;
             font-weight: bold;
+            text-transform: uppercase;
         }
+        
         .amazon {
-            background-color: #ff9900;
-            color: white;
+            background-color: var(--amazon-color);
         }
-        .reebelo {
-            background-color: #4052b5;
-            color: white;
-        }
+        
         .walmart {
-            background-color: #0071ce;
-            color: white;
+            background-color: var(--walmart-color);
         }
+        
         .catch {
-            background-color: #00aaa7;
-            color: white;
+            background-color: var(--catch-color);
         }
+        
         .meta {
-            background-color: #1877f2;
-            color: white;
+            background-color: var(--meta-color);
         }
+        
         .tiktok {
-            background-color: #000000;
+            background-color: var(--tiktok-color);
+        }
+        
+        .reebelo {
+            background-color: var(--reebelo-color);
+        }
+        
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            color: #4a90e2;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .download-link:hover {
+            color: #3a7cd1;
+            text-decoration: underline;
+        }
+        
+        .download-link svg {
+            margin-right: 5px;
+        }
+        
+        .empty-history {
+            text-align: center;
+            padding: 50px 0;
+            color: #888;
+        }
+        
+        .empty-history h3 {
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .start-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .start-link:hover {
+            background-color: #3a7cd1;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .pagination a {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 0 5px;
+            border-radius: 4px;
+            background-color: white;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .pagination a:hover,
+        .pagination a.active {
+            background-color: #4a90e2;
             color: white;
         }
-        .date-time {
+        
+        .date-cell {
+            color: #777;
             font-size: 14px;
-            color: #666;
+        }
+        
+        footer {
+            background-color: #fff;
+            padding: 30px 0;
+            margin-top: 60px;
+            border-top: 1px solid #eee;
+        }
+        
+        footer p {
+            text-align: center;
+            margin: 0;
+            color: #999;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-nav">
-            <h1>Transformation History</h1>
-            <a href="/">Back to Home</a>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/static/logo.svg" alt="Product Feed Transformer Logo">
+                Product Feed Transformer
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/history" class="active">History</a></li>
+                    <li><a href="/templates">Templates</a></li>
+                </ul>
+            </nav>
         </div>
+    </header>
 
-        <table>
+    <div class="container">
+        <h1 class="page-title">Transformation History</h1>
+        
+        {% if history %}
+        <table class="history-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Marketplace</th>
+                    <th>Date</th>
                     <th>Source File</th>
-                    <th>Output File</th>
+                    <th>Marketplace</th>
                     <th>Row Count</th>
                     <th>Processing Time</th>
-                    <th>Date</th>
+                    <th>Download</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in history %}
+                {% for entry in history %}
                 <tr>
-                    <td>{{ item.id }}</td>
+                    <td class="date-cell">{{ entry.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ entry.source_filename }}</td>
                     <td>
-                        <span class="marketplace-badge {{ item.display_name.split()[0].lower() }}">
-                            {{ item.display_name }}
+                        <span class="marketplace-badge {{ entry.marketplace.lower() }}">
+                            {{ entry.marketplace }}
                         </span>
                     </td>
-                    <td>{{ item.source_filename }}</td>
+                    <td>{{ entry.output_row_count }}</td>
+                    <td>{{ "%.2f"|format(entry.transformation_time) }}s</td>
                     <td>
-                        <a href="/download/{{ item.output_filename }}">{{ item.output_filename }}</a>
+                        <a href="/download/{{ entry.output_filename }}" class="download-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Download
+                        </a>
                     </td>
-                    <td>
-                        {{ item.source_row_count }} → {{ item.output_row_count }}
-                        {% if item.source_row_count == item.output_row_count %}
-                            <span class="status success">1:1</span>
-                        {% elif item.output_row_count > item.source_row_count %}
-                            <span class="status warning">+{{ item.output_row_count - item.source_row_count }}</span>
-                        {% else %}
-                            <span class="status error">-{{ item.source_row_count - item.output_row_count }}</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ "%.2f"|format(item.transformation_time) }} sec</td>
-                    <td class="date-time">{{ item.processed_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-
-        <div class="footer">
-            <p>Product Feed Manager - Powered by OpenAI GPT-4o</p>
+        {% else %}
+        <div class="empty-history">
+            <h3>No transformations yet</h3>
+            <p>Once you transform product data, your history will appear here.</p>
+            <a href="/" class="start-link">Transform Your First Feed</a>
         </div>
+        {% endif %}
     </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; {{ current_year if current_year else '2023' }} Product Feed Transformer. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
