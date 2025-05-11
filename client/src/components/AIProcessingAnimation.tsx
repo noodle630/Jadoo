@@ -81,8 +81,8 @@ export default function AIProcessingAnimation({
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center p-6">        
         {/* Status text */}
-        <h3 className="text-xl font-medium text-white mb-5 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          {localStep === maxSteps ? 'Feed Ready' : 'Processing Data'}
+        <h3 className="text-xl font-medium text-white mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          {localStep === maxSteps ? 'Products Ready to Sell 💲🚀' : 'Processing Data'}
         </h3>
         
         {/* Current insight */}
@@ -94,23 +94,13 @@ export default function AIProcessingAnimation({
             exit={{ opacity: 0 }}
             className="text-sm text-slate-300 text-center"
           >
-            {currentInsight}
+            {localStep === maxSteps ? 'Validating against platform requirements...' : currentInsight}
           </motion.p>
         </div>
         
         {/* Modern progress bar */}
         <div className="w-full max-w-sm relative">
-          <div className="relative h-1.5 w-full bg-slate-800/70 rounded-full overflow-hidden">
-            {/* Shimmer effect inside track */}
-            <div className="absolute inset-0 overflow-hidden">
-              <motion.div 
-                className="absolute top-0 bottom-0 w-20 bg-gradient-to-r from-transparent via-slate-700/20 to-transparent"
-                style={{ left: "-100%" }}
-                animate={{ left: "100%" }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              />
-            </div>
-            
+          <div className="relative h-2 w-full bg-slate-800/70 rounded-full overflow-hidden">
             {/* Progress fill */}
             <motion.div 
               className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full relative overflow-hidden"
@@ -128,8 +118,8 @@ export default function AIProcessingAnimation({
             </motion.div>
           </div>
           
-          {/* Progress percentage */}
-          <div className="mt-3 text-xs text-center text-slate-400">
+          {/* Progress percentage - aligned better */}
+          <div className="mt-2 text-xs text-center text-slate-400">
             <span className="text-blue-400">{Math.round(progress)}%</span> complete
           </div>
         </div>
