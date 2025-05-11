@@ -290,10 +290,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Using script: ${scriptPath}`);
       
       // Create a child process to run the Python script with env variables
+      // Usage: transform_to_amazon.py [-h] [--output OUTPUT] [--verbose] file
       const pythonProcess = spawn('python3', [
-        scriptPath,
-        filePath,
-        '--output', outputFilePath
+        scriptPath, 
+        filePath,  // positional argument for file
+        '--output', outputFilePath  // optional argument for output file
       ], {
         env: { ...process.env }  // Pass all environment variables including OPENAI_API_KEY
       });

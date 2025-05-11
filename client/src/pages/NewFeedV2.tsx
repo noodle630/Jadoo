@@ -552,17 +552,12 @@ export default function NewFeedV2() {
         );
       
       case 'processing':
-        // Calculate progress percentage based on processing stage
-        const progressPercentage = processingStage === 0 ? 10 : 
-                                  processingStage === 1 ? 30 : 
-                                  processingStage === 2 ? 65 : 
-                                  processingStage === 3 ? 90 : 75;
-                                  
+        // Use a single progress bar that doesn't rely on specific percentage calculations
         return (
           <Card className="border-slate-800 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl font-medium flex items-center">
-                <Loader2 className="h-5 w-5 mr-2 animate-spin text-slate-400" />
+              <CardTitle className="text-xl font-medium flex items-center">
+                <Loader2 className="h-5 w-5 mr-2 animate-spin text-blue-500" />
                 Processing Data
               </CardTitle>
               <CardDescription className="text-slate-400">
@@ -571,50 +566,28 @@ export default function NewFeedV2() {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
+                {/* Single pulsing progress bar */}
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-sm text-slate-400">Transformation Progress</span>
-                    <span className="text-sm text-slate-400">{progressPercentage}%</span>
+                    <span className="text-sm text-slate-400">Processing your file</span>
                   </div>
-                  <Progress value={progressPercentage} className="h-2" />
+                  <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden relative">
+                    <div className="h-full bg-blue-600 rounded-full absolute top-0 left-0 animate-pulse" style={{width: '30%'}}></div>
+                    <div className="h-full bg-transparent absolute top-0 left-0 w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-pulse" style={{animationDuration: '1.5s'}}></div>
+                  </div>
                 </div>
                 
                 <div className="space-y-4">
+                  {/* Always show first step as complete (data received) */}
                   <div className="flex items-center text-sm">
                     <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-slate-300">Analyzing source data structure</span>
+                    <span className="text-slate-300">File received successfully</span>
                   </div>
+                  
+                  {/* Always show processing step with spinning indicator */}
                   <div className="flex items-center text-sm">
-                    {processingStage >= 1 ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                    ) : (
-                      <Loader2 className="h-4 w-4 animate-spin text-blue-500 mr-2" />
-                    )}
-                    <span className="text-slate-300">Mapping fields to marketplace format</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    {processingStage >= 2 ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                    ) : processingStage >= 1 ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-blue-500 mr-2" />
-                    ) : (
-                      <div className="h-4 w-4 mr-2" />
-                    )}
-                    <span className={processingStage >= 1 ? "text-slate-300" : "text-slate-500"}>
-                      Transforming product data with AI
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    {processingStage >= 3 ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                    ) : processingStage >= 2 ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-blue-500 mr-2" />
-                    ) : (
-                      <div className="h-4 w-4 mr-2" />
-                    )}
-                    <span className={processingStage >= 2 ? "text-slate-300" : "text-slate-500"}>
-                      Validating and finalizing output
-                    </span>
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-500 mr-2" />
+                    <span className="text-slate-300">Transforming data for {marketplaceForm.getValues().marketplace}</span>
                   </div>
                 </div>
                 
