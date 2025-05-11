@@ -304,7 +304,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // Store the output file path for later retrieval
             await storage.updateFeed(feedId, {
-              status: 'completed',
+              status: 'success',
               itemCount,
               aiChanges,
               outputUrl,
