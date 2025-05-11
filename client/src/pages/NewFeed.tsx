@@ -62,7 +62,13 @@ export default function NewFeed() {
         });
       }, 300);
       
-      const response = await apiRequest("POST", "/api/feeds/upload", formData);
+      // Log the form data being submitted
+      console.log("Uploading file with FormData");
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value instanceof File ? value.name : value}`);
+      }
+      
+      const response = await apiRequest("POST", "/api/feeds/upload", formData, true);
       clearInterval(interval);
       setUploadProgress(100);
       return response.json();
@@ -330,7 +336,12 @@ export default function NewFeed() {
                           type="file" 
                           id="file-upload" 
                           accept=".csv,.xls,.xlsx" 
-                          onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                          onChange={(e) => {
+                            console.log("File selected:", e.target.files);
+                            if (e.target.files && e.target.files[0]) {
+                              handleFileUpload(e.target.files[0]);
+                            }
+                          }}
                           className="hidden" 
                         />
                       </div>
