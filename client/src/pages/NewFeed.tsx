@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,12 +42,34 @@ export default function NewFeed() {
   const [apiKey, setApiKey] = useState("");
   const [selectedMarketplace, setSelectedMarketplace] = useState("amazon");
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [aiProcessProgress, setAiProcessProgress] = useState(20);
+  const [aiProcessProgress, setAiProcessProgress] = useState(0); // Start at 0
   const [processingComplete, setProcessingComplete] = useState(false);
   const [uploadError, setUploadError] = useState("");
   
   // Current step labels
   const steps = ["Upload Data", "Preview & Configure", "AI Processing", "Generate Feed"];
+  
+  // Auto-start AI processing when step 3 is loaded
+  useEffect(() => {
+    if (currentStep === 3 && aiProcessProgress === 0) {
+      // Start a simulated AI processing animation
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 2;
+        setAiProcessProgress(progress);
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          // Simulate processing completion after reaching 100%
+          setTimeout(() => {
+            setProcessingComplete(true);
+          }, 500);
+        }
+      }, 200);
+      
+      return () => clearInterval(interval);
+    }
+  }, [currentStep, aiProcessProgress]);
   
   // File upload mutation
   const uploadMutation = useMutation({
@@ -502,14 +524,28 @@ export default function NewFeed() {
             <div className="mb-6">
               <h3 className="text-md font-medium text-gray-700 mb-4">AI Data Transformation</h3>
               
-              <ProcessingStatus 
-                isComplete={processingComplete}
+              {/* Beautiful AI Processing Animation */}
+              <AIProcessingAnimation 
                 progress={aiProcessProgress}
-                onCancel={() => moveToStep(2)}
-                onContinue={() => moveToStep(4)}
-                estimatedTimeRemaining="~2 min"
-                currentTask="Optimizing product titles and descriptions"
+                message="AI Magic in Progress"
               />
+              
+              <div className="flex justify-between mt-8">
+                <Button 
+                  variant="outline" 
+                  onClick={() => moveToStep(2)} 
+                  disabled={aiProcessProgress > 0 && aiProcessProgress < 100}
+                >
+                  Back
+                </Button>
+                <Button 
+                  onClick={() => moveToStep(4)} 
+                  disabled={!processingComplete}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                >
+                  {aiProcessProgress === 100 ? "Continue to Feed" : "Processing..."}
+                </Button>
+              </div>
             </div>
           )}
           
