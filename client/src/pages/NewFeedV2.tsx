@@ -342,173 +342,204 @@ export default function NewFeedV2() {
       case 'upload':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left column - Upload form */}
-            <Card className="border-slate-800 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl font-medium flex items-center">
-                  <Upload className="h-5 w-5 mr-2 text-slate-400" />
-                  Upload Product Data
-                </CardTitle>
-                <CardDescription className="text-slate-400">
-                  Select a CSV file containing your product data
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...uploadForm}>
-                  <form onSubmit={uploadForm.handleSubmit(handleUpload)} className="space-y-6">
-                    <FormField
-                      control={uploadForm.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-slate-300">Feed Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="e.g. May 2025 Products"
-                              {...field}
-                              className="bg-slate-950 border-slate-800"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={uploadForm.control}
-                      name="file"
-                      render={({ field: { value, onChange, ...fieldProps } }) => (
-                        <FormItem>
-                          <FormLabel className="text-slate-300">Product Data File</FormLabel>
-                          <FormControl>
-                            <div className="grid w-full items-center gap-1.5">
-                              <Label
-                                htmlFor="file"
-                                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-slate-700 bg-slate-950/50 hover:bg-slate-900/30 transition"
-                              >
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                  <FileText className="h-8 w-8 text-slate-500 mb-2" />
-                                  <p className="mb-1 text-sm text-slate-400">
-                                    <span className="font-semibold">Click to upload</span> or drag and drop
-                                  </p>
-                                  <p className="text-xs text-slate-500">CSV or Excel file (max 10MB)</p>
-                                </div>
-                                <Input
-                                  id="file"
-                                  type="file"
-                                  accept=".csv,.xlsx,.xls"
-                                  className="hidden"
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                      onChange(file);
-                                      // Show visual confirmation that file was selected
-                                      const label = document.querySelector('label[for="file"]');
-                                      if (label) {
-                                        label.classList.add('border-green-500');
-                                        label.classList.add('bg-green-950/20');
-                                        
-                                        // Update the text content
-                                        const fileNameElem = label.querySelector('p.text-sm.text-slate-400');
-                                        if (fileNameElem) {
-                                          fileNameElem.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-                                          fileNameElem.classList.add('text-green-400');
-                                        }
-                                        
-                                        // Update icon
-                                        const iconElem = label.querySelector('.text-slate-500');
-                                        if (iconElem) {
-                                          iconElem.classList.remove('text-slate-500');
-                                          iconElem.classList.add('text-green-500');
+            {/* Left column - Upload form with futuristic styling */}
+            <Card className="border-cyan-900/30 shadow-lg bg-slate-950 overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-950 opacity-70"></div>
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-800/10 via-transparent to-transparent"></div>
+              
+              <div className="relative z-10">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center mr-3">
+                      <Upload className="h-4 w-4 text-slate-950" />
+                    </div>
+                    <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+                      Upload Product Data
+                    </span>
+                  </CardTitle>
+                  <CardDescription className="text-slate-400 ml-11">
+                    Select a CSV file containing your product data
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  <Form {...uploadForm}>
+                    <form onSubmit={uploadForm.handleSubmit(handleUpload)} className="space-y-6">
+                      <FormField
+                        control={uploadForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-slate-300 font-medium">Feed Name</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g. May 2025 Products"
+                                {...field}
+                                className="bg-slate-900/60 border-slate-700/50 focus:border-cyan-700 h-11 text-slate-200"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={uploadForm.control}
+                        name="file"
+                        render={({ field: { value, onChange, ...fieldProps } }) => (
+                          <FormItem className="space-y-2">
+                            <FormLabel className="text-slate-300 font-medium">Product Data File</FormLabel>
+                            <FormControl>
+                              <div className="grid w-full items-center gap-1.5">
+                                <Label
+                                  htmlFor="file"
+                                  className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg cursor-pointer border-slate-700/70 bg-slate-900/40 hover:bg-slate-800/30 hover:border-cyan-700/70 transition-all duration-200 backdrop-blur"
+                                >
+                                  <div className="flex flex-col items-center justify-center py-6">
+                                    <div className="w-12 h-12 mb-2 rounded-full bg-gradient-to-r from-slate-800 to-slate-700 flex items-center justify-center">
+                                      <FileText className="h-6 w-6 text-cyan-400" />
+                                    </div>
+                                    <p className="mb-1 text-base text-slate-300 mt-2">
+                                      <span className="font-medium">Click to upload</span> or drag and drop
+                                    </p>
+                                    <p className="text-sm text-slate-500">CSV or Excel file (max 10MB)</p>
+                                  </div>
+                                  <Input
+                                    id="file"
+                                    type="file"
+                                    accept=".csv,.xlsx,.xls"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        onChange(file);
+                                        // Show visual confirmation that file was selected
+                                        const label = document.querySelector('label[for="file"]');
+                                        if (label) {
+                                          label.classList.remove('border-slate-700/70');
+                                          label.classList.remove('bg-slate-900/40');
+                                          label.classList.add('border-cyan-500/70');
+                                          label.classList.add('bg-cyan-950/30');
+                                          
+                                          // Update the text content
+                                          const fileNameElem = label.querySelector('p.text-base.text-slate-300');
+                                          if (fileNameElem) {
+                                            fileNameElem.textContent = `Selected: ${file.name}`;
+                                            fileNameElem.classList.add('text-cyan-300');
+                                          }
+                                          
+                                          const fileSizeElem = label.querySelector('p.text-sm.text-slate-500');
+                                          if (fileSizeElem) {
+                                            fileSizeElem.textContent = `${(file.size / 1024).toFixed(1)} KB · Ready to transform`;
+                                            fileSizeElem.classList.add('text-cyan-400/70');
+                                          }
+                                          
+                                          // Update icon
+                                          const iconContainer = label.querySelector('.rounded-full');
+                                          if (iconContainer) {
+                                            iconContainer.classList.remove('from-slate-800');
+                                            iconContainer.classList.remove('to-slate-700');
+                                            iconContainer.classList.add('from-cyan-900');
+                                            iconContainer.classList.add('to-cyan-800');
+                                          }
                                         }
                                       }
-                                    }
-                                  }}
-                                  {...fieldProps}
-                                />
-                              </Label>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  
-                    <div className="pt-2">
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                        disabled={uploadFileMutation.isPending}
-                      >
-                        {uploadFileMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Uploading...
-                          </>
-                        ) : (
-                          'Continue'
+                                    }}
+                                    {...fieldProps}
+                                  />
+                                </Label>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
                         )}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
+                      />
+                    
+                      <div className="pt-3">
+                        <Button
+                          type="submit"
+                          className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 border-0 shadow-lg shadow-blue-900/30"
+                          disabled={uploadFileMutation.isPending}
+                        >
+                          {uploadFileMutation.isPending ? (
+                            <>
+                              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                              Uploading...
+                            </>
+                          ) : (
+                            'Transform Your Data'
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </div>
             </Card>
             
-            {/* Right column - Marketing information and feature highlights */}
-            <Card className="border-slate-800 shadow-lg bg-gradient-to-br from-slate-900 to-slate-950">
-              <CardHeader>
-                <CardTitle className="text-2xl font-medium">
-                  <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+            {/* Right column - Futuristic design with minimal text */}
+            <Card className="border-blue-900/40 shadow-lg bg-slate-950 p-4 overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-950 to-slate-900 opacity-80"></div>
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent"></div>
+              
+              <div className="relative z-10 flex flex-col justify-between h-full p-4">
+                <div className="space-y-3">
+                  <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
                     Transform Your Product Data
-                  </span>
-                </CardTitle>
-                <CardDescription className="text-slate-400">
-                  Upload once, get marketplace-ready listings everywhere
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {/* Feature highlight block */}
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-md bg-slate-800/20 border border-slate-800">
-                      <h3 className="text-lg font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-                        Dump It In ✨
-                      </h3>
-                      <p className="text-sm text-slate-400">Got a name, a price, and a quantity? That's all we ask.</p>
-                      <p className="text-sm text-slate-400">We'll clean the rest like it's our job. (It is.)</p>
-                      <p className="text-sm text-slate-400 mt-1">Got SKUs, UPCs, or random mystery columns? Even better.</p>
-                      <p className="text-sm text-slate-400">Our AI loves a good puzzle — feed it chaos, get back gold.</p>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <h4 className="text-md font-medium text-slate-300">How S Works For You:</h4>
-                      <ul className="space-y-2">
-                        <li className="flex items-start">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-slate-400">Automatically cleans and standardizes product data</span>
-                        </li>
-                        <li className="flex items-start">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-slate-400">Maps to marketplace-specific requirements</span>
-                        </li>
-                        <li className="flex items-start">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-slate-400">Enhances titles and descriptions with AI</span>
-                        </li>
-                        <li className="flex items-start">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-slate-400">Fixes errors and validates required fields</span>
-                        </li>
-                        <li className="flex items-start">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-slate-400">Download instantly in marketplace-ready format</span>
-                        </li>
-                      </ul>
-                    </div>
+                  </h2>
+                  <p className="text-slate-400 text-lg">
+                    Upload once, get marketplace-ready listings everywhere
+                  </p>
+                </div>
+                
+                <div className="mt-8 mb-6">
+                  <div className="p-5 rounded-md bg-slate-900/80 border border-slate-800/40 backdrop-blur shadow-lg">
+                    <h3 className="text-xl font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-3">
+                      Dump It In ✨
+                    </h3>
+                    <p className="text-slate-400">Got a name, a price, and a quantity? That's all we ask.</p>
+                    <p className="text-slate-400">We'll clean the rest like it's our job. (It is.)</p>
+                    <p className="text-slate-400 mt-1">Got SKUs, UPCs, or random mystery columns? Even better.</p>
+                    <p className="text-slate-400">Our AI loves a good puzzle — feed it chaos, get back gold.</p>
                   </div>
                 </div>
-              </CardContent>
+                
+                <div className="space-y-1 mt-auto">
+                  <h4 className="text-lg font-medium text-slate-300 mb-3">How S Works For You:</h4>
+                  <ul className="space-y-3">
+                    <li className="flex items-center">
+                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
+                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
+                      </div>
+                      <span className="ml-2 text-slate-300">Automatically cleans and standardizes product data</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
+                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
+                      </div>
+                      <span className="ml-2 text-slate-300">Maps to marketplace-specific requirements</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
+                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
+                      </div>
+                      <span className="ml-2 text-slate-300">Enhances titles and descriptions with AI</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
+                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
+                      </div>
+                      <span className="ml-2 text-slate-300">Fixes errors and validates required fields</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
+                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
+                      </div>
+                      <span className="ml-2 text-slate-300">Download instantly in marketplace-ready format</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </Card>
           </div>
         );
