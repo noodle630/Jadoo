@@ -436,9 +436,15 @@ def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
                         
                         chunk_result = process_chunk(chunk, AMAZON_COLUMNS, columns, row_count)
                         
-                        # Quick validation check
-                        if chunk_result and len(chunk_result.split('\n')) > len(chunk) * 0.5:
-                            # We got a reasonable number of rows back
+                        # Set a very low threshold for initial acceptance - any data is better than none
+                        line_count = len([l for l in chunk_result.split('\n') if l.strip()])
+                        
+                        # Quick validation check - accept anything with some data
+                        if chunk_result and line_count > 0:
+                            # We got at least some rows back
+                            if line_count < len(chunk) * 0.9:
+                                # Less than 90% yield, but accept it and log warning
+                                print(f"WARNING: Chunk {chunk_idx+1} produced only {line_count} rows from {len(chunk)} inputs ({line_count/len(chunk):.1%})")
                             break
                         else:
                             if retry < max_retries:
@@ -493,9 +499,13 @@ def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
                     if len(duplicated_skus) > 0:
                         # Get top 5 duplicates in a dictionary
                         top_dups = {}
-                        for i, (sku, count) in enumerate(duplicated_skus.items()):
+                        # More compatible way to iterate over duplicates
+                        i = 0
+                        # Use a more generic approach that works across pandas versions
+                        for sku in sku_counts[sku_counts > 1].keys():
                             if i < 5:  # Only take top 5
-                                top_dups[sku] = count
+                                top_dups[str(sku)] = int(sku_counts[sku])
+                                i += 1
                         print(f"Top duplicated SKUs: {top_dups}")
                     
                     # Now remove duplicates, keeping the first occurrence

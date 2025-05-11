@@ -338,10 +338,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 // Ensure we never have negative count
                 if (itemCount < 0) itemCount = 0;
                 
-                // Force itemCount to match what was reported in Python script
-                // The actual count from CSV analysis in transform_to_amazon.py was 511
-                itemCount = 511;
-                console.log(`Forced final item count to: ${itemCount}`);
+                // Don't force a hardcoded itemCount - use the actual count
+                console.log(`Actual data item count: ${itemCount}`);
               }
             } catch (fsError) {
               console.error('Error reading output file:', fsError);
