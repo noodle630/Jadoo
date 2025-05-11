@@ -1,12 +1,13 @@
 import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupGithubAuth, requireAuth, validateGithubRepo } from "./githubAuth";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { z } from "zod";
 import { v4 as uuidv4 } from 'uuid';
-import { insertFeedSchema, insertTemplateSchema, feedStatusEnum, marketplaceEnum, feedSourceEnum } from '@shared/schema';
+import { insertFeedSchema, insertTemplateSchema, feedStatusEnum, marketplaceEnum, feedSourceEnum, insertGithubRepositorySchema } from '@shared/schema';
 import { fromZodError } from "zod-validation-error";
 import { spawn } from 'child_process';
 
@@ -643,8 +644,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GitHub repository integration
+  router.post('/feeds/:id/github', requireAuth, validateGithubRepo, async (req: Request, res: Response) => {
+    try {
+      const feedId = parseInt(req.params.id);
+      if (isNaN(feedId)) {
+        return res.status(400).json({ message: 'Invalid feed ID' });
+      }
+      
+      const feed = await storage.getFeed(feedId);
+      if (!feed) {
+        return res.status(404).json({ message: 'Feed not found' });
+      }
+      
+      // User should be authenticated at this point because of requireAuth middleware
+      const user = req.user as any;
+      
+      // Repository info should be in req.githubRepo from validateGithubRepo middleware
+      const githubRepo = req.githubRepo;
+      
+      // Parse repo path parts
+      const [repoOwner, repoName] = githubRepo.full_name.split('/');
+      
+      const repoInfo = {
+        feedId,
+        userId: user.id,
+        repoName,
+        repoOwner,
+        repoUrl: githubRepo.html_url,
+        branch: req.body.branch || 'main',
+        path: req.body.path || '/',
+        autoSync: req.body.autoSync || false
+      };
+      
+      // Link the repository to the feed
+      await storage.linkRepoToFeed(feedId, repoInfo);
+      
+      res.json({
+        message: 'GitHub repository linked successfully',
+        repository: {
+          name: githubRepo.name,
+          owner: githubRepo.owner.login,
+          url: githubRepo.html_url
+        }
+      });
+    } catch (error) {
+      console.error('Error linking GitHub repository:', error);
+      res.status(500).json({ message: 'Error linking GitHub repository' });
+    }
+  });
+  
+  // Get GitHub repo info for a feed
+  router.get('/feeds/:id/github', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const feedId = parseInt(req.params.id);
+      if (isNaN(feedId)) {
+        return res.status(400).json({ message: 'Invalid feed ID' });
+      }
+      
+      const repoInfo = await storage.getRepoByFeedId(feedId);
+      if (!repoInfo) {
+        return res.status(404).json({ message: 'No GitHub repository linked to this feed' });
+      }
+      
+      res.json(repoInfo);
+    } catch (error) {
+      console.error('Error getting GitHub repository info:', error);
+      res.status(500).json({ message: 'Error getting GitHub repository info' });
+    }
+  });
+
   // Use main route prefix
   app.use('/api', router);
+  
+  // Setup GitHub authentication after router setup
+  setupGithubAuth(app);
 
   const httpServer = createServer(app);
   return httpServer;

@@ -281,6 +281,57 @@ export class MemStorage implements IStorage {
     this.templates.set(id, template);
     return true;
   }
+  
+  // GitHub authentication related methods
+  async getUserByGithubId(githubId: string): Promise<User | undefined> {
+    for (const user of this.users.values()) {
+      if (user.githubId === githubId) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+  
+  async updateUser(id: number, updateData: Partial<User>): Promise<User | undefined> {
+    const user = await this.getUser(id);
+    if (!user) {
+      return undefined;
+    }
+    
+    const updatedUser = { ...user, ...updateData };
+    this.users.set(id, updatedUser);
+    
+    return updatedUser;
+  }
+  
+  async storeGithubToken(userId: number, token: string): Promise<boolean> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      return false;
+    }
+    
+    this.githubTokens.set(userId, token);
+    
+    // Also update the user object with the token
+    await this.updateUser(userId, { githubToken: token });
+    
+    return true;
+  }
+  
+  // GitHub repository operations
+  async linkRepoToFeed(feedId: number, repoInfo: any): Promise<boolean> {
+    const feed = await this.getFeed(feedId);
+    if (!feed) {
+      return false;
+    }
+    
+    this.githubRepos.set(feedId, repoInfo);
+    return true;
+  }
+  
+  async getRepoByFeedId(feedId: number): Promise<any> {
+    return this.githubRepos.get(feedId);
+  }
 }
 
 export const storage = new MemStorage();
