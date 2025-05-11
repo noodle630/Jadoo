@@ -592,31 +592,38 @@ export default function NewFeedV2() {
                     <span className="text-slate-300">Transforming data for {feedForm.getValues().marketplace?.charAt(0).toUpperCase() + feedForm.getValues().marketplace?.slice(1)} format</span>
                   </div>
                   
-                  {/* Processing progress bar */}
-                  <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden relative mt-2">
-                    <div className="h-full bg-blue-600 rounded-full absolute top-0 left-0 animate-pulse" style={{width: '60%'}}></div>
-                    <div className="h-full bg-transparent absolute top-0 left-0 w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-pulse" style={{animationDuration: '1.5s'}}></div>
-                  </div>
-                  
-                  {/* Critical product data info */}
-                  <div className="bg-slate-900/80 border border-slate-800/70 rounded p-3 text-sm mt-2">
-                    <span className="font-medium text-blue-400 block mb-1">Required Data Fields:</span>
-                    <div className="grid grid-cols-2 gap-1 text-xs">
-                      <div className="flex items-center">
-                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
-                        <span className="text-slate-300">SKU</span>
+                  {/* Platform USPs - replacing required fields with platform benefits */}
+                  <div className="bg-gradient-to-br from-slate-900/90 to-slate-800/70 border border-slate-700/40 rounded-lg p-4 text-sm mt-4">
+                    <span className="font-medium text-blue-400 block mb-2">Platform Features:</span>
+                    <div className="grid gap-3">
+                      <div className="flex items-start">
+                        <div className="bg-blue-900/30 rounded-md p-1.5 mr-2.5">
+                          <Sparkles className="h-4 w-4 text-blue-300" />
+                        </div>
+                        <div>
+                          <span className="text-slate-200 font-medium block leading-tight">AI-Powered Data Quality</span>
+                          <span className="text-slate-400 text-xs">Automatically fixes missing fields and ensures data quality</span>
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
-                        <span className="text-slate-300">Title</span>
+                      
+                      <div className="flex items-start">
+                        <div className="bg-cyan-900/30 rounded-md p-1.5 mr-2.5">
+                          <Zap className="h-4 w-4 text-cyan-300" />
+                        </div>
+                        <div>
+                          <span className="text-slate-200 font-medium block leading-tight">Smart Title Optimization</span>
+                          <span className="text-slate-400 text-xs">Enhances product titles for better marketplace visibility</span>
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
-                        <span className="text-slate-300">Price</span>
-                      </div>
-                      <div className="flex items-center">
-                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
-                        <span className="text-slate-300">Quantity</span>
+                      
+                      <div className="flex items-start">
+                        <div className="bg-indigo-900/30 rounded-md p-1.5 mr-2.5">
+                          <BarChart className="h-4 w-4 text-indigo-300" />
+                        </div>
+                        <div>
+                          <span className="text-slate-200 font-medium block leading-tight">Real-Time Data Validation</span>
+                          <span className="text-slate-400 text-xs">Validates all entries against marketplace requirements</span>
+                        </div>
                       </div>
                     </div>
                   </div>
