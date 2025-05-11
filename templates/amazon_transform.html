@@ -1,0 +1,48 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Amazon Inventory Loader Transformation</title>
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+                h1 { color: #232f3e; }
+                form { margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+                label { display: block; margin-bottom: 5px; font-weight: bold; }
+                input[type="file"] { margin-bottom: 20px; }
+                button { background-color: #ff9900; border: none; color: white; padding: 10px 20px; 
+                        cursor: pointer; font-weight: bold; border-radius: 3px; }
+                button:hover { background-color: #e88a00; }
+                .info { background-color: #f8f8f8; padding: 15px; margin: 20px 0; border-radius: 5px; }
+                .info h3 { margin-top: 0; }
+                .description { color: #555; }
+            </style>
+        </head>
+        <body>
+            <h1>Amazon Inventory Loader Transformation Tool</h1>
+            <div class="description">
+                <p>Convert your product data to Amazon Inventory Loader format. Upload a CSV file with your product information, and our AI will transform it into the required format for Amazon Seller Central.</p>
+            </div>
+            
+            <div class="info">
+                <h3>How It Works</h3>
+                <p>1. Upload your product CSV file</p>
+                <p>2. Our AI analyzes your data structure</p>
+                <p>3. We transform and map your fields to Amazon's required format</p>
+                <p>4. Download the Amazon-ready inventory file</p>
+            </div>
+            
+            <form action="/transform-to-amazon" method="post" enctype="multipart/form-data">
+                <label for="file">Select your product CSV file:</label>
+                <input type="file" name="file" id="file" accept=".csv" required>
+                <button type="submit">Transform to Amazon Format</button>
+            </form>
+            
+            <div class="info">
+                <h3>Sample CSV Structure</h3>
+                <p>Your CSV file should contain product data with columns like:</p>
+                <p><code>product_id, title, description, price, inventory, category, brand, sku, etc.</code></p>
+                <p>Don't worry if your columns don't match exactly - our AI will map them appropriately!</p>
+            </div>
+        </body>
+        </html>
+        
