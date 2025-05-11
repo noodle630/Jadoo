@@ -7,13 +7,14 @@ import { ThemeProvider } from "@/lib/theme-provider";
 
 import Layout from "@/components/Layout";
 import Dashboard from "@/pages/Dashboard";
-import NewFeed from "@/pages/NewFeed";
+import NewFeedV2 from "@/pages/NewFeedV2";
 import Templates from "@/pages/Templates";
 import History from "@/pages/History";
 import Settings from "@/pages/Settings";
 import Products from "@/pages/Products";
 import ProductCategories from "@/pages/ProductCategories";
 import ProductsImport from "@/pages/ProductsImport";
+import Channels from "@/pages/Channels";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -21,7 +22,7 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={Dashboard} />
-        <Route path="/feed/new" component={NewFeed} />
+        <Route path="/feed/new" component={NewFeedV2} />
         <Route path="/feeds/:id" component={Products} />
         <Route path="/products" component={Products} />
         <Route path="/products/categories" component={ProductCategories} />
@@ -29,6 +30,8 @@ function Router() {
         <Route path="/templates" component={Templates} />
         <Route path="/history" component={History} />
         <Route path="/settings" component={Settings} />
+        <Route path="/channels" component={Channels} />
+        <Route path="/connections" component={Channels} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

@@ -8,20 +8,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, ArrowRight, ChevronRight, FileUp, Upload } from 'lucide-react';
+import { AlertCircle, ArrowRight, ChevronRight, FileUp, Upload, CheckCircle2, FileText, RadioTower } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { queryClient, apiRequest } from '@/lib/queryClient';
+import { queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import AIProcessingAnimation from '@/components/AIProcessingAnimation';
 
-// Define the form schema
-const formSchema = z.object({
+// Simplify the initial form schema - just name and file
+const initialFormSchema = z.object({
   name: z.string().min(3, {
     message: 'Feed name must be at least 3 characters.',
-  }),
-  marketplace: z.string({
-    required_error: 'Please select a marketplace.',
   }),
   file: z.any()
     .refine((file) => file instanceof File, {
@@ -29,10 +27,29 @@ const formSchema = z.object({
     })
 });
 
-type FormValues = z.infer<typeof formSchema>;
+// Schema for the marketplace selection step
+const marketplaceFormSchema = z.object({
+  marketplace: z.string({
+    required_error: 'Please select a marketplace.',
+  }),
+});
+
+type InitialFormValues = z.infer<typeof initialFormSchema>;
+type MarketplaceFormValues = z.infer<typeof marketplaceFormSchema>;
+
+// Define feed creation process steps
+type Step = 'upload' | 'marketplace' | 'processing' | 'complete';
 
 export default function NewFeed() {
   const [selectedTab, setSelectedTab] = useState('file');
+  const [currentStep, setCurrentStep] = useState<Step>('upload');
+  const [uploadedInfo, setUploadedInfo] = useState<{
+    name: string;
+    fileId?: string;
+    fileName: string;
+    feedId?: number;
+  } | null>(null);
+  const [processingStep, setProcessingStep] = useState(1);
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [fileState, setFileState] = useState<{
