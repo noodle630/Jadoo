@@ -811,13 +811,13 @@ export default function NewFeedV2() {
                       <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/30">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-xs font-medium text-slate-400">Titles</span>
-                          <span className="text-xs font-bold text-emerald-400">
+                          <span className="text-xs font-bold text-blue-400">
                             {uploadedInfo?.aiChanges?.titleOptimized || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.4)}
                           </span>
                         </div>
                         <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
+                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full"
                             style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.titleOptimized || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.4)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
                           ></div>
                         </div>
