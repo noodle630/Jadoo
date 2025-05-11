@@ -286,8 +286,8 @@ export default function FeedHistory() {
                             key={feed.id}
                             className="hover:bg-slate-800/50 border-slate-800"
                           >
-                            <TableCell className="font-medium text-cyan-500">
-                              {feed.name && feed.name.trim() !== "" ? feed.name : `Untitled Feed ${feed.id}`}
+                            <TableCell className="font-medium text-white">
+                              {!feed.name || feed.name.trim() === "" ? `Untitled Feed ${feed.id}` : feed.name}
                             </TableCell>
                             <TableCell className="text-slate-400 capitalize">
                               {feed.source}
@@ -394,7 +394,7 @@ export default function FeedHistory() {
           <Dialog open={detailsDialog.open} onOpenChange={closeDetails}>
             <DialogContent className="max-w-2xl bg-slate-900 border-slate-800">
               <DialogHeader>
-                <DialogTitle className="text-xl">{detailsDialog.feed.name || `Untitled Feed ${detailsDialog.feed.id}`}</DialogTitle>
+                <DialogTitle className="text-xl">{!detailsDialog.feed.name || detailsDialog.feed.name.trim() === "" ? `Untitled Feed ${detailsDialog.feed.id}` : detailsDialog.feed.name}</DialogTitle>
                 <DialogDescription>
                   Created on {formatDate(detailsDialog.feed.createdAt)}
                 </DialogDescription>
@@ -468,7 +468,7 @@ export default function FeedHistory() {
                             // Create a download link and trigger it
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
-                            const fileName = `${detailsDialog.feed?.name || `Untitled Feed ${detailsDialog.feed.id}`}.csv`;
+                            const fileName = `${!detailsDialog.feed.name || detailsDialog.feed.name.trim() === "" ? `Untitled Feed ${detailsDialog.feed.id}` : detailsDialog.feed.name}.csv`;
                             a.href = url;
                             a.download = fileName;
                             document.body.appendChild(a);

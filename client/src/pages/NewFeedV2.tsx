@@ -344,16 +344,16 @@ export default function NewFeedV2() {
                     <CardContent className="pb-4">
                       <ul className="space-y-2 text-sm text-slate-400">
                         <li className="flex items-start gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                          <span>Include unique IDs or SKUs for each product to prevent duplication</span>
+                          <Sparkles className="h-4 w-4 text-indigo-400 mt-0.5 flex-shrink-0" />
+                          <span>Just upload your data – our AI magic handles field mapping & format conversions</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                          <span>Product titles under 200 characters perform best across marketplaces</span>
+                          <Sparkles className="h-4 w-4 text-indigo-400 mt-0.5 flex-shrink-0" />
+                          <span>Don't worry about messy data – we'll clean, standardize, and transform it all</span>
                         </li>
                         <li className="flex items-start gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                          <span>Include high-res image URLs (min 1000×1000 pixels) for better marketplace visibility</span>
+                          <Sparkles className="h-4 w-4 text-indigo-400 mt-0.5 flex-shrink-0" />
+                          <span>Any format works! We automatically detect and convert data to marketplace specs</span>
                         </li>
                       </ul>
                     </CardContent>
