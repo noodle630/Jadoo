@@ -251,159 +251,277 @@ export default function FeedHistory() {
   return (
     <Layout>
       <div className="container mx-auto py-6 px-4 max-w-6xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-white">Feed History</h1>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={() => navigate("/feed/new")}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-1">Feed History</h1>
+            <p className="text-slate-400 text-sm">View and manage your marketplace product feeds</p>
+          </div>
+          <Button 
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0"
+            onClick={() => navigate("/create-feed")}
           >
-            <DownloadCloud size={16} />
-            <span>Create New Feed</span>
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Create New Feed
           </Button>
         </div>
 
-        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="all">All Feeds</TabsTrigger>
-            {marketplaces.map((marketplace) => (
-              <TabsTrigger key={marketplace} value={marketplace}>
-                {marketplace.charAt(0).toUpperCase() + marketplace.slice(1)}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <TabsList className="mb-2 bg-slate-900/70 border border-slate-800 p-1 overflow-x-auto flex-wrap">
+              <TabsTrigger value="all" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                All Feeds
               </TabsTrigger>
-            ))}
-          </TabsList>
+              {marketplaces.map((marketplace) => (
+                <TabsTrigger 
+                  key={marketplace} 
+                  value={marketplace.toLowerCase()}
+                  className="data-[state=active]:bg-slate-800 data-[state=active]:text-white flex items-center gap-1.5"
+                >
+                  <MarketplaceIcon marketplace={marketplace.toLowerCase() as any} size="xs" />
+                  {marketplace}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          <TabsContent value={activeTab} className="space-y-4">
-            {filteredFeeds.length === 0 ? (
-              <div className="flex items-center justify-center py-12 px-4 bg-slate-900 border border-slate-800 rounded-lg">
-                <p className="text-slate-500">No feed history found</p>
+            <div className="flex gap-2 w-full md:w-auto">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => refetch()}
+                className="hidden md:flex border-slate-700 hover:bg-slate-800 hover:text-white"
+              >
+                <RefreshCw className="h-3.5 w-3.5 mr-2" />
+                Refresh
+              </Button>
+              <div className="relative flex-1 md:flex-auto">
+                <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500" />
+                <Input
+                  placeholder="Search feeds..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8 h-9 w-full md:w-60 bg-slate-900/70 border-slate-700 focus:border-slate-600"
+                />
+              </div>
+            </div>
+          </div>
+
+          <TabsContent value="all" className="mt-4">
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array(6).fill(0).map((_, i) => (
+                  <div key={i} className="border border-slate-800 rounded-lg p-4 bg-slate-900/70">
+                    <Skeleton className="h-6 w-2/3 mb-3 bg-slate-800" />
+                    <Skeleton className="h-4 w-1/2 mb-2 bg-slate-800" />
+                    <Skeleton className="h-4 w-3/4 mb-4 bg-slate-800" />
+                    <div className="flex justify-between items-center">
+                      <Skeleton className="h-4 w-16 bg-slate-800" />
+                      <Skeleton className="h-4 w-24 bg-slate-800" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : processedFeeds.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="mx-auto w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center mb-4">
+                  <FileDown className="text-slate-400 h-6 w-6" />
+                </div>
+                <h3 className="text-lg font-medium mb-2 text-white">No feeds found</h3>
+                <p className="text-slate-400 max-w-md mx-auto mb-6">
+                  {searchQuery ? 
+                    "No feeds match your search query. Try a different search term." :
+                    "You haven't created any feed transformations yet. Convert your product data into marketplace-ready formats."}
+                </p>
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0" onClick={() => navigate("/create-feed")}>
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Create New Feed
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredFeeds.map((feed) => (
-                  <Card 
-                    key={feed.id} 
-                    className="bg-slate-900/70 border-slate-800 hover:bg-slate-800/80 transition-all cursor-pointer overflow-hidden"
-                    onClick={() => showDetails(feed)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white truncate" title={feed.name}>
-                            {feed.name}
-                          </h3>
-                        </div>
-                        <div>
-                          {getStatusBadge(feed.status)}
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 text-sm text-slate-400 mb-3">
-                        <span className="bg-slate-800 px-2 py-0.5 rounded capitalize">{feed.source}</span>
+                {processedFeeds.map((feed) => (
+                  <DataCard 
+                    key={feed.id}
+                    title={feed.name}
+                    subtitle={
+                      <div className="flex items-center gap-2">
+                        <span className="capitalize">{feed.source}</span>
                         <span className="text-slate-600">•</span>
-                        {getMarketplaceIcon(feed.marketplace)}
+                        <span>{formatShortDate(feed.processedAt)}</span>
                       </div>
-                      
-                      <div className="flex justify-between items-center text-sm">
-                        <div className="text-blue-400">
-                          {feed.itemCount || 0} items
+                    }
+                    badge={{
+                      label: getStatusLabel(feed.status),
+                      variant: getStatusType(feed.status) as any,
+                    }}
+                    icon={<MarketplaceIcon marketplace={feed.marketplace.toLowerCase() as any} size="md" />}
+                    iconBackground={`bg-slate-800/70`}
+                    onClick={() => showDetails(feed)}
+                    footer={
+                      <div className="w-full flex justify-between items-center">
+                        <div className="flex items-center gap-1.5 text-sm">
+                          <span className="text-slate-400">Items:</span>
+                          <span className="font-medium text-white">{feed.itemCount || "—"}</span>
                         </div>
-                        <div className="text-slate-500 text-xs">
-                          {formatDate(feed.processedAt)}
-                        </div>
+                        {feed.outputUrl && (
+                          <Button variant="outline" size="sm" className="h-7 px-2.5 py-1 border-slate-700 hover:bg-slate-800">
+                            <DownloadCloud className="h-3.5 w-3.5 mr-1.5" />
+                            Download
+                          </Button>
+                        )}
                       </div>
-                    </CardContent>
-                  </Card>
+                    }
+                  />
                 ))}
               </div>
             )}
           </TabsContent>
+
+          {marketplaces.map((marketplace) => (
+            <TabsContent key={marketplace} value={marketplace.toLowerCase()} className="mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {processedFeeds
+                  .filter(feed => feed.marketplace.toLowerCase() === marketplace.toLowerCase())
+                  .map((feed) => (
+                    <DataCard 
+                      key={feed.id}
+                      title={feed.name}
+                      subtitle={
+                        <div className="flex items-center gap-2">
+                          <span className="capitalize">{feed.source}</span>
+                          <span className="text-slate-600">•</span>
+                          <span>{formatShortDate(feed.processedAt)}</span>
+                        </div>
+                      }
+                      badge={{
+                        label: getStatusLabel(feed.status),
+                        variant: getStatusType(feed.status) as any,
+                      }}
+                      icon={<MarketplaceIcon marketplace={feed.marketplace.toLowerCase() as any} size="md" />}
+                      iconBackground={`bg-slate-800/70`}
+                      onClick={() => showDetails(feed)}
+                      footer={
+                        <div className="w-full flex justify-between items-center">
+                          <div className="flex items-center gap-1.5 text-sm">
+                            <span className="text-slate-400">Items:</span>
+                            <span className="font-medium text-white">{feed.itemCount || "—"}</span>
+                          </div>
+                          {feed.outputUrl && (
+                            <Button variant="outline" size="sm" className="h-7 px-2.5 py-1 border-slate-700 hover:bg-slate-800">
+                              <DownloadCloud className="h-3.5 w-3.5 mr-1.5" />
+                              Download
+                            </Button>
+                          )}
+                        </div>
+                      }
+                    />
+                  ))}
+              </div>
+            </TabsContent>
+          ))}
         </Tabs>
 
+        {/* Feed Details Dialog */}
         {detailsDialog.feed && (
           <Dialog open={detailsDialog.open} onOpenChange={closeDetails}>
             <DialogContent className="max-w-2xl bg-slate-900 border-slate-800">
               <DialogHeader>
-                <DialogTitle className="text-xl">{detailsDialog.feed.name}</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className="text-xl font-bold text-white flex items-center gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded bg-slate-800 flex items-center justify-center">
+                    <MarketplaceIcon 
+                      marketplace={detailsDialog.feed.marketplace.toLowerCase() as any} 
+                      size="md" 
+                    />
+                  </div>
+                  {detailsDialog.feed.name}
+                </DialogTitle>
+                <DialogDescription className="text-slate-400">
                   Created on {formatDate(detailsDialog.feed.createdAt)}
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="text-sm text-slate-500">Status</div>
+              
+              <div className="space-y-5 py-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-slate-800/40 p-3 rounded-lg space-y-1">
+                    <div className="text-sm text-slate-400">Status</div>
                     <div className="flex items-center gap-2">
-                      {getStatusBadge(detailsDialog.feed.status)}
+                      <StatusBadge 
+                        status={getStatusType(detailsDialog.feed.status)}
+                        label={getStatusLabel(detailsDialog.feed.status)}
+                      />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-slate-500">Marketplace</div>
-                    <div>{getMarketplaceIcon(detailsDialog.feed.marketplace)}</div>
+                  
+                  <div className="bg-slate-800/40 p-3 rounded-lg space-y-1">
+                    <div className="text-sm text-slate-400">Source</div>
+                    <div className="text-white capitalize flex items-center">
+                      {detailsDialog.feed.source === 'csv' ? (
+                        <FileDown className="h-4 w-4 mr-1.5 text-blue-400" />
+                      ) : (
+                        <ExternalLink className="h-4 w-4 mr-1.5 text-green-400" />
+                      )}
+                      {detailsDialog.feed.source}
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-slate-500">Source</div>
-                    <div className="text-slate-200 capitalize">{detailsDialog.feed.source}</div>
+                  
+                  <div className="bg-slate-800/40 p-3 rounded-lg space-y-1">
+                    <div className="text-sm text-slate-400">Items</div>
+                    <div className="text-white font-medium">{detailsDialog.feed.itemCount || "—"}</div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-slate-500">Items</div>
-                    <div className="text-slate-200">{detailsDialog.feed.itemCount || "—"}</div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-slate-500">Created</div>
-                    <div className="text-slate-200">{formatDate(detailsDialog.feed.createdAt)}</div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-slate-500">Processed</div>
-                    <div className="text-slate-200">{formatDate(detailsDialog.feed.processedAt)}</div>
+                  
+                  <div className="bg-slate-800/40 p-3 rounded-lg space-y-1">
+                    <div className="text-sm text-slate-400">Processed</div>
+                    <div className="text-white">{formatDate(detailsDialog.feed.processedAt)}</div>
                   </div>
                 </div>
 
                 {detailsDialog.feed.errorDetails && (
-                  <div className="mt-4 space-y-2">
+                  <div className="mt-4 bg-red-900/20 border border-red-800/50 rounded-lg p-3 space-y-3">
                     <div className="flex items-center gap-2 text-red-400">
-                      <AlertTriangle size={16} />
+                      <AlertTriangle className="h-4 w-4" />
                       <span className="font-semibold">Error Details</span>
                     </div>
-                    <div className="text-red-300">{detailsDialog.feed.errorDetails.message}</div>
-                    <div className="text-slate-400">
-                      {detailsDialog.feed.errorDetails.count} issue{detailsDialog.feed.errorDetails.count !== 1 ? "s" : ""} found
-                    </div>
-
+                    <div className="text-red-300 text-sm">{detailsDialog.feed.errorDetails.message}</div>
+                    
                     {detailsDialog.feed.errorDetails.items && detailsDialog.feed.errorDetails.items.length > 0 && (
-                      <div className="bg-slate-800/50 p-3 rounded-md space-y-2 max-h-40 overflow-y-auto">
-                        {detailsDialog.feed.errorDetails.items.map((item, index) => (
-                          <div key={index} className="flex text-sm">
-                            <div className="font-mono text-slate-300 mr-2">{item.sku}:</div>
-                            <div className="text-red-300">{item.issue}</div>
+                      <div>
+                        <div className="text-slate-400 text-sm mb-2">
+                          {detailsDialog.feed.errorDetails.count} issue{detailsDialog.feed.errorDetails.count !== 1 ? "s" : ""} found
+                        </div>
+                        <ScrollArea className="h-36 rounded overflow-hidden">
+                          <div className="space-y-2">
+                            {detailsDialog.feed.errorDetails.items.map((item, index) => (
+                              <div key={index} className="flex text-sm bg-red-900/20 p-2 rounded">
+                                <div className="font-mono text-slate-300 mr-2">{item.sku}:</div>
+                                <div className="text-red-300">{item.issue}</div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </ScrollArea>
                       </div>
                     )}
                   </div>
                 )}
               </div>
+              
               <DialogFooter className="sm:justify-between flex flex-col sm:flex-row gap-2">
-                <div className="flex items-center">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="px-2"
-                    onClick={() => {
-                      toast({
-                        title: "Copied feed ID to clipboard",
-                        description: `Feed ID: ${detailsDialog.feed!.id}`,
-                      });
-                      navigator.clipboard.writeText(detailsDialog.feed!.id.toString());
-                    }}
-                  >
-                    <span className="text-xs text-slate-500">ID: {detailsDialog.feed.id}</span>
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="px-2 text-slate-400 hover:text-slate-300"
+                  onClick={() => {
+                    toast({
+                      title: "Copied feed ID to clipboard",
+                      description: `Feed ID: ${detailsDialog.feed!.id}`,
+                    });
+                    navigator.clipboard.writeText(detailsDialog.feed!.id.toString());
+                  }}
+                >
+                  <span className="text-xs">ID: {detailsDialog.feed.id}</span>
+                </Button>
+                
                 {detailsDialog.feed.outputUrl && (
                   <Button
-                    variant="outline"
-                    className="gap-2"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 flex items-center gap-2"
                     onClick={() => {
                       // Download the feed output
                       fetch(`/api/feeds/${detailsDialog.feed!.id}/download`)
@@ -412,7 +530,7 @@ export default function FeedHistory() {
                           // Create a download link and trigger it
                           const url = window.URL.createObjectURL(blob);
                           const a = document.createElement('a');
-                          const fileName = `${detailsDialog.feed.name}.csv`;
+                          const fileName = `${detailsDialog.feed!.name.replace(/\s+/g, '_')}.csv`;
                           a.href = url;
                           a.download = fileName;
                           document.body.appendChild(a);
@@ -429,13 +547,13 @@ export default function FeedHistory() {
                           toast({
                             variant: "destructive",
                             title: "Download failed",
-                            description: "There was an error downloading the file.",
+                            description: "Could not download file. Please try again later.",
                           });
                         });
                     }}
                   >
-                    <FileDown className="h-4 w-4" />
-                    <span>Download Output</span>
+                    <DownloadCloud className="h-4 w-4" />
+                    <span>Download Feed</span>
                   </Button>
                 )}
               </DialogFooter>
