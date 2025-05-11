@@ -34,13 +34,17 @@ REQUIRED_META_FIELDS = [
     "price", "link", "image_link", "brand"
 ]
 
-def transform_to_meta_format(csv_file_path, output_file=None):
+from db_utils import time_transformation
+
+@time_transformation
+def transform_to_meta_format(csv_file_path, output_file=None, marketplace="meta"):
     """
     Transform a CSV file to Meta (Facebook) product catalog format
     
     Args:
         csv_file_path: Path to the CSV file to transform
         output_file: Path to save the transformed file (default: meta_<input_filename>)
+        marketplace: The marketplace identifier for the database (default: meta)
     
     Returns:
         The path to the transformed file

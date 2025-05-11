@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transformation History - Product Feed Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #555;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .success {
+            background-color: #e6f7e6;
+            color: #2e7d32;
+        }
+        .warning {
+            background-color: #fff8e1;
+            color: #ff8f00;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header-nav a {
+            text-decoration: none;
+            color: #555;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .header-nav a:hover {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+        .marketplace-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .amazon {
+            background-color: #ff9900;
+            color: white;
+        }
+        .reebelo {
+            background-color: #4052b5;
+            color: white;
+        }
+        .walmart {
+            background-color: #0071ce;
+            color: white;
+        }
+        .catch {
+            background-color: #00aaa7;
+            color: white;
+        }
+        .meta {
+            background-color: #1877f2;
+            color: white;
+        }
+        .tiktok {
+            background-color: #000000;
+            color: white;
+        }
+        .date-time {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-nav">
+            <h1>Transformation History</h1>
+            <a href="/">Back to Home</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Marketplace</th>
+                    <th>Source File</th>
+                    <th>Output File</th>
+                    <th>Row Count</th>
+                    <th>Processing Time</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>
+                        <span class="marketplace-badge {{ item.display_name.split()[0].lower() }}">
+                            {{ item.display_name }}
+                        </span>
+                    </td>
+                    <td>{{ item.source_filename }}</td>
+                    <td>
+                        <a href="/download/{{ item.output_filename }}">{{ item.output_filename }}</a>
+                    </td>
+                    <td>
+                        {{ item.source_row_count }} → {{ item.output_row_count }}
+                        {% if item.source_row_count == item.output_row_count %}
+                            <span class="status success">1:1</span>
+                        {% elif item.output_row_count > item.source_row_count %}
+                            <span class="status warning">+{{ item.output_row_count - item.source_row_count }}</span>
+                        {% else %}
+                            <span class="status error">-{{ item.source_row_count - item.output_row_count }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ "%.2f"|format(item.transformation_time) }} sec</td>
+                    <td class="date-time">{{ item.processed_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>Product Feed Manager - Powered by OpenAI GPT-4o</p>
+        </div>
+    </div>
+</body>
+</html>

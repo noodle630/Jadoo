@@ -36,13 +36,17 @@ TIKTOK_OPTIONAL_COLUMNS = [
 # Combine all fields
 TIKTOK_COLUMNS = TIKTOK_REQUIRED_COLUMNS + TIKTOK_OPTIONAL_COLUMNS
 
-def transform_to_tiktok_format(csv_file_path, output_file=None):
+from db_utils import time_transformation
+
+@time_transformation
+def transform_to_tiktok_format(csv_file_path, output_file=None, marketplace="tiktok"):
     """
     Transform a CSV file to TikTok catalog format
     
     Args:
         csv_file_path: Path to the CSV file to transform
         output_file: Path to save the transformed file (default: tiktok_<input_filename>)
+        marketplace: The marketplace identifier for the database (default: tiktok)
     
     Returns:
         The path to the transformed file

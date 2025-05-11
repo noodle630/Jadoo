@@ -6,6 +6,9 @@ from werkzeug.utils import secure_filename
 from openai import OpenAI
 from dotenv import load_dotenv
 
+# Import database utilities
+from db_utils import get_recent_transformations
+
 # Load environment variables
 load_dotenv()
 

@@ -7,5 +7,8 @@ dependencies = [
     "flask>=3.1.0",
     "openai>=1.78.0",
     "pandas>=2.2.3",
+    "psycopg2-binary>=2.9.10",
     "python-dotenv>=1.1.0",
+    "requests>=2.32.3",
+    "werkzeug>=3.1.3",
 ]
