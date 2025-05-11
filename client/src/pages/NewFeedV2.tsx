@@ -71,7 +71,8 @@ import {
   RefreshCw,
   HelpCircle,
   ListFilter,
-  DownloadCloud
+  DownloadCloud,
+  Clock
 } from 'lucide-react';
 
 // Define schema for combined upload and marketplace selection
@@ -673,20 +674,69 @@ export default function NewFeedV2() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-sm text-slate-400 mt-3">
-                    <p>This process typically takes 1-2 minutes depending on file size.</p>
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      <div className="flex items-center bg-slate-800/30 rounded-md p-2 border border-slate-700/30">
-                        <span className="bg-blue-900/30 p-1 rounded-md mr-2">
-                          <Wand2 className="h-4 w-4 text-blue-400" />
-                        </span>
-                        <span className="text-xs text-slate-300">Auto-formatting</span>
+                  <div className="mt-3">
+                    <p className="text-sm text-slate-400 mb-4">This process typically takes 1-2 minutes depending on data complexity.</p>
+                    
+                    <div className="space-y-4">
+                      <div className="mb-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-medium text-slate-300">Overall Progress</span>
+                          <span className="text-xs font-medium text-blue-400">{processingStage > 0 ? `${Math.min(processingStage * 25, 95)}%` : 'Initializing...'}</span>
+                        </div>
+                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full transition-all duration-500"
+                            style={{ width: `${Math.min(processingStage * 25, 95)}%` }}
+                          ></div>
+                        </div>
                       </div>
-                      <div className="flex items-center bg-slate-800/30 rounded-md p-2 border border-slate-700/30">
-                        <span className="bg-purple-900/30 p-1 rounded-md mr-2">
-                          <ListFilter className="h-4 w-4 text-purple-400" />
-                        </span>
-                        <span className="text-xs text-slate-300">Data cleaning</span>
+                      
+                      <div className="grid grid-cols-1 gap-3">
+                        <div className={`flex items-center bg-slate-800/30 rounded-md p-2.5 border ${processingStage >= 1 ? 'border-blue-700/30' : 'border-slate-700/30'}`}>
+                          <span className={`p-1.5 rounded-md mr-2 ${processingStage >= 1 ? 'bg-blue-900/30' : 'bg-slate-800'}`}>
+                            {processingStage >= 1 ? (
+                              <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                            ) : (
+                              <Loader2 className="h-4 w-4 text-slate-500 animate-spin" />
+                            )}
+                          </span>
+                          <div>
+                            <span className={`text-sm ${processingStage >= 1 ? 'text-slate-200' : 'text-slate-400'}`}>Data Validation</span>
+                            <p className="text-xs text-slate-500">Checking format compatibility and required fields</p>
+                          </div>
+                        </div>
+
+                        <div className={`flex items-center bg-slate-800/30 rounded-md p-2.5 border ${processingStage >= 2 ? 'border-blue-700/30' : 'border-slate-700/30'}`}>
+                          <span className={`p-1.5 rounded-md mr-2 ${processingStage >= 2 ? 'bg-blue-900/30' : 'bg-slate-800'}`}>
+                            {processingStage >= 2 ? (
+                              <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                            ) : processingStage >= 1 ? (
+                              <Loader2 className="h-4 w-4 text-slate-500 animate-spin" />
+                            ) : (
+                              <Clock className="h-4 w-4 text-slate-700" />
+                            )}
+                          </span>
+                          <div>
+                            <span className={`text-sm ${processingStage >= 2 ? 'text-slate-200' : 'text-slate-400'}`}>Marketplace Optimization</span>
+                            <p className="text-xs text-slate-500">Applying AI transformations for target marketplace</p>
+                          </div>
+                        </div>
+
+                        <div className={`flex items-center bg-slate-800/30 rounded-md p-2.5 border ${processingStage >= 3 ? 'border-blue-700/30' : 'border-slate-700/30'}`}>
+                          <span className={`p-1.5 rounded-md mr-2 ${processingStage >= 3 ? 'bg-blue-900/30' : 'bg-slate-800'}`}>
+                            {processingStage >= 3 ? (
+                              <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                            ) : processingStage >= 2 ? (
+                              <Loader2 className="h-4 w-4 text-slate-500 animate-spin" />
+                            ) : (
+                              <Clock className="h-4 w-4 text-slate-700" />
+                            )}
+                          </span>
+                          <div>
+                            <span className={`text-sm ${processingStage >= 3 ? 'text-slate-200' : 'text-slate-400'}`}>Final Validation</span>
+                            <p className="text-xs text-slate-500">Ensuring feed meets marketplace requirements</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
