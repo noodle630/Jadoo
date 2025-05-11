@@ -113,6 +113,8 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
         print("Sending data to OpenAI for transformation...")
         
         try:
+            print(f"Sending OpenAI request to transform data for {row_count} rows...")
+            
             response = client.chat.completions.create(
                 model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
                 messages=[
@@ -124,6 +126,8 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
             
             # Extract the transformed CSV from the response
             message_content = response.choices[0].message.content
+            
+            print(f"OpenAI response received! Content length: {len(message_content) if message_content else 0} characters")
         except Exception as api_error:
             print(f"OpenAI API Error: {str(api_error)}")
             raise
