@@ -413,7 +413,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const outputFilePath = sourceDetails.outputPath;
-      const fs = require('fs');
       
       if (!fs.existsSync(outputFilePath)) {
         return res.status(404).json({ message: 'Output file does not exist on the server' });

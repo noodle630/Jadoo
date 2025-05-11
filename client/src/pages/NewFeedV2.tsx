@@ -434,7 +434,7 @@ export default function NewFeedV2() {
                   
                   {/* Catchy marketing text */}
                   <div className="mt-4 mb-6">
-                    <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-500 to-indigo-400 bg-clip-text text-transparent mb-2">✨ Dump It In</h3>
+                    <h3 className="text-lg font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-2">Dump It In ✨</h3>
                     <p className="text-sm text-slate-400">Got a name, a price, and a quantity? That's all we ask.</p>
                     <p className="text-sm text-slate-400">We'll clean the rest like it's our job. (It is.)</p>
                     <p className="text-sm text-slate-400 mt-1">Got SKUs, UPCs, or random mystery columns? Even better.</p>

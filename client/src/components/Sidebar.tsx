@@ -32,9 +32,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-slate-950 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
-      isOpen ? 'translate-x-0' : '-translate-x-full'
-    }`}>
+    <aside 
+      className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-slate-950 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 shadow-2xl shadow-slate-900/50 ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
+      aria-hidden={!isOpen && window.innerWidth < 768}
+    >
       {/* Logo */}
       <div className="flex h-14 items-center border-b border-slate-800 px-4">
         <Link href="/">
