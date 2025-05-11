@@ -31,6 +31,7 @@ function Router() {
         <Route path="/products/import" component={ProductsImport} />
         <Route path="/templates" component={Templates} />
         <Route path="/history" component={History} />
+        <Route path="/feeds" component={History} />
         <Route path="/settings" component={Settings} />
         <Route path="/channels" component={Channels} />
         <Route path="/connections" component={Channels} />
