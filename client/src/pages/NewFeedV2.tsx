@@ -69,19 +69,15 @@ import {
   Database
 } from 'lucide-react';
 
-// Define schemas for form validation
-const uploadFormSchema = z.object({
+// Define schema for combined upload and marketplace selection
+const feedFormSchema = z.object({
   name: z.string().min(1, "Feed name is required"),
   file: z.any().refine((file) => file?.size > 0, "File is required"),
-});
-
-const marketplaceFormSchema = z.object({
   marketplace: z.string().min(1, "Please select a marketplace"),
 });
 
-// Infer types from schemas
-type UploadFormValues = z.infer<typeof uploadFormSchema>;
-type MarketplaceFormValues = z.infer<typeof marketplaceFormSchema>;
+// Infer type from schema
+type FeedFormValues = z.infer<typeof feedFormSchema>;
 
 // Define steps for the feed creation process
 type Step = 'upload' | 'marketplace' | 'processing' | 'complete';
