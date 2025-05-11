@@ -72,6 +72,11 @@ export default function FeedHistory() {
   const { data: feeds = [], isLoading } = useQuery<Feed[]>({
     queryKey: ["/api/feeds"],
   });
+  
+  // Debug feeds in useEffect
+  useEffect(() => {
+    console.log("Feeds loaded:", feeds);
+  }, [feeds]);
 
   // Handle sorting
   const sortedFeeds = [...feeds].sort((a, b) => {
@@ -281,8 +286,8 @@ export default function FeedHistory() {
                             key={feed.id}
                             className="hover:bg-slate-800/50 border-slate-800"
                           >
-                            <TableCell className="font-medium text-slate-200">
-                              {feed.name || `Untitled Feed ${feed.id}`}
+                            <TableCell className="font-medium text-cyan-500">
+                              {feed.name ? feed.name : `Untitled Feed ${feed.id}`}
                             </TableCell>
                             <TableCell className="text-slate-400 capitalize">
                               {feed.source}
