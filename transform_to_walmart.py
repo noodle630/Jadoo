@@ -140,7 +140,7 @@ def transform_to_walmart_format(csv_file_path, output_file=None):
         print("Sending data to OpenAI for transformation...")
         
         response = client.chat.completions.create(
-            model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+            model="gpt-3.5-turbo", # Using GPT-3.5-turbo for cost optimization as explicitly requested by user
             messages=[
                 {"role": "system", "content": "You are a data transformation expert that converts product data to Walmart marketplace format."},
                 {"role": "user", "content": prompt}
