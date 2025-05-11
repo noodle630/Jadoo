@@ -397,16 +397,19 @@ def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
             # Extract and clean the template response
             template_content = response.choices[0].message.content
             
-            # Clean up the response
-            template_content = template_content.strip()
-            if template_content.startswith("```csv"):
-                template_content = template_content[6:]
-            elif template_content.startswith("```"):
-                template_content = template_content[3:]
-            if template_content.endswith("```"):
-                template_content = template_content[:-3]
-                
-            template_content = template_content.strip()
+            # Clean up the response with safeguards for None values
+            if template_content is not None:
+                template_content = template_content.strip()
+                if template_content.startswith("```csv"):
+                    template_content = template_content[6:]
+                elif template_content.startswith("```"):
+                    template_content = template_content[3:]
+                if template_content.endswith("```"):
+                    template_content = template_content[:-3]
+                    
+                template_content = template_content.strip()
+            else:
+                template_content = ""  # Provide empty string as fallback
             
             # Split into header and data
             template_lines = template_content.split('\n')
@@ -501,11 +504,15 @@ def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
                         top_dups = {}
                         # More compatible way to iterate over duplicates
                         i = 0
-                        # Use a more generic approach that works across pandas versions
-                        for sku in sku_counts[sku_counts > 1].keys():
-                            if i < 5:  # Only take top 5
-                                top_dups[str(sku)] = int(sku_counts[sku])
-                                i += 1
+                        # Using dictionary-based approach for maximum compatibility
+                        sku_dict = dict(sku_counts)
+                        # Find top 5 duplicates using standard Python methods
+                        skus_with_dups = {k: v for k, v in sku_dict.items() if v > 1}
+                        # Get top 5 duplicates (or fewer if less exist)
+                        for j, (sku, count) in enumerate(sorted(skus_with_dups.items(), key=lambda x: x[1], reverse=True)):
+                            if j >= 5:  # Limit to top 5
+                                break
+                            top_dups[str(sku)] = int(count)
                         print(f"Top duplicated SKUs: {top_dups}")
                     
                     # Now remove duplicates, keeping the first occurrence
