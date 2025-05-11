@@ -13,6 +13,7 @@ import History from "@/pages/History";
 import Settings from "@/pages/Settings";
 import Products from "@/pages/Products";
 import ProductCategories from "@/pages/ProductCategories";
+import ProductsImport from "@/pages/ProductsImport";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -22,6 +23,7 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/products" component={Products} />
         <Route path="/products/categories" component={ProductCategories} />
+        <Route path="/products/import" component={ProductsImport} />
         <Route path="/new-feed" component={NewFeed} />
         <Route path="/templates" component={Templates} />
         <Route path="/history" component={History} />
@@ -34,7 +36,7 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="datafeedsync-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="s-theme">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />

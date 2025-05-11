@@ -586,7 +586,7 @@ export default function Products() {
             </div>
             
             <div className="flex gap-2 items-center">
-              <Select value={statusFilter || ""} onValueChange={(value) => setStatusFilter(value || null)}>
+              <Select value={statusFilter || "all"} onValueChange={(value) => setStatusFilter(value === "all" ? null : value)}>
                 <SelectTrigger className="h-9 w-[160px]">
                   <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4" />
@@ -594,7 +594,7 @@ export default function Products() {
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Status</SelectItem>
+                  <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="inactive">Inactive</SelectItem>
                   <SelectItem value="archived">Archived</SelectItem>
