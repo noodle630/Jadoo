@@ -1,7 +1,15 @@
 import { useLocation } from "wouter";
-import { Bell, Menu, User, Search, Command } from "lucide-react";
+import { Bell, Menu, User, Search, Command, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "./theme-toggle";
+
+// Temporary ModeToggle component until we fix the import
+const ModeToggle = () => {
+  return (
+    <Button variant="ghost" size="icon">
+      <Search className="h-4 w-4" />
+    </Button>
+  );
+};
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,30 +78,55 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
   return (
     <div className="sticky top-0 z-10">
       <header className="bg-slate-100/50 dark:bg-slate-950/50 backdrop-blur-md py-2 px-4 border-b border-slate-200 dark:border-slate-800/50 flex items-center h-16">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          onClick={onToggleSidebar}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="mr-2 bg-slate-800/10 dark:bg-slate-800/40 border-slate-300/50 dark:border-slate-700/50 hover:bg-slate-800/20 dark:hover:bg-slate-700/50"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56 mt-1">
+            <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => window.location.href = "/"}>
+              Dashboard
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => window.location.href = "/new-feed"}>
+              Create Feed
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => window.location.href = "/templates"}>
+              Templates
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => window.location.href = "/history"}>
+              Feed History
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => window.location.href = "/products"}>
+              Products
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => window.location.href = "/settings"}>
+              Settings
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold px-2 dark:text-white">{getPageTitle()}</h1>
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-md bg-blue-500/10 dark:bg-blue-950/50">
+            {location === "/" && <Command className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+            {location === "/new-feed" && <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+            {location === "/templates" && <Command className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+            {location === "/history" && <Command className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+            {location === "/products" && <Command className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+          </div>
+          <h1 className="text-lg font-semibold dark:text-white">{getPageTitle()}</h1>
         </div>
 
         <div className="flex-1" />
 
-        <div className="hidden md:flex items-center h-9 rounded-md px-3 mx-4 bg-slate-200/70 dark:bg-slate-800/40 border border-slate-300/50 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 w-80">
-          <Search className="h-4 w-4 mr-2" />
-          <span className="text-sm">Search...</span>
-          <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-1.5 font-mono text-[10px] font-medium text-slate-600 dark:text-slate-400">
-            <span className="text-xs">⌘</span>K
-          </kbd>
-        </div>
-
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
           <ModeToggle />
 
           <Button variant="ghost" size="icon" className="relative">
@@ -110,7 +143,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                   <AvatarImage src="https://i.pravatar.cc/150?img=12" />
                   <AvatarFallback>DM</AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium">demo</span>
+                <span className="text-sm font-medium hidden sm:inline-block">demo</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

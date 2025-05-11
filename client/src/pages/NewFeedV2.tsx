@@ -617,7 +617,7 @@ export default function NewFeedV2() {
                         <h4 className="font-medium text-red-300">Processing Error</h4>
                         <p className="text-red-200/80">
                           {processingError && 
-                           processingError.includes("Cannot read properties of null") ? 
+                           (processingError.includes("Cannot read properties of null") || processingError.includes("reading 'id'")) ? 
                            "Your file couldn't be processed. Please ensure your data contains required fields (SKU, title, price, quantity) and try again." : 
                            processingError}
                         </p>
