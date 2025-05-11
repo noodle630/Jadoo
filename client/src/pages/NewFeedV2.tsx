@@ -612,7 +612,7 @@ export default function NewFeedV2() {
                         Products Ready to Sell 💲🚀
                       </h2>
                       <p className="text-slate-300">
-                        Optimized for <span className="text-white font-semibold">{marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)}</span> marketplace
+                        Optimized for <span className="text-white font-semibold">{feedForm.getValues('marketplace')?.charAt(0).toUpperCase() + feedForm.getValues('marketplace')?.slice(1)}</span> marketplace
                       </p>
                     </div>
                   </div>
@@ -644,7 +644,7 @@ export default function NewFeedV2() {
                     <div className="text-sm text-slate-300 space-y-2">
                       <p className="flex items-start">
                         <CheckCircle2 className="h-4 w-4 text-green-400 mr-2 mt-0.5" />
-                        All product data was successfully transformed to {marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)} format
+                        All product data was successfully transformed to {feedForm.getValues('marketplace')?.charAt(0).toUpperCase() + feedForm.getValues('marketplace')?.slice(1)} format
                       </p>
                       <p className="flex items-start">
                         <CheckCircle2 className="h-4 w-4 text-green-400 mr-2 mt-0.5" />
