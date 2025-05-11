@@ -1,6 +1,6 @@
 product_id,title,description,price,inventory,category,brand,sku
 1001,Men's cotton t-shirt blue M,comfortable blue tshirt for men,19.99,45,Apparel,ABC Clothing,TS-001-BLU-M
-1002,men's cotton t-shirt, black , l,comfortable black t shirt for men size L,19.99,32,apparel,abc clothing,TS-001-BLK-L
+1002,"men's cotton t-shirt, black, l","comfortable black t shirt for men size L",19.99,32,apparel,"abc clothing",TS-001-BLK-L
 1003,WOMENS DRESS RED S,fancy red dress for women size small,49.99,12,Apparel,,DR-100-RED-S
 1004,wireless Headphones - BLACK,premium wireless headphones with noise cancellation .,89.99,18,Electronics,Soundtech,HP-200-BLK
 1005,HDMI Cable 6ft,High Speed hdmi Cable compatible with all devices,9.99,120,electronics,techconnect,CB-300-HDMI
