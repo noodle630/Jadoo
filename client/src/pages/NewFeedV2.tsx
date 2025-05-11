@@ -513,14 +513,14 @@ export default function NewFeedV2() {
                 
                 <div className="mt-8 mb-6">
                   <div className="p-5 rounded-md bg-slate-900/80 border border-slate-800/40 backdrop-blur shadow-lg flex items-center space-x-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center">
-                      <Wand2 className="h-6 w-6 text-slate-950" />
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+                      <Zap className="h-6 w-6 text-slate-950" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                        Messy Data → Marketplace Ready
+                      <h3 className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                        Minimal Input → Maximum Results
                       </h3>
-                      <p className="text-slate-400">Upload any format, get marketplace gold in minutes</p>
+                      <p className="text-slate-400">From basic product data to marketplace success in minutes</p>
                     </div>
                   </div>
                 </div>
@@ -528,30 +528,30 @@ export default function NewFeedV2() {
                 <div className="grid grid-cols-2 gap-3 mt-6">
                   <div className="p-3 rounded-md bg-slate-900/60 border border-slate-800/40 flex items-center space-x-3">
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                      <Zap className="h-4 w-4 text-blue-400" />
                     </div>
-                    <span className="text-slate-300 text-sm">Auto Format</span>
+                    <span className="text-slate-300 text-sm">Instant Setup</span>
                   </div>
                   
                   <div className="p-3 rounded-md bg-slate-900/60 border border-slate-800/40 flex items-center space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                      <Sparkles className="h-4 w-4 text-indigo-400" />
                     </div>
-                    <span className="text-slate-300 text-sm">Title Enhance</span>
+                    <span className="text-slate-300 text-sm">AI Optimization</span>
                   </div>
                   
                   <div className="p-3 rounded-md bg-slate-900/60 border border-slate-800/40 flex items-center space-x-3">
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                      <CheckCircle2 className="h-4 w-4 text-purple-400" />
+                      <Database className="h-4 w-4 text-purple-400" />
                     </div>
-                    <span className="text-slate-300 text-sm">Auto Category</span>
+                    <span className="text-slate-300 text-sm">Automatic Storage</span>
                   </div>
                   
                   <div className="p-3 rounded-md bg-slate-900/60 border border-slate-800/40 flex items-center space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                      <Download className="h-4 w-4 text-cyan-400" />
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-500/20 flex items-center justify-center">
+                      <BadgeCheck className="h-4 w-4 text-slate-400" />
                     </div>
-                    <span className="text-slate-300 text-sm">Instant Download</span>
+                    <span className="text-slate-300 text-sm">Quality Validation</span>
                   </div>
                 </div>
               </div>
