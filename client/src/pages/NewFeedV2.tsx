@@ -417,27 +417,73 @@ export default function NewFeedV2() {
                                     onChange={(e) => {
                                       const file = e.target.files?.[0];
                                       if (file) {
-                                        onChange(file);
                                         // Show visual confirmation that file was selected
                                         const label = document.querySelector('label[for="file"]');
-                                        if (label) {
-                                          label.classList.remove('border-slate-700/70');
-                                          label.classList.remove('bg-slate-900/40');
-                                          label.classList.add('border-cyan-500/70');
-                                          label.classList.add('bg-cyan-950/30');
-                                          
-                                          // Update the text content
-                                          const fileNameElem = label.querySelector('p.text-base.text-slate-300');
-                                          if (fileNameElem) {
-                                            fileNameElem.textContent = `Selected: ${file.name}`;
-                                            fileNameElem.classList.add('text-cyan-300');
+                                        
+                                        // Helper function to update the UI based on file info
+                                        const updateFileUI = (file, labelElem = null, rowCount = null) => {
+                                          const uiLabel = labelElem || label;
+                                          if (uiLabel) {
+                                            uiLabel.classList.remove('border-slate-700/70');
+                                            uiLabel.classList.remove('bg-slate-900/40');
+                                            uiLabel.classList.add('border-cyan-500/70');
+                                            uiLabel.classList.add('bg-cyan-950/30');
+                                            
+                                            // Update the text content
+                                            const fileNameElem = uiLabel.querySelector('p.text-base.text-slate-300');
+                                            if (fileNameElem) {
+                                              fileNameElem.textContent = `Selected: ${file.name}`;
+                                              fileNameElem.classList.add('text-cyan-300');
+                                            }
+                                            
+                                            const fileSizeElem = uiLabel.querySelector('p.text-sm.text-slate-500');
+                                            if (fileSizeElem) {
+                                              const fileSize = `${(file.size / 1024).toFixed(1)} KB`;
+                                              const rowInfo = rowCount ? ` • ${rowCount.toLocaleString()} rows` : '';
+                                              fileSizeElem.textContent = `${fileSize}${rowInfo} • Ready to transform`;
+                                              fileSizeElem.classList.add('text-cyan-400/70');
+                                            }
+                                            
+                                            // Update icon
+                                            const iconContainer = uiLabel.querySelector('.rounded-full');
+                                            if (iconContainer) {
+                                              iconContainer.classList.remove('bg-slate-800');
+                                              iconContainer.classList.add('bg-cyan-900/60');
+                                            }
                                           }
-                                          
-                                          const fileSizeElem = label.querySelector('p.text-sm.text-slate-500');
-                                          if (fileSizeElem) {
-                                            fileSizeElem.textContent = `${(file.size / 1024).toFixed(1)} KB · Ready to transform`;
-                                            fileSizeElem.classList.add('text-cyan-400/70');
-                                          }
+                                        };
+                                        
+                                        // Check CSV row limit
+                                        if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+                                          const reader = new FileReader();
+                                          reader.onload = (event) => {
+                                            const content = event.target?.result as string;
+                                            if (content) {
+                                              const lines = content.split('\n').filter(line => line.trim().length > 0);
+                                              const rowCount = lines.length - 1; // Subtract header row
+                                              
+                                              if (rowCount > 1000) {
+                                                toast({
+                                                  title: "File too large",
+                                                  description: `Your CSV contains ${rowCount.toLocaleString()} rows. The maximum allowed is 1,000 rows.`,
+                                                  variant: "destructive",
+                                                  duration: 10000,
+                                                });
+                                                // Reset the file input
+                                                e.target.value = '';
+                                                return;
+                                              }
+                                              
+                                              // File is valid, continue with the upload
+                                              onChange(file);
+                                              updateFileUI(file, label, rowCount);
+                                            }
+                                          };
+                                          reader.readAsText(file);
+                                        } else {
+                                          // For non-CSV files, just proceed normally
+                                          onChange(file);
+                                          updateFileUI(file);
                                           
                                           // Update icon
                                           const iconContainer = label.querySelector('.rounded-full');
