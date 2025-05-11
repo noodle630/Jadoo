@@ -40,7 +40,7 @@ def clean_csv():
             return jsonify({"error": "No file selected"}), 400
         
         # Check if the file is a CSV
-        if not file.filename.endswith('.csv'):
+        if file.filename is None or not file.filename.endswith('.csv'):
             return jsonify({"error": "File must be a CSV"}), 400
         
         # Read the CSV file
@@ -98,7 +98,18 @@ def clean_csv():
         )
         
         # Extract the cleaned CSV from the response
-        cleaned_csv = response.choices[0].message.content.strip()
+        message_content = response.choices[0].message.content
+        if message_content is None:
+            return jsonify({"error": "Received empty response from OpenAI API"}), 500
+            
+        # Remove markdown code block indicators if present
+        cleaned_content = message_content.strip()
+        if cleaned_content.startswith("```csv"):
+            cleaned_content = cleaned_content[6:]
+        if cleaned_content.endswith("```"):
+            cleaned_content = cleaned_content[:-3]
+            
+        cleaned_csv = cleaned_content.strip()
         
         # Create a text/csv response
         response = make_response(cleaned_csv)

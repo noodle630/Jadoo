@@ -94,7 +94,14 @@ def clean_csv_with_openai(csv_file_path):
             print("Error: Received empty response from OpenAI API")
             return None
             
-        cleaned_csv = message_content.strip()
+        # Remove markdown code block indicators if present
+        cleaned_content = message_content.strip()
+        if cleaned_content.startswith("```csv"):
+            cleaned_content = cleaned_content[6:]
+        if cleaned_content.endswith("```"):
+            cleaned_content = cleaned_content[:-3]
+            
+        cleaned_csv = cleaned_content.strip()
         
         # Save cleaned CSV to a new file
         output_file = f"cleaned_{os.path.basename(csv_file_path)}"
