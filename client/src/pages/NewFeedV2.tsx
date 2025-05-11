@@ -72,7 +72,10 @@ import {
   HelpCircle,
   ListFilter,
   DownloadCloud,
-  Clock
+  Clock,
+  ArrowLeft,
+  Bell,
+  BarChart
 } from 'lucide-react';
 
 // Define schema for combined upload and marketplace selection
@@ -748,22 +751,22 @@ export default function NewFeedV2() {
         
       case 'complete':
         return (
-          <Card className="border-green-800/30 shadow-xl relative overflow-hidden backdrop-blur-sm">
+          <Card className="border-blue-800/30 shadow-xl relative overflow-hidden backdrop-blur-sm">
             {/* Dynamic background effects */}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-900/30 via-transparent to-emerald-900/20 z-0"></div>
-            <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-bl from-green-500/10 to-transparent rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-transparent to-indigo-900/20 z-0"></div>
+            <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-bl from-blue-500/10 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-gradient-to-tr from-indigo-500/10 to-transparent rounded-full blur-3xl"></div>
             
             <CardContent className="p-6 relative z-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Left column - Main stats and download */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="h-14 w-14 bg-green-900/50 rounded-xl flex items-center justify-center border-2 border-green-500/50 shadow-lg shadow-green-500/20">
-                      <CheckCircle2 className="h-7 w-7 text-green-400" />
+                    <div className="h-14 w-14 bg-blue-900/50 rounded-xl flex items-center justify-center border-2 border-blue-500/50 shadow-lg shadow-blue-500/20">
+                      <CheckCircle2 className="h-7 w-7 text-blue-400" />
                     </div>
                     <div>
-                      <h2 className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text text-3xl font-bold">
+                      <h2 className="bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text text-3xl font-bold">
                         Feed Transformation Complete
                       </h2>
                       <p className="text-slate-300">
@@ -773,44 +776,48 @@ export default function NewFeedV2() {
                   </div>
                   
                   {/* Feed stats card */}
-                  <div className="p-5 bg-slate-900/60 rounded-xl border border-green-700/30 backdrop-blur-sm relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent opacity-50"></div>
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+                  <div className="p-5 bg-slate-900/60 rounded-xl border border-blue-700/30 backdrop-blur-sm relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-50"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
                     
-                    <div className="flex justify-between items-center relative z-10 mb-4 pb-3 border-b border-green-800/20">
+                    <div className="flex justify-between items-center relative z-10 mb-4 pb-3 border-b border-blue-800/20">
                       <div className="flex items-center">
-                        <div className="mr-3 h-12 w-12 bg-gradient-to-br from-slate-900 to-green-900/50 rounded-lg flex items-center justify-center border border-green-600/30 relative shadow-lg">
-                          <FileSpreadsheet className="h-6 w-6 text-green-400" />
+                        <div className="mr-3 h-12 w-12 bg-gradient-to-br from-slate-900 to-blue-900/50 rounded-lg flex items-center justify-center border border-blue-600/30 relative shadow-lg">
+                          <FileSpreadsheet className="h-6 w-6 text-blue-400" />
                         </div>
                         <div>
                           <h3 className="text-lg font-semibold text-white">
                             {uploadedInfo?.name || "Transformed Feed"}
                           </h3>
-                          <p className="text-base text-green-400">
+                          <p className="text-base text-blue-400">
                             <span className="font-bold">{uploadedInfo?.skuCount || 511}</span> products processed
                           </p>
                         </div>
                       </div>
-                      <div className="px-3 py-2 rounded-md bg-green-900/50 border border-green-600/40 shadow-lg">
-                        <p className="text-sm font-medium text-green-400">100% Success</p>
+                      <div className="px-3 py-2 rounded-md bg-amber-900/50 border border-amber-600/40 shadow-lg">
+                        <p className="text-sm font-medium text-amber-400">Needs Validation</p>
                       </div>
                     </div>
                     
                     <div className="text-sm text-slate-300 space-y-2">
                       <p className="flex items-start">
-                        <CheckCircle2 className="h-4 w-4 text-green-400 mr-2 mt-0.5" />
-                        All product data was successfully transformed to {feedForm.getValues('marketplace')?.charAt(0).toUpperCase() + feedForm.getValues('marketplace')?.slice(1)} format
+                        <CheckCircle2 className="h-4 w-4 text-blue-400 mr-2 mt-0.5" />
+                        Product data transformed to {feedForm.getValues('marketplace')?.charAt(0).toUpperCase() + feedForm.getValues('marketplace')?.slice(1)} format
                       </p>
                       <p className="flex items-start">
-                        <CheckCircle2 className="h-4 w-4 text-green-400 mr-2 mt-0.5" />
-                        Feed meets marketplace requirements and is ready for upload
+                        <AlertTriangle className="h-4 w-4 text-amber-400 mr-2 mt-0.5" />
+                        Some validation issues detected, feed may need review before marketplace upload
+                      </p>
+                      <p className="flex items-start">
+                        <AlertTriangle className="h-4 w-4 text-amber-400 mr-2 mt-0.5" />
+                        Only 18 unique products found - possible duplicate SKUs or formatting issues
                       </p>
                     </div>
                   </div>
                   
                   {/* Download button */}
                   <Button 
-                    className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 border-green-700/50 shadow-xl"
+                    className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border-blue-700/50 shadow-xl"
                     onClick={() => {
                       if (uploadedInfo?.outputUrl) {
                         window.location.href = uploadedInfo.outputUrl;
@@ -825,7 +832,7 @@ export default function NewFeedV2() {
                   <div className="grid grid-cols-2 gap-4">
                     <Button
                       variant="outline"
-                      className="border-green-700/30 text-green-400 hover:bg-green-900/30 hover:text-green-300 hover:border-green-600/50"
+                      className="border-blue-700/30 text-blue-400 hover:bg-blue-900/30 hover:text-blue-300 hover:border-blue-600/50"
                       onClick={goToFeedHistory}
                     >
                       Feed History
