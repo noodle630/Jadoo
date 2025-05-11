@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
 
 import {
   Dialog,
@@ -67,7 +66,8 @@ import {
   Sparkles, 
   Radio,
   Database,
-  Wand2
+  Wand2,
+  Zap
 } from 'lucide-react';
 
 // Define schema for combined upload and marketplace selection
@@ -760,22 +760,13 @@ export default function NewFeedV2() {
                       </div>
                     </div>
                     
-                    <div className="mt-8 p-4 rounded-lg border border-green-800/30 bg-green-900/20">
-                      <h4 className="text-sm font-medium text-emerald-400 mb-2">AI Optimization Benefits</h4>
-                      <ul className="space-y-1 text-xs text-slate-300">
-                        <li className="flex items-start">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
-                          Improved product discoverability in marketplace search
-                        </li>
-                        <li className="flex items-start">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
-                          Enhanced listing quality scores for better ranking
-                        </li>
-                        <li className="flex items-start">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
-                          All required fields validated for immediate listing approval
-                        </li>
-                      </ul>
+                    <div className="mt-6 flex items-center space-x-3">
+                      <div className="bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/30">
+                        <Zap className="h-5 w-5 text-emerald-400" />
+                      </div>
+                      <div className="text-xs text-slate-300">
+                        <span className="text-emerald-400 font-medium">Instant benefits:</span> Better search visibility, higher quality scores, faster approvals
+                      </div>
                     </div>
                   </div>
                 </div>
