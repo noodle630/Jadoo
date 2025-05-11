@@ -367,6 +367,20 @@ export default function NewFeedV2() {
                                       <span className="font-medium">Click to upload</span> or drag and drop
                                     </p>
                                     <p className="text-sm text-slate-500">CSV or Excel file (max 10MB)</p>
+                                    <div className="flex gap-1 mt-3">
+                                      <Badge variant="outline" className="bg-slate-800/50 text-blue-300 border-blue-800/50">
+                                        SKU
+                                      </Badge>
+                                      <Badge variant="outline" className="bg-slate-800/50 text-blue-300 border-blue-800/50">
+                                        Title
+                                      </Badge>
+                                      <Badge variant="outline" className="bg-slate-800/50 text-blue-300 border-blue-800/50">
+                                        Price
+                                      </Badge>
+                                      <Badge variant="outline" className="bg-slate-800/50 text-blue-300 border-blue-800/50">
+                                        Qty
+                                      </Badge>
+                                    </div>
                                   </div>
                                   <Input
                                     id="file"
@@ -419,7 +433,7 @@ export default function NewFeedV2() {
                         )}
                       />
                     
-                      <div className="pt-3">
+                      <div className="pt-3 space-y-3">
                         <Button
                           type="submit"
                           className="w-full h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 border-0 shadow-lg shadow-blue-900/30"
@@ -436,6 +450,21 @@ export default function NewFeedV2() {
                             </>
                           )}
                         </Button>
+                        
+                        <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
+                          <span>Need a different approach?</span>
+                          <Button 
+                            variant="ghost" 
+                            className="text-blue-400 hover:text-blue-300 p-0 h-auto font-medium hover:bg-transparent"
+                            onClick={() => toast({
+                              title: "Coming Soon",
+                              description: "API data ingestion will be available shortly",
+                            })}
+                          >
+                            <Database className="h-4 w-4 mr-1" />
+                            Connect via API
+                          </Button>
+                        </div>
                       </div>
                     </form>
                   </Form>
@@ -523,17 +552,6 @@ export default function NewFeedV2() {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {/* Single pulsing progress bar */}
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm text-slate-400">Processing your file</span>
-                  </div>
-                  <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden relative">
-                    <div className="h-full bg-blue-600 rounded-full absolute top-0 left-0 animate-pulse" style={{width: '30%'}}></div>
-                    <div className="h-full bg-transparent absolute top-0 left-0 w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-pulse" style={{animationDuration: '1.5s'}}></div>
-                  </div>
-                </div>
-                
                 <div className="space-y-4">
                   {/* Always show first step as complete (data received) */}
                   <div className="flex items-center text-sm">
@@ -546,6 +564,35 @@ export default function NewFeedV2() {
                     <Loader2 className="h-4 w-4 animate-spin text-blue-500 mr-2" />
                     <span className="text-slate-300">Transforming data for {feedForm.getValues().marketplace?.charAt(0).toUpperCase() + feedForm.getValues().marketplace?.slice(1)} format</span>
                   </div>
+                  
+                  {/* Processing progress bar */}
+                  <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden relative mt-2">
+                    <div className="h-full bg-blue-600 rounded-full absolute top-0 left-0 animate-pulse" style={{width: '60%'}}></div>
+                    <div className="h-full bg-transparent absolute top-0 left-0 w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-pulse" style={{animationDuration: '1.5s'}}></div>
+                  </div>
+                  
+                  {/* Critical product data info */}
+                  <div className="bg-slate-900/80 border border-slate-800/70 rounded p-3 text-sm mt-2">
+                    <span className="font-medium text-blue-400 block mb-1">Required Data Fields:</span>
+                    <div className="grid grid-cols-2 gap-1 text-xs">
+                      <div className="flex items-center">
+                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
+                        <span className="text-slate-300">SKU</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
+                        <span className="text-slate-300">Title</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
+                        <span className="text-slate-300">Price</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
+                        <span className="text-slate-300">Quantity</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 {processingError ? (
@@ -555,28 +602,16 @@ export default function NewFeedV2() {
                     </div>
                     <div className="pt-1 flex items-start gap-2">
                       <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
-                      <div>{processingError}</div>
+                      <div>
+                        {processingError && 
+                         processingError.includes("Cannot read properties of null") ? 
+                         "Unable to process feed. Please check your file format and try again." : 
+                         processingError}
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="relative bg-slate-950 border border-slate-800 rounded-md p-4">
-                    <div className="absolute -top-3 left-3 bg-slate-900 px-2 py-0.5 rounded text-xs text-slate-400">
-                      AI Processing
-                    </div>
-                    <div className="pt-1">
-                      <AIProcessingAnimation 
-                        step={processingStage} 
-                        maxSteps={4}
-                        onComplete={() => {
-                          // Already handled in the mutation
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-                
-                {processingStage >= 2 && (
-                  <div className="text-sm text-slate-400 italic">
+                  <div className="text-sm text-slate-400 italic mt-4">
                     This process may take a few minutes depending on the size of your data.
                     The AI is optimizing product titles, descriptions, and other attributes
                     for maximum marketplace compliance and performance.
