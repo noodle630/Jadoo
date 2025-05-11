@@ -54,8 +54,8 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
             column_count = len(df.columns)
             columns = list(df.columns)
             
-            # Limit the data sample to prevent exceeding token limits
-            sample_rows = min(5, row_count)
+            # Provide a larger sample to give the model more context
+            sample_rows = min(15, row_count)
             data_sample = df.head(sample_rows).to_csv(index=False)
             
             # Prepare a message about the data structure
@@ -73,41 +73,43 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
         
         # Send to OpenAI for cleaning and transformation to Amazon format
         prompt = f"""
-        As an AI data transformation expert, convert the following CSV data to Amazon Inventory Loader format.
+        As an expert in product feed transformation, convert the following source data to Amazon Inventory Loader format for successful marketplace onboarding.
         
-        Data information:
+        DATA INFORMATION:
         {data_info}
         
-        Sample data (first {sample_rows} rows):
+        SAMPLE DATA (first {sample_rows} rows):
         {data_sample}
         
-        INSTRUCTIONS:
-        1. Transform the source data to match the Amazon Inventory Loader template format for Electronics category
-        2. Map the source fields to Amazon fields, using your best judgment when direct mappings aren't available
-        3. For missing required fields, generate appropriate values based on existing data
-        4. Clean data by fixing formatting and standardizing values
-        5. Ensure all required Amazon fields are included
-        6. Format the output as a valid CSV with all the columns from the Amazon template
-        7. The first row must contain the column headers
-        8. Do not include any markdown formatting or explanations, only return the CSV content
+        TRANSFORMATION REQUIREMENTS:
+        1. Convert ALL {row_count} rows from the source data into valid Amazon Inventory Loader format
+        2. Map source fields to Amazon fields with precision (map Your SKU to item_sku, Product Name to item_name, etc.)
+        3. For missing but required fields, infer or generate appropriate values based on existing data
+        4. Clean, standardize and normalize all data fields to meet Amazon's format specifications
+        5. Format numbers correctly: prices without currency symbols, integers for quantities
+        6. Output MUST include ALL rows from the source data in proper CSV format
+        7. The first row must contain ALL Amazon column headers exactly as specified
         
-        IMPORTANT GUIDELINES:
-        - For 'external_product_id', use UPC if available or generate a 12-digit number
-        - For 'external_product_id_type', use 'UPC' as default
-        - For 'update_delete', use 'Update' as default
-        - For 'feed_product_type', use 'Consumer Electronics' for electronic items
-        - For 'item_condition', use 'New' as default
-        - Missing prices should be realistic market prices for similar items
-        - Generate reasonable bullet points (bullet_point1-5) from the product description
-        - Generate a comprehensive product_description if missing
-        - For images, use placeholder URLs like https://example.com/images/[sku].jpg if none provided
+        FIELD MAPPING GUIDELINES:
+        - item_sku: Map from "Your SKU", generate if missing using alphanumeric format (e.g., "PROD-12345")
+        - external_product_id: Generate a valid 12-digit UPC code if not available
+        - external_product_id_type: Always use "UPC"
+        - item_name: Map from "Product Name", standardize format and length (max 200 chars)
+        - brand_name: Extract from product name or set "Generic" if unclear
+        - manufacturer: Set same as brand_name if unknown
+        - feed_product_type: Set to "Electronics" or appropriate subcategory based on product
+        - update_delete: Always set to "Update"
+        - standard_price: Map from "Price", ensure numeric format without currency symbols
+        - quantity: Map from "Quantity", ensure integer values only
+        - item_condition: Map from "SKU Condition" or default to "New" 
+        - item_type: Set to appropriate category based on product name
+        - model: Extract from product name or generate if missing
         
-        REQUIRED FIELDS (these MUST be in the output):
-        item_sku, external_product_id, external_product_id_type, item_name, brand_name, 
-        manufacturer, feed_product_type, update_delete, standard_price, quantity, 
-        item_condition, item_type, model
+        REQUIRED OUTPUT:
+        A complete, well-formed CSV with ALL {row_count} products formatted according to Amazon's requirements. 
+        Include ONLY the CSV data with headers, no explanations, comments or markdown formatting.
         
-        RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
+        IMPORTANT: Your task is explicitly to convert ALL {row_count} source rows to the target format.
         """
         
         print("Sending data to OpenAI for transformation...")
@@ -118,10 +120,15 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
             response = client.chat.completions.create(
                 model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
                 messages=[
-                    {"role": "system", "content": "You are a data transformation expert that converts product data to Amazon Inventory Loader format."},
+                    {
+                        "role": "system", 
+                        "content": "You are an expert product feed transformation system that converts raw product data to Amazon Inventory Loader format with perfect accuracy. Your output must be ONLY valid CSV data with all required Amazon columns."
+                    },
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,  # Lower temperature for more consistent outputs
+                temperature=0.2,  # Very low temperature for maximum consistency
+                max_tokens=15000,  # Allow plenty of tokens for the full output
+                top_p=0.95,       # Focus on most likely tokens
             )
             
             # Extract the transformed CSV from the response
@@ -139,10 +146,32 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
         cleaned_content = message_content.strip()
         if cleaned_content.startswith("```csv"):
             cleaned_content = cleaned_content[6:]
+        elif cleaned_content.startswith("```"):
+            cleaned_content = cleaned_content[3:]
         if cleaned_content.endswith("```"):
             cleaned_content = cleaned_content[:-3]
             
         transformed_csv = cleaned_content.strip()
+        
+        # Validate the output
+        try:
+            # Try parsing as CSV to make sure it's valid
+            df_output = pd.read_csv(io.StringIO(transformed_csv))
+            output_rows = len(df_output)
+            print(f"Successfully validated output: {output_rows} rows produced")
+            
+            # If we got too few rows, add a warning
+            if output_rows < row_count:
+                print(f"WARNING: Expected {row_count} rows, but only got {output_rows} rows.")
+                
+            # Make sure all required columns are present
+            required_columns = ["item_sku", "external_product_id", "item_name", "standard_price", "quantity"]
+            missing_cols = [col for col in required_columns if col not in df_output.columns]
+            if missing_cols:
+                print(f"WARNING: Missing required columns: {', '.join(missing_cols)}")
+                
+        except Exception as val_error:
+            print(f"Warning: Unable to validate CSV format: {str(val_error)}")
         
         # Determine output file name
         if output_file:
