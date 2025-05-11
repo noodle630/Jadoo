@@ -59,7 +59,7 @@ REQUIRED_WALMART_FIELDS = [
     "brand", "price", "ShippingWeight", "shortDescription", "mainImageUrl"
 ]
 
-def transform_to_walmart_format(csv_file_path, output_file=None, max_rows=200):
+def transform_to_walmart_format(csv_file_path, output_file=None, max_rows=1000):
     """
     Transform a CSV file to Walmart marketplace format
     

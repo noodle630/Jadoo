@@ -39,7 +39,7 @@ TIKTOK_COLUMNS = TIKTOK_REQUIRED_COLUMNS + TIKTOK_OPTIONAL_COLUMNS
 from db_utils import time_transformation
 
 @time_transformation
-def transform_to_tiktok_format(csv_file_path, output_file=None, marketplace="tiktok", max_rows=200):
+def transform_to_tiktok_format(csv_file_path, output_file=None, marketplace="tiktok", max_rows=1000):
     """
     Transform a CSV file to TikTok catalog format
     
