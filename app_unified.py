@@ -489,9 +489,22 @@ def marketplace_form(marketplace_key):
         return redirect(url_for('index'))
     
     marketplace = MARKETPLACES[marketplace_key]
-    return render_template('marketplace_transform.html', 
+    
+    # Get required columns for this marketplace
+    required_columns = []
+    if marketplace_key == "walmart":
+        required_columns = REQUIRED_WALMART_FIELDS
+    elif marketplace_key == "catch":
+        required_columns = REQUIRED_CATCH_FIELDS
+    elif marketplace_key == "meta":
+        required_columns = REQUIRED_META_FIELDS
+    elif marketplace_key == "tiktok":
+        required_columns = REQUIRED_TIKTOK_FIELDS
+    
+    return render_template('marketplace_form.html', 
+                          marketplace=marketplace, 
                           marketplace_key=marketplace_key,
-                          marketplace=marketplace)
+                          required_columns=required_columns)
 
 @app.route('/transform', methods=['POST'])
 def transform_csv():
@@ -535,11 +548,19 @@ def transform_csv():
         if format_param == 'json':
             return jsonify(result)
         else:
+            # Create a file-like object from the CSV data
+            if isinstance(result, dict) and "data" in result:
+                csv_data = result["data"]
+                output_filename = result.get("output_filename", "transformed.csv")
+            else:
+                csv_data = result
+                output_filename = f"transformed_{marketplace_key}.csv"
+                
             return send_file(
-                io.BytesIO(result["data"].encode('utf-8')),
+                io.BytesIO(csv_data.encode('utf-8')),
                 mimetype='text/csv',
                 as_attachment=True,
-                download_name=result["output_filename"]
+                download_name=output_filename
             )
             
     except Exception as e:

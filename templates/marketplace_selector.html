@@ -1,150 +1,409 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Product Feed Manager - Marketplace Selection</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Feed Transformer</title>
     <style>
+        :root {
+            --amazon-color: #ff9900;
+            --amazon-hover: #e68a00;
+            --walmart-color: #0071ce;
+            --walmart-hover: #005ea6;
+            --catch-color: #00a1e0;
+            --catch-hover: #0086b6;
+            --meta-color: #1877f2;
+            --meta-hover: #166fe5;
+            --tiktok-color: #fe2c55;
+            --tiktok-hover: #e52a4f;
+            --reebelo-color: #6e43c4;
+            --reebelo-hover: #5a37a0;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             line-height: 1.6;
+            color: #333;
             margin: 0;
             padding: 0;
-            background: #f5f5f5;
-            color: #333;
+            background-color: #f5f5f5;
         }
+        
         .container {
             max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 20px;
         }
+        
         header {
+            background-color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 30px;
         }
-        h1 {
-            font-size: 2.5rem;
-            margin: 0;
-            color: #444;
-        }
-        .header-actions {
-            display: flex;
-            gap: 15px;
-        }
-        .btn {
-            display: inline-block;
-            background: #f8f8f8;
-            color: #555;
-            padding: 8px 16px;
-            border-radius: 4px;
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
             text-decoration: none;
-            border: 1px solid #ddd;
-            font-size: 14px;
-            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
         }
-        .btn:hover {
-            background: #eee;
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
         }
-        .btn-primary {
-            background: #4a6cf7;
-            color: white;
-            border-color: #3a5ce7;
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
-        .btn-primary:hover {
-            background: #3a5ce7;
+        
+        nav li {
+            margin-left: 20px;
         }
+        
+        nav a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #333;
+        }
+        
+        .hero {
+            background-color: #fff;
+            padding: 50px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        
+        .hero p {
+            font-size: 18px;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
         .marketplace-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
         }
+        
         .marketplace-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid #eee;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
         }
+        
         .marketplace-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
+        
         .card-header {
-            padding: 15px;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
         }
-        .card-body {
-            padding: 15px;
+        
+        .card-header img {
+            max-width: 65%;
+            max-height: 65%;
+            object-fit: contain;
         }
-        .card-footer {
-            padding: 15px;
-            background: #f8f8f8;
-            text-align: center;
-            border-top: 1px solid #eee;
+        
+        .card-content {
+            padding: 25px;
+            flex: 1;
         }
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            padding: 20px;
-            color: #777;
-            border-top: 1px solid #eee;
+        
+        .card-content h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 20px;
         }
-        .logo {
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: #4a6cf7;
-        }
-        .description {
+        
+        .card-content p {
+            margin: 0 0 20px;
             color: #666;
-            margin: 10px 0;
-            font-size: 14px;
             line-height: 1.5;
-            height: 63px;
-            overflow: hidden;
+        }
+        
+        .card-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-footer span {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: #4a90e2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a7cd1;
+        }
+        
+        .amazon {
+            background-color: var(--amazon-color);
+        }
+        
+        .amazon:hover {
+            background-color: var(--amazon-hover);
+        }
+        
+        .walmart {
+            background-color: var(--walmart-color);
+            color: white;
+        }
+        
+        .walmart:hover {
+            background-color: var(--walmart-hover);
+        }
+        
+        .catch {
+            background-color: var(--catch-color);
+            color: white;
+        }
+        
+        .catch:hover {
+            background-color: var(--catch-hover);
+        }
+        
+        .meta {
+            background-color: var(--meta-color);
+            color: white;
+        }
+        
+        .meta:hover {
+            background-color: var(--meta-hover);
+        }
+        
+        .tiktok {
+            background-color: var(--tiktok-color);
+            color: white;
+        }
+        
+        .tiktok:hover {
+            background-color: var(--tiktok-hover);
+        }
+        
+        .reebelo {
+            background-color: var(--reebelo-color);
+            color: white;
+        }
+        
+        .reebelo:hover {
+            background-color: var(--reebelo-hover);
+        }
+        
+        .amazon-border {
+            border-top: 4px solid var(--amazon-color);
+        }
+        
+        .walmart-border {
+            border-top: 4px solid var(--walmart-color);
+        }
+        
+        .catch-border {
+            border-top: 4px solid var(--catch-color);
+        }
+        
+        .meta-border {
+            border-top: 4px solid var(--meta-color);
+        }
+        
+        .tiktok-border {
+            border-top: 4px solid var(--tiktok-color);
+        }
+        
+        .reebelo-border {
+            border-top: 4px solid var(--reebelo-color);
+        }
+        
+        footer {
+            background-color: #fff;
+            padding: 30px 0;
+            margin-top: 60px;
+            border-top: 1px solid #eee;
+        }
+        
+        footer p {
+            text-align: center;
+            margin: 0;
+            color: #999;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <img src="/static/logo.svg" alt="Product Feed Transformer Logo">
+                Product Feed Transformer
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/history">History</a></li>
+                    <li><a href="/templates">Templates</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
     <div class="container">
-        <header>
-            <h1>Product Feed Manager</h1>
-            <div class="header-actions">
-                <a href="/history" class="btn">Transformation History</a>
-                <a href="/templates" class="btn">Saved Templates</a>
-            </div>
-        </header>
+        <section class="hero">
+            <h1>Transform Your Product Data</h1>
+            <p>Upload your inventory data and instantly convert it to marketplace-ready product feeds with our AI-powered transformation engine.</p>
+            <a href="#marketplaces" class="btn btn-primary">Get Started</a>
+        </section>
 
-        <h2>Select a Marketplace</h2>
-        <p>Choose a marketplace to transform your product data for:</p>
-
-        <div class="marketplace-grid">
-            {% for key, marketplace in marketplaces.items() %}
-            <div class="marketplace-card">
-                <div class="card-header" style="background-color: {{ marketplace.color }}">
-                    {{ marketplace.name }}
-                </div>
-                <div class="card-body">
-                    <div class="description">
-                        Transform your product data to {{ marketplace.name }} format. Our AI will map your fields to the required format and clean up your data.
+        <section id="marketplaces">
+            <h2>Select Target Marketplace</h2>
+            <div class="marketplace-grid">
+                <a href="/marketplace/amazon" class="marketplace-card amazon-border">
+                    <div class="card-header" style="background-color: #f8f9fa;">
+                        <img src="https://logo.clearbit.com/amazon.com" alt="Amazon logo">
                     </div>
-                </div>
-                <div class="card-footer">
-                    <a href="/marketplace/{{ key }}" class="btn btn-primary">Select</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+                    <div class="card-content">
+                        <h3>Amazon</h3>
+                        <p>Transform your product data into Amazon Seller Central inventory format, ready for upload via Inventory Loader.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span>36+ fields supported</span>
+                        <button class="btn amazon">Transform</button>
+                    </div>
+                </a>
 
-        <div class="footer">
-            <p>Product Feed Manager - Powered by OpenAI GPT-4o</p>
-            <p>Transform your product data into marketplace-ready formats</p>
-        </div>
+                <a href="/marketplace/walmart" class="marketplace-card walmart-border">
+                    <div class="card-header" style="background-color: #f8f9fa;">
+                        <img src="https://logo.clearbit.com/walmart.com" alt="Walmart logo">
+                    </div>
+                    <div class="card-content">
+                        <h3>Walmart</h3>
+                        <p>Convert your CSV data to Walmart marketplace's product feed format for easy upload to your seller account.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span>40+ fields supported</span>
+                        <button class="btn walmart">Transform</button>
+                    </div>
+                </a>
+
+                <a href="/marketplace/reebelo" class="marketplace-card reebelo-border">
+                    <div class="card-header" style="background-color: #f8f9fa;">
+                        <img src="https://logo.clearbit.com/reebelo.com" alt="Reebelo logo">
+                    </div>
+                    <div class="card-content">
+                        <h3>Reebelo</h3>
+                        <p>Convert your inventory data to Reebelo's marketplace format, optimized for refurbished electronics listings.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span>25+ fields supported</span>
+                        <button class="btn reebelo">Transform</button>
+                    </div>
+                </a>
+
+                <a href="/marketplace/catch" class="marketplace-card catch-border">
+                    <div class="card-header" style="background-color: #f8f9fa;">
+                        <img src="https://logo.clearbit.com/catch.com.au" alt="Catch logo">
+                    </div>
+                    <div class="card-content">
+                        <h3>Catch Marketplace</h3>
+                        <p>Transform your product data to match Catch Marketplace's required format for successful product listings.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span>30+ fields supported</span>
+                        <button class="btn catch">Transform</button>
+                    </div>
+                </a>
+
+                <a href="/marketplace/meta" class="marketplace-card meta-border">
+                    <div class="card-header" style="background-color: #f8f9fa;">
+                        <img src="https://logo.clearbit.com/facebook.com" alt="Meta logo">
+                    </div>
+                    <div class="card-content">
+                        <h3>Meta (Facebook & Instagram)</h3>
+                        <p>Convert your inventory data to Meta's catalog format for Facebook and Instagram shop integrations.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span>20+ fields supported</span>
+                        <button class="btn meta">Transform</button>
+                    </div>
+                </a>
+
+                <a href="/marketplace/tiktok" class="marketplace-card tiktok-border">
+                    <div class="card-header" style="background-color: #f8f9fa;">
+                        <img src="https://logo.clearbit.com/tiktok.com" alt="TikTok logo">
+                    </div>
+                    <div class="card-content">
+                        <h3>TikTok Shop</h3>
+                        <p>Transform your inventory data into TikTok Shop's product catalog format for smooth integration.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span>20+ fields supported</span>
+                        <button class="btn tiktok">Transform</button>
+                    </div>
+                </a>
+            </div>
+        </section>
     </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; {{ current_year }} Product Feed Transformer. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
