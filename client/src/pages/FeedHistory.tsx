@@ -73,9 +73,19 @@ export default function FeedHistory() {
     queryKey: ["/api/feeds"],
   });
   
-  // Debug feeds in useEffect
+  // Debug feeds in useEffect with detailed logging
   useEffect(() => {
     console.log("Feeds loaded:", feeds);
+    
+    // Log each feed's name property for debugging
+    feeds.forEach((feed, index) => {
+      console.log(`Feed ${index + 1} (ID: ${feed.id}):`, { 
+        name: feed.name,
+        nameEmpty: !feed.name,
+        nameTrimEmpty: feed.name ? feed.name.trim() === "" : true,
+        displayName: !feed.name || feed.name.trim() === "" ? `Untitled Feed ${feed.id}` : feed.name
+      });
+    });
   }, [feeds]);
 
   // Handle sorting
