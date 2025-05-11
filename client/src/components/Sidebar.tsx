@@ -1,177 +1,195 @@
-import { useLocation, Link } from "wouter";
-import { 
-  LayoutDashboard, 
-  PlusCircle, 
-  LayoutTemplate, 
-  History, 
-  Settings,
-  Package,
-  ChevronDown,
-  Grid3X3,
-  Upload
-} from "lucide-react";
 import { useState } from "react";
-import Logo from "./Logo";
+import { Link, useLocation } from "wouter";
+import {
+  BarChart3,
+  Clock,
+  FileSpreadsheet,
+  GanttChart,
+  Home,
+  PlusCircle,
+  Settings,
+  SlidersHorizontal
+} from "lucide-react";
 
 export default function Sidebar() {
   const [location] = useLocation();
-  const [expanded, setExpanded] = useState<string[]>(["Products"]);
-
-  const isLinkActive = (path: string) => {
-    if (path === "/" && location === path) return true;
-    if (path !== "/" && location.startsWith(path)) return true;
-    return false;
-  };
-
-  const toggleExpand = (section: string) => {
-    if (expanded.includes(section)) {
-      setExpanded(expanded.filter(item => item !== section));
-    } else {
-      setExpanded([...expanded, section]);
-    }
-  };
-
-  // Create a NavItem component to avoid the <a> inside <a> nesting issue
-  const NavItem = ({ href, icon, label, children, expandable = false, beta = false }: { 
-    href?: string; 
-    icon: JSX.Element; 
-    label: string;
-    children?: React.ReactNode;
-    expandable?: boolean;
-    beta?: boolean;
-  }) => {
-    const isActive = href ? isLinkActive(href) : false;
-    const isExpanded = expanded.includes(label);
-    const activeClass = href === "/" 
-      ? isActive && !location.includes("/") ? "bg-blue-600/10 text-blue-500 dark:text-blue-400 font-medium" : "" 
-      : isActive ? "bg-blue-600/10 text-blue-500 dark:text-blue-400 font-medium" : "";
-    
-    const content = (
-      <div 
-        className={`flex items-center py-2.5 px-3 rounded-md my-0.5 mx-2 hover:bg-slate-800/40 transition-all duration-200 cursor-pointer group ${activeClass}`}
-        role="button"
-        tabIndex={0}
-        onClick={expandable ? () => toggleExpand(label) : undefined}
-      >
-        <div className="flex items-center flex-1">
-          <span className={`mr-3 ${isActive ? 'text-blue-500' : 'text-slate-400 group-hover:text-slate-300'}`}>
-            {icon}
-          </span>
-          <span className={`${isActive ? '' : 'text-slate-300 group-hover:text-slate-100'}`}>{label}</span>
-          {beta && (
-            <span className="ml-2 text-[10px] font-medium uppercase bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded">Beta</span>
-          )}
-        </div>
-        {expandable && (
-          <ChevronDown 
-            size={14} 
-            className={`transition-transform duration-200 text-slate-400 group-hover:text-slate-300 ${isExpanded ? 'rotate-180' : ''}`} 
-          />
-        )}
-      </div>
-    );
-    
-    return (
-      <div>
-        {href ? (
-          <Link href={href}>
-            {content}
-          </Link>
-        ) : (
-          content
-        )}
-        {children && (
-          <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-            {children}
-          </div>
-        )}
-      </div>
-    );
+  
+  const isActive = (path: string) => {
+    // Handle both exact matches and sub-routes
+    if (path === "/") return location === "/";
+    return location === path || location.startsWith(`${path}/`);
   };
 
   return (
-    <aside className="bg-slate-950 text-white w-full md:w-64 md:min-h-screen flex-shrink-0 border-r border-slate-900/80 shadow-xl flex flex-col">
-      <div className="p-4 flex items-center border-b border-slate-900/50">
-        <Logo variant="default" size="md" />
-      </div>
-
-      <div className="flex-1 overflow-auto custom-scrollbar">
-        <nav className="py-4">
-          <NavItem 
-            href="/" 
-            icon={<LayoutDashboard className="h-4 w-4" />} 
-            label="Dashboard" 
-          />
-          
-          <div className="mt-4 mb-1 px-5">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Inventory
-            </p>
-          </div>
-          
-          <NavItem 
-            icon={<Package className="h-4 w-4" />} 
-            label="Products"
-            expandable
-          >
-            <div className="py-1 ml-9 border-l border-slate-800 pl-3 mb-2">
-              <NavItem
-                href="/products" 
-                icon={<Grid3X3 className="h-3.5 w-3.5" />} 
-                label="All Products" 
-              />
-              <NavItem 
-                href="/products/categories" 
-                icon={<LayoutTemplate className="h-3.5 w-3.5" />} 
-                label="Categories" 
-              />
-              <NavItem 
-                href="/products/import" 
-                icon={<Upload className="h-3.5 w-3.5" />} 
-                label="Import" 
-              />
+    <aside className="fixed inset-y-0 left-0 z-10 flex w-64 flex-col bg-slate-950 text-white">
+      {/* Logo */}
+      <div className="flex h-14 items-center border-b border-slate-800 px-4">
+        <Link href="/">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white">
+              <span className="text-lg font-semibold">S</span>
             </div>
-          </NavItem>
-          
-          <div className="mt-4 mb-1 px-5">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Feeds
-            </p>
+            <span className="text-xl font-bold">S</span>
           </div>
-          
-          <NavItem 
-            href="/new-feed" 
-            icon={<PlusCircle className="h-4 w-4" />} 
-            label="Create Feed" 
-          />
-          <NavItem 
-            href="/templates" 
-            icon={<LayoutTemplate className="h-4 w-4" />} 
-            label="Templates" 
-          />
-          <NavItem 
-            href="/history" 
-            icon={<History className="h-4 w-4" />} 
-            label="History" 
-          />
-          
-          <div className="mt-4 mb-1 px-5">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Settings
-            </p>
-          </div>
-          
-          <NavItem 
-            href="/settings" 
-            icon={<Settings className="h-4 w-4" />} 
-            label="Preferences" 
-          />
-        </nav>
+        </Link>
       </div>
       
-      <div className="px-4 py-3 text-xs text-slate-500 border-t border-slate-900/50 flex justify-between items-center">
-        <span className="font-medium text-slate-400">S</span>
-        <span className="text-slate-600">© 2025</span>
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto p-2">
+        <ul className="space-y-1 px-2">
+          {/* Dashboard */}
+          <li>
+            <Link href="/">
+              <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                isActive("/") 
+                  ? "bg-slate-800 text-white" 
+                  : "text-slate-400 hover:bg-slate-900 hover:text-white"
+              }`}>
+                <Home size={18} />
+                <span>Dashboard</span>
+              </div>
+            </Link>
+          </li>
+          
+          {/* Feed Management Section */}
+          <li className="mt-6">
+            <h3 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Feeds
+            </h3>
+            <ul className="space-y-1">
+              {/* Create Feed - The main action */}
+              <li>
+                <Link href="/feed/new">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/feed/new") 
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <PlusCircle size={18} />
+                    <span>Create Feed</span>
+                  </div>
+                </Link>
+              </li>
+              
+              {/* Feed History */}
+              <li>
+                <Link href="/history">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/history") 
+                      ? "bg-slate-800 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <Clock size={18} />
+                    <span>Feed History</span>
+                  </div>
+                </Link>
+              </li>
+              
+              {/* Templates */}
+              <li>
+                <Link href="/templates">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/templates") 
+                      ? "bg-slate-800 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <FileSpreadsheet size={18} />
+                    <span>Templates</span>
+                  </div>
+                </Link>
+              </li>
+            </ul>
+            
+            {/* Products Section */}
+            <h3 className="mt-6 mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Products
+            </h3>
+            <ul className="space-y-1">
+              <li>
+                <Link href="/products">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/products") && !isActive("/products/categories") && !isActive("/products/import")
+                      ? "bg-slate-800 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <GanttChart size={18} />
+                    <span>All Products</span>
+                  </div>
+                </Link>
+              </li>
+              <li>
+                <Link href="/products/import">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/products/import") 
+                      ? "bg-slate-800 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <SlidersHorizontal size={18} />
+                    <span>Import Products</span>
+                  </div>
+                </Link>
+              </li>
+            </ul>
+          </li>
+          
+          {/* Analytics Section */}
+          <li className="mt-6">
+            <h3 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Analytics
+            </h3>
+            <ul className="space-y-1">
+              <li>
+                <Link href="/analytics">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/analytics") 
+                      ? "bg-slate-800 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <BarChart3 size={18} />
+                    <span>Performance</span>
+                  </div>
+                </Link>
+              </li>
+            </ul>
+          </li>
+          
+          {/* Settings Section */}
+          <li className="mt-6">
+            <h3 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Settings
+            </h3>
+            <ul className="space-y-1">
+              <li>
+                <Link href="/settings">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/settings") 
+                      ? "bg-slate-800 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <Settings size={18} />
+                    <span>Preferences</span>
+                  </div>
+                </Link>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      
+      {/* Footer */}
+      <div className="mt-auto border-t border-slate-800 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-medium">
+              S
+            </div>
+            <div className="text-xs">
+              <p className="font-medium text-slate-300">S</p>
+              <p className="text-slate-500">Marketplace feeds</p>
+            </div>
+          </div>
+          <span className="text-xs text-slate-500">© 2025</span>
+        </div>
       </div>
     </aside>
   );

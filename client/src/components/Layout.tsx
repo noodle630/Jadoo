@@ -1,32 +1,42 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
-import Header from "./Header";
+import { MoonIcon, SunIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "@/lib/theme-provider";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const { theme, setTheme } = useTheme();
   
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-white dark:bg-black">
-      <div 
-        className={`md:hidden ${sidebarOpen ? "block" : "hidden"} fixed inset-0 z-40 bg-black bg-opacity-50`} 
-        onClick={() => setSidebarOpen(false)} 
-      />
+    <div className="min-h-screen bg-white dark:bg-slate-900">
+      {/* Sidebar */}
+      <Sidebar />
       
-      <div 
-        className={`fixed inset-y-0 left-0 z-50 md:relative md:z-0 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 transition-transform duration-300 ease-in-out`}
-      >
-        <Sidebar />
-      </div>
-      
-      <div className="flex-grow flex flex-col w-full">
-        <Header onToggleSidebar={toggleSidebar} />
-        <main className="flex-grow p-0 overflow-auto">
+      {/* Main Content */}
+      <div className="pl-64">
+        {/* Top Bar */}
+        <header className="h-14 flex items-center justify-end border-b border-slate-200 dark:border-slate-800 px-6">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="rounded-full"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <SunIcon className="h-5 w-5" />
+            ) : (
+              <MoonIcon className="h-5 w-5" />
+            )}
+          </Button>
+        </header>
+        
+        {/* Page Content */}
+        <main>
           {children}
         </main>
       </div>

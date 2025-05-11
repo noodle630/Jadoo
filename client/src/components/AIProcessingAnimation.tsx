@@ -1,149 +1,238 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Sparkles, Database, Zap, FileText, CheckCircle2 } from 'lucide-react';
 
 interface AIProcessingAnimationProps {
-  progress: number;
-  message?: string;
+  step?: number;
+  maxSteps?: number;
+  insights?: string[];
+  onComplete?: () => void;
 }
 
-export default function AIProcessingAnimation({ progress, message }: AIProcessingAnimationProps) {
-  const [dots, setDots] = useState('.');
-  const [insights, setInsights] = useState<string[]>([]);
+export default function AIProcessingAnimation({
+  step = 1,
+  maxSteps = 4,
+  insights = [],
+  onComplete
+}: AIProcessingAnimationProps) {
+  const [localStep, setLocalStep] = useState(step);
+  const [localInsights, setLocalInsights] = useState<string[]>(insights);
+  const [currentInsight, setCurrentInsight] = useState<string | null>(null);
   
-  // Array of AI insights that will appear during processing
-  const possibleInsights = [
-    "Analyzing product categories...",
-    "Optimizing product titles...",
-    "Enhancing descriptions...",
-    "Standardizing attribute formats...",
-    "Validating inventory quantities...",
-    "Cross-referencing prices...",
-    "Formatting images for marketplace...",
-    "Generating SKU mappings...",
-    "Fixing missing attributes...",
-    "Ensuring compliance with marketplace standards..."
+  // Animation-related states
+  const [particles, setParticles] = useState<{id: number, x: number, y: number, size: number, speed: number, color: string}[]>([]);
+  
+  // Default insights if none provided
+  const defaultInsights = [
+    "Analyzing CSV structure and headers...",
+    "Identifying product categories and attributes...",
+    "Matching to marketplace requirements...",
+    "Filling missing metadata and standardizing formats...",
+    "Applying SEO optimizations to titles and descriptions...",
+    "Validating against platform guidelines...",
+    "Transforming to final marketplace format..."
   ];
   
-  // Animate the loading dots
+  // Create random particles for the animation
   useEffect(() => {
-    const interval = setInterval(() => {
-      setDots(prev => {
-        if (prev.length >= 3) return '.';
-        return prev + '.';
-      });
-    }, 400);
+    const particleCount = 50;
+    const newParticles = [];
+    const colors = ['#3B82F6', '#6366F1', '#8B5CF6', '#F59E0B', '#10B981'];
     
-    return () => clearInterval(interval);
+    for (let i = 0; i < particleCount; i++) {
+      newParticles.push({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 5 + 1,
+        speed: Math.random() * 0.5 + 0.1,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+    
+    setParticles(newParticles);
   }, []);
   
-  // Add insights as the progress increases
+  // Auto-progress steps for demo purposes
   useEffect(() => {
-    const thresholds = [10, 25, 40, 55, 70, 85, 95];
-    
-    // Add a new insight when progress crosses a threshold
-    for (const threshold of thresholds) {
-      if (progress >= threshold && insights.length < thresholds.indexOf(threshold) + 1) {
-        // Select a random insight that hasn't been shown yet
-        const availableInsights = possibleInsights.filter(insight => !insights.includes(insight));
-        if (availableInsights.length > 0) {
-          const randomInsight = availableInsights[Math.floor(Math.random() * availableInsights.length)];
-          setInsights(prev => [...prev, randomInsight]);
-        }
+    const timer = setTimeout(() => {
+      if (localStep < maxSteps) {
+        setLocalStep(prev => prev + 1);
+      } else if (onComplete) {
+        onComplete();
       }
-    }
-  }, [progress, insights]);
+    }, 4000);
+    
+    return () => clearTimeout(timer);
+  }, [localStep, maxSteps, onComplete]);
+  
+  // Display random insights
+  useEffect(() => {
+    const insightsToUse = localInsights.length > 0 ? localInsights : defaultInsights;
+    const intervalId = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * insightsToUse.length);
+      setCurrentInsight(insightsToUse[randomIndex]);
+    }, 2500);
+    
+    return () => clearInterval(intervalId);
+  }, [localInsights]);
+  
+  // Progress value for the progress ring
+  const progress = (localStep / maxSteps) * 100;
   
   return (
-    <Card className="border-none shadow-none bg-transparent">
-      <CardContent className="pt-6 pb-8 px-0">
-        <div className="max-w-lg mx-auto">
-          <div className="flex flex-col items-center text-center space-y-6">
-            {/* Main animated icon */}
-            <div className="relative mb-8">
-              {/* Pulsing glow background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-indigo-600/30 rounded-full blur-xl animate-pulse"></div>
-              
-              {/* Spinning circles */}
-              <div className="relative h-32 w-32">
-                <div className="absolute inset-0 rounded-full border-4 border-indigo-200 dark:border-indigo-900/30 opacity-20"></div>
-                <div className="absolute inset-2 rounded-full border-4 border-t-blue-600 dark:border-t-blue-400 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
-                <div className="absolute inset-4 rounded-full border-4 border-r-indigo-600 dark:border-r-indigo-400 border-t-transparent border-b-transparent border-l-transparent animate-spin-slow"></div>
-                <div className="absolute inset-6 rounded-full border-4 border-b-blue-500 dark:border-b-blue-400 border-t-transparent border-r-transparent border-l-transparent animate-spin-slower"></div>
-                
-                {/* Center icon */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 flex items-center justify-center shadow-lg">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                      <path d="M12 4.5C7 4.5 2.5 8 2.5 13.5C2.5 19 7 21.5 12 21.5C17 21.5 21.5 19 21.5 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M21.5 7.5V2.5H16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M16.5 7.5L21.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Floating particles */}
-              <div className="absolute top-1/2 left-0 h-2 w-2 rounded-full bg-blue-400 animate-float opacity-70"></div>
-              <div className="absolute top-1/4 right-1/4 h-3 w-3 rounded-full bg-indigo-400 animate-float-slow opacity-70"></div>
-              <div className="absolute bottom-1/3 right-0 h-2 w-2 rounded-full bg-blue-300 animate-float-slower opacity-70"></div>
-            </div>
-            
-            {/* Progress message */}
-            <div>
-              <h3 className="text-xl font-medium mb-1 text-slate-900 dark:text-slate-100 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
-                {message || "AI Magic in Progress"}
-                <span className="inline-block w-8">{dots}</span>
-              </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
-                {progress < 100 ? 'Transforming your data into marketplace-ready feeds' : 'Transformation complete!'}
-              </p>
-            </div>
-            
-            {/* Progress bar */}
-            <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-300 ease-out" 
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-            
-            {/* Progress percentage */}
-            <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              {progress}% Complete
-            </div>
-            
-            {/* AI insights */}
-            <div className="mt-6 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-800 w-full">
-              <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1.5">
-                  <path d="M9 21.5L21.5 9C21.7761 8.72387 21.7761 8.27613 21.5 8L16 2.5C15.7239 2.22387 15.2761 2.22387 15 2.5L2.5 15L8.5 21.5C8.77614 21.7761 9.22386 21.7761 9.5 21.5H9Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M15 9L9 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2.5 15L8.5 21.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                AI Insights
-              </h4>
-              <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                {insights.length > 0 ? (
-                  insights.map((insight, index) => (
-                    <div key={index} className="flex items-start">
-                      <div className="flex-shrink-0 h-4 w-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mt-0.5 mr-2">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-green-600 dark:text-green-400">
-                          <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-                      <span>{insight}</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center text-slate-500 dark:text-slate-500 italic">
-                    Processing will begin shortly...
-                  </div>
-                )}
-              </div>
-            </div>
+    <div className="relative w-full max-w-lg mx-auto h-64 overflow-hidden rounded-lg bg-gradient-to-br from-slate-900 to-slate-800">
+      {/* Animated particles */}
+      <div className="absolute inset-0 overflow-hidden z-0">
+        {particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className="absolute rounded-full opacity-70"
+            style={{
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              backgroundColor: particle.color,
+              x: `${particle.x}%`,
+              y: `${particle.y}%`,
+            }}
+            animate={{
+              x: [`${particle.x}%`, `${(particle.x + 20) % 100}%`],
+              y: [`${particle.y}%`, `${(particle.y + 15) % 100}%`],
+            }}
+            transition={{
+              duration: 15 / particle.speed,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'linear',
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10 h-full flex flex-col items-center justify-center p-6">
+        {/* Progress ring */}
+        <div className="relative mb-4">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            {/* Background circle */}
+            <circle 
+              cx="60" 
+              cy="60" 
+              r="54" 
+              fill="none" 
+              stroke="rgba(255,255,255,0.1)" 
+              strokeWidth="6" 
+            />
+            {/* Progress circle */}
+            <circle 
+              cx="60" 
+              cy="60" 
+              r="54" 
+              fill="none" 
+              stroke="url(#gradient)" 
+              strokeWidth="6" 
+              strokeLinecap="round" 
+              strokeDasharray="339.29"
+              strokeDashoffset={339.29 - (339.29 * progress) / 100}
+              transform="rotate(-90 60 60)" 
+            />
+            {/* Gradient definition */}
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor="#8B5CF6" />
+              </linearGradient>
+            </defs>
+          </svg>
+          
+          {/* Icon in the middle */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            {localStep === maxSteps ? (
+              <CheckCircle2 className="h-10 w-10 text-green-400" />
+            ) : (
+              <Sparkles className="h-10 w-10 text-blue-400 animate-pulse" />
+            )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+        
+        {/* Status text */}
+        <h3 className="text-lg font-medium text-white mb-2">
+          {localStep === maxSteps ? 'Processing Complete!' : 'AI Processing in Progress...'}
+        </h3>
+        
+        {/* Current insight */}
+        <div className="h-8 flex items-center justify-center">
+          <motion.p
+            key={currentInsight} // Force animation to restart when text changes
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="text-sm text-blue-300 text-center"
+          >
+            {currentInsight}
+          </motion.p>
+        </div>
+        
+        {/* Processing steps */}
+        <div className="flex justify-between w-full mt-6 max-w-xs">
+          <Step 
+            icon={<Database className="h-4 w-4" />} 
+            label="Parse" 
+            active={localStep >= 1} 
+            complete={localStep > 1} 
+          />
+          <Step 
+            icon={<Zap className="h-4 w-4" />} 
+            label="Analyze" 
+            active={localStep >= 2} 
+            complete={localStep > 2} 
+          />
+          <Step 
+            icon={<FileText className="h-4 w-4" />} 
+            label="Transform" 
+            active={localStep >= 3} 
+            complete={localStep > 3} 
+          />
+          <Step 
+            icon={<CheckCircle2 className="h-4 w-4" />} 
+            label="Validate" 
+            active={localStep >= 4} 
+            complete={localStep >= maxSteps} 
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface StepProps {
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  complete: boolean;
+}
+
+function Step({ icon, label, active, complete }: StepProps) {
+  return (
+    <div className="flex flex-col items-center">
+      <div className={`flex items-center justify-center h-8 w-8 rounded-full mb-1 ${
+        complete 
+          ? 'bg-green-400 text-green-900' 
+          : active 
+            ? 'bg-blue-500 text-white' 
+            : 'bg-slate-700 text-slate-400'
+      }`}>
+        {icon}
+      </div>
+      <span className={`text-xs ${
+        complete 
+          ? 'text-green-400' 
+          : active 
+            ? 'text-blue-400' 
+            : 'text-slate-500'
+      }`}>
+        {label}
+      </span>
+    </div>
   );
 }
