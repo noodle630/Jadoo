@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -452,9 +453,35 @@ export default function FeedHistory() {
               <DialogFooter className="gap-2">
                 {detailsDialog.feed.status === "success" && detailsDialog.feed.outputUrl && (
                   <Button
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                    onClick={() => window.open(detailsDialog.feed.outputUrl!, "_blank")}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 relative overflow-hidden group"
+                    onClick={() => {
+                      if (detailsDialog.feed?.outputUrl) {
+                        fetch(detailsDialog.feed.outputUrl)
+                          .then(response => response.blob())
+                          .then(blob => {
+                            // Create a download link and trigger it
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            const fileName = `${detailsDialog.feed?.name || 'feed'}.csv`;
+                            a.href = url;
+                            a.download = fileName;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            a.remove();
+                          })
+                          .catch(err => {
+                            console.error('Download error:', err);
+                            toast({
+                              variant: "destructive",
+                              title: "Download failed",
+                              description: "Could not download the feed. Please try again."
+                            });
+                          });
+                      }
+                    }}
                   >
+                    <div className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-blue-400/10 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
                     <FileDown className="mr-2 h-4 w-4" />
                     Download Feed
                   </Button>
