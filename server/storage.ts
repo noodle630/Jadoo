@@ -1,0 +1,268 @@
+import { 
+  users, type User, type InsertUser,
+  feeds, type Feed, type InsertFeed,
+  templates, type Template, type InsertTemplate
+} from "@shared/schema";
+
+// Interface for storage operations
+export interface IStorage {
+  // User operations
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  
+  // Feed operations
+  getFeed(id: number): Promise<Feed | undefined>;
+  getFeedsByUserId(userId: number): Promise<Feed[]>;
+  createFeed(feed: InsertFeed): Promise<Feed>;
+  updateFeed(id: number, feed: Partial<Feed>): Promise<Feed | undefined>;
+  deleteFeed(id: number): Promise<boolean>;
+  
+  // Template operations
+  getTemplate(id: number): Promise<Template | undefined>;
+  getTemplatesByUserId(userId: number): Promise<Template[]>;
+  createTemplate(template: InsertTemplate): Promise<Template>;
+  updateTemplate(id: number, template: Partial<Template>): Promise<Template | undefined>;
+  deleteTemplate(id: number): Promise<boolean>;
+  incrementTemplateUsage(id: number): Promise<boolean>;
+}
+
+export class MemStorage implements IStorage {
+  private users: Map<number, User>;
+  private feeds: Map<number, Feed>;
+  private templates: Map<number, Template>;
+  private userId: number;
+  private feedId: number;
+  private templateId: number;
+
+  constructor() {
+    this.users = new Map();
+    this.feeds = new Map();
+    this.templates = new Map();
+    this.userId = 1;
+    this.feedId = 1;
+    this.templateId = 1;
+    
+    // Add a demo user
+    this.createUser({
+      username: "demo",
+      password: "password123",
+      email: "demo@example.com",
+      company: "Demo Company",
+      role: "E-commerce Manager"
+    });
+    
+    // Add some sample templates
+    this.createTemplate({
+      userId: 1,
+      name: "Amazon Template",
+      marketplace: "amazon",
+      categories: ["Electronics", "Apparel", "Home", "Beauty", "Sports", "Toys", "Books", "Food", "Health", "Automotive", "Garden", "Pet"],
+    });
+    
+    this.createTemplate({
+      userId: 1,
+      name: "Walmart Template",
+      marketplace: "walmart",
+      categories: ["Home", "Kitchen", "Electronics", "Clothing", "Beauty", "Sports", "Toys", "Office"],
+    });
+    
+    this.createTemplate({
+      userId: 1,
+      name: "Meta Shops Template",
+      marketplace: "meta",
+      categories: ["Fashion", "Beauty", "Electronics", "Home", "Accessories"],
+    });
+
+    this.createTemplate({
+      userId: 1,
+      name: "TikTok Shop Template",
+      marketplace: "tiktok",
+      categories: ["Trendy", "Beauty", "Fashion", "Electronics"],
+    });
+
+    // Add some sample feed history
+    this.createFeed({
+      userId: 1,
+      name: "Summer Collection 2023",
+      source: "csv",
+      sourceDetails: { filename: "summer_collection.csv" },
+      marketplace: "amazon",
+      status: "completed",
+      itemCount: 124,
+      aiChanges: {
+        titleOptimized: 18,
+        categoryCorrected: 5,
+        descriptionEnhanced: 42,
+        pricingFixed: 2
+      },
+      outputUrl: "/feeds/summer-collection-2023.csv"
+    });
+    
+    this.createFeed({
+      userId: 1,
+      name: "Electronics Inventory",
+      source: "api",
+      sourceDetails: { endpoint: "https://api.example.com/products" },
+      marketplace: "walmart",
+      status: "failed",
+      itemCount: 87,
+      aiChanges: null,
+      outputUrl: null
+    });
+    
+    this.createFeed({
+      userId: 1,
+      name: "Holiday Promotions",
+      source: "csv",
+      sourceDetails: { filename: "holiday_promotions.csv" },
+      marketplace: "meta",
+      status: "completed",
+      itemCount: 56,
+      aiChanges: {
+        titleOptimized: 12,
+        categoryCorrected: 8,
+        descriptionEnhanced: 28,
+        pricingFixed: 0
+      },
+      outputUrl: "/feeds/holiday-promotions.csv"
+    });
+    
+    this.createFeed({
+      userId: 1,
+      name: "Spring Apparel",
+      source: "api",
+      sourceDetails: { endpoint: "https://api.inventory.com/spring" },
+      marketplace: "tiktok",
+      status: "completed",
+      itemCount: 73,
+      aiChanges: {
+        titleOptimized: 22,
+        categoryCorrected: 15,
+        descriptionEnhanced: 35,
+        pricingFixed: 3
+      },
+      outputUrl: "/feeds/spring-apparel.csv"
+    });
+    
+    this.createFeed({
+      userId: 1,
+      name: "Home Decor Catalog",
+      source: "csv",
+      sourceDetails: { filename: "home_decor.csv" },
+      marketplace: "etsy",
+      status: "warning",
+      itemCount: 42,
+      aiChanges: {
+        titleOptimized: 12,
+        categoryCorrected: 5,
+        descriptionEnhanced: 20,
+        pricingFixed: 0
+      },
+      outputUrl: "/feeds/home-decor.csv"
+    });
+  }
+
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.username.toLowerCase() === username.toLowerCase(),
+    );
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const id = this.userId++;
+    const now = new Date();
+    const newUser: User = { ...user, id, createdAt: now };
+    this.users.set(id, newUser);
+    return newUser;
+  }
+
+  // Feed operations
+  async getFeed(id: number): Promise<Feed | undefined> {
+    return this.feeds.get(id);
+  }
+
+  async getFeedsByUserId(userId: number): Promise<Feed[]> {
+    return Array.from(this.feeds.values())
+      .filter(feed => feed.userId === userId)
+      .sort((a, b) => new Date(b.processedAt).getTime() - new Date(a.processedAt).getTime());
+  }
+
+  async createFeed(feed: InsertFeed): Promise<Feed> {
+    const id = this.feedId++;
+    const now = new Date();
+    const newFeed: Feed = { ...feed, id, processedAt: now };
+    this.feeds.set(id, newFeed);
+    return newFeed;
+  }
+
+  async updateFeed(id: number, feedUpdate: Partial<Feed>): Promise<Feed | undefined> {
+    const feed = this.feeds.get(id);
+    if (!feed) return undefined;
+    
+    const updatedFeed = { ...feed, ...feedUpdate };
+    this.feeds.set(id, updatedFeed);
+    return updatedFeed;
+  }
+
+  async deleteFeed(id: number): Promise<boolean> {
+    return this.feeds.delete(id);
+  }
+
+  // Template operations
+  async getTemplate(id: number): Promise<Template | undefined> {
+    return this.templates.get(id);
+  }
+
+  async getTemplatesByUserId(userId: number): Promise<Template[]> {
+    return Array.from(this.templates.values())
+      .filter(template => template.userId === userId);
+  }
+
+  async createTemplate(template: InsertTemplate): Promise<Template> {
+    const id = this.templateId++;
+    const now = new Date();
+    const newTemplate: Template = { 
+      ...template, 
+      id, 
+      lastUpdated: now,
+      usageCount: 0
+    };
+    this.templates.set(id, newTemplate);
+    return newTemplate;
+  }
+
+  async updateTemplate(id: number, templateUpdate: Partial<Template>): Promise<Template | undefined> {
+    const template = this.templates.get(id);
+    if (!template) return undefined;
+    
+    const now = new Date();
+    const updatedTemplate = { 
+      ...template, 
+      ...templateUpdate, 
+      lastUpdated: now 
+    };
+    this.templates.set(id, updatedTemplate);
+    return updatedTemplate;
+  }
+
+  async deleteTemplate(id: number): Promise<boolean> {
+    return this.templates.delete(id);
+  }
+
+  async incrementTemplateUsage(id: number): Promise<boolean> {
+    const template = this.templates.get(id);
+    if (!template) return false;
+    
+    template.usageCount += 1;
+    this.templates.set(id, template);
+    return true;
+  }
+}
+
+export const storage = new MemStorage();
