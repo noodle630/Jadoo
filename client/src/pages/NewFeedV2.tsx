@@ -66,7 +66,8 @@ import {
   BadgeCheck, 
   Sparkles, 
   Radio,
-  Database
+  Database,
+  Wand2
 } from 'lucide-react';
 
 // Define schema for combined upload and marketplace selection
@@ -80,7 +81,7 @@ const feedFormSchema = z.object({
 type FeedFormValues = z.infer<typeof feedFormSchema>;
 
 // Define steps for the feed creation process
-type Step = 'upload' | 'marketplace' | 'processing' | 'complete';
+type Step = 'upload' | 'processing' | 'complete';
 
 export default function NewFeedV2() {
   const { toast } = useToast();
