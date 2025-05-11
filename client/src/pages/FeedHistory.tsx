@@ -282,7 +282,7 @@ export default function FeedHistory() {
                             className="hover:bg-slate-800/50 border-slate-800"
                           >
                             <TableCell className="font-medium text-slate-200">
-                              {feed.name || "Summer Collection 2023"}
+                              {feed.name || `Untitled Feed ${feed.id}`}
                             </TableCell>
                             <TableCell className="text-slate-400 capitalize">
                               {feed.source}
@@ -389,7 +389,7 @@ export default function FeedHistory() {
           <Dialog open={detailsDialog.open} onOpenChange={closeDetails}>
             <DialogContent className="max-w-2xl bg-slate-900 border-slate-800">
               <DialogHeader>
-                <DialogTitle className="text-xl">{detailsDialog.feed.name}</DialogTitle>
+                <DialogTitle className="text-xl">{detailsDialog.feed.name || `Untitled Feed ${detailsDialog.feed.id}`}</DialogTitle>
                 <DialogDescription>
                   Created on {formatDate(detailsDialog.feed.createdAt)}
                 </DialogDescription>
@@ -463,7 +463,7 @@ export default function FeedHistory() {
                             // Create a download link and trigger it
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
-                            const fileName = `${detailsDialog.feed?.name || 'feed'}.csv`;
+                            const fileName = `${detailsDialog.feed?.name || `Untitled Feed ${detailsDialog.feed.id}`}.csv`;
                             a.href = url;
                             a.download = fileName;
                             document.body.appendChild(a);
