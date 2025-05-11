@@ -1,89 +1,131 @@
-# CSV Cleaning API
+# Project "S": AI-Powered Product Feed Manager
 
-This project provides tools for cleaning and standardizing CSV data for marketplace listings using OpenAI's GPT-4o model.
+Project "S" is an AI-native application that transforms messy vendor product data into clean, marketplace-ready product feeds using OpenAI's GPT models.
 
-## Features
+## Project Overview
 
-- **Command-line tool** for cleaning CSV files directly
-- **Flask API endpoint** for cleaning CSV files via HTTP requests
-- **AI-powered data cleaning** that handles:
-  - Inconsistent formatting (capitalization, spacing, punctuation)
-  - Standardization of values in each column
-  - Missing values handling
-  - Invalid or corrupted data removal
-  - Proper formatting for marketplace listings
+This project aims to be a lightweight, AI-first alternative to enterprise feed management platforms. It enables vendors to:
 
-## Prerequisites
+1. Upload raw inventory data (CSVs or API feeds)
+2. Automatically clean, standardize, and transform data
+3. Generate marketplace-ready product feeds
+4. (Coming soon) Push data directly to marketplace seller accounts
+
+## Key Features
+
+- **AI-powered data cleaning**: Uses GPT models to intelligently parse and fix messy data
+- **Marketplace-specific transformations**: Currently supports Amazon Inventory Loader format
+- **Multiple interfaces**: Web UI, API endpoints, and command-line tools
+- **Data validation**: Identifies and fixes common data issues
+
+## Getting Started
+
+### Prerequisites
 
 - Python 3.8+
 - OpenAI API key
+- Flask (for web interface)
 
-## Setup
+### Installation
 
-1. Install dependencies:
-   ```bash
-   pip install flask openai pandas python-dotenv
+1. Clone this repository
+2. Install required packages:
+   ```
+   pip install -r requirements.txt
+   ```
+3. Set your OpenAI API key:
+   ```
+   export OPENAI_API_KEY="your-api-key"
    ```
 
-2. Set up your OpenAI API key:
-   - Create a `.env` file in the project root
-   - Add your OpenAI API key: `OPENAI_API_KEY=your-api-key-here`
+### Usage
 
-## Usage
+#### Web Interface
 
-### Command-line Tool
-
-Clean a CSV file using the command-line tool:
+Run the Amazon transformation web interface:
 
 ```bash
-python clean_csv.py path/to/your/file.csv
+./run_amazon.sh
 ```
+
+Then open your browser to http://localhost:8080
+
+#### Command Line
+
+Transform a CSV file to Amazon format:
+
+```bash
+python transform_to_amazon.py your_products.csv
+```
+
+#### API Endpoints
+
+POST to `/transform-to-amazon` with a CSV file in the `file` field.
+
+## Project Structure
+
+- `app.py` - Basic Flask application for CSV cleaning
+- `app_amazon.py` - Flask app for Amazon Inventory Loader transformations
+- `transform_to_amazon.py` - Command-line tool for Amazon transformations
+- `clean_csv.py` - Core functionality for CSV cleaning with OpenAI
+- `templates/` - HTML templates for web interfaces
+
+## Marketplaces Supported
+
+- **Amazon** - Inventory Loader Format (Electronics)
+- Walmart (Coming soon)
+- Meta/Facebook (Coming soon)
+- TikTok (Coming soon)
+- Reebelo (Coming soon)
+
+## How It Works
+
+1. **Data Ingestion**: Upload a CSV file or connect to an API endpoint
+2. **Analysis**: Parse data structure, identify issues, extract sample
+3. **AI Processing**: Send to OpenAI API with custom prompt templates
+4. **Transformation**: Map fields to marketplace requirements
+5. **Validation**: Check for required fields and format compliance
+6. **Export**: Generate marketplace-ready CSV or JSON
+
+## Command Line Options
+
+```
+python transform_to_amazon.py [file] [options]
 
 Options:
-- `--output` or `-o`: Specify output file name (default: cleaned_<input_filename>)
-- `--verbose` or `-v`: Show more detailed output
-
-Example:
-```bash
-python clean_csv.py data.csv --output cleaned_data.csv --verbose
+  --output, -o   Output file name
+  --verbose, -v  Show sample of transformed data
 ```
 
-### API Server
+## API Reference
 
-1. Start the Flask server:
-   ```bash
-   python app.py
-   ```
+### POST /transform-to-amazon
 
-2. Open a web browser and navigate to `http://localhost:8000`
+Transform CSV to Amazon format
 
-3. Use the web form to upload a CSV file for cleaning
+**Request Parameters:**
+- `file`: CSV file upload
+- `format`: Response format (`csv` or `json`)
 
-### API Endpoint
+**Response:**
+- CSV file download (default)
+- JSON structure with transformed data (if format=json)
 
-Send a POST request to `/clean` with a CSV file in the 'file' field:
+## Development
 
-```
-POST /clean
-Content-Type: multipart/form-data
+This project is currently in active development. Upcoming features:
 
-file: <your-csv-file>
-```
+- Support for additional marketplaces
+- User authentication
+- Template storage and reuse
+- Direct marketplace integration
+- Data visualization and analytics
 
-The response will be the cleaned CSV data.
+## License
 
-## Example
+[MIT License](LICENSE)
 
-Input CSV with inconsistent formatting:
-```csv
-product_id,title,description,price,inventory,category,brand,sku
-1001,Men's cotton t-shirt blue M,comfortable blue tshirt for men,19.99,45,Apparel,ABC Clothing,TS-001-BLU-M
-1002,"men's cotton t-shirt, black, l","comfortable black t shirt for men size L",19.99,32,apparel,"abc clothing",TS-001-BLK-L
-```
+## Acknowledgments
 
-Output CSV with standardized formatting:
-```csv
-product_id,title,description,price,inventory,category,brand,sku
-1001,Men's Cotton T-Shirt Blue M,Comfortable blue t-shirt for men,19.99,45,Apparel,ABC Clothing,TS-001-BLU-M
-1002,Men's Cotton T-Shirt Black L,Comfortable black t-shirt for men size L,19.99,32,Apparel,ABC Clothing,TS-001-BLK-L
-```
+- OpenAI for their powerful GPT models
+- Marketplace documentation from Amazon, Walmart, etc.
