@@ -246,7 +246,7 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count, max
         print(f"Error processing chunk: {str(e)}")
         return ""
 
-def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=200):
+def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
     """
     Transform a CSV file to Amazon Inventory Loader format
     

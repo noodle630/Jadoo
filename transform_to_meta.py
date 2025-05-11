@@ -37,7 +37,7 @@ REQUIRED_META_FIELDS = [
 from db_utils import time_transformation
 
 @time_transformation
-def transform_to_meta_format(csv_file_path, output_file=None, marketplace="meta", max_rows=200):
+def transform_to_meta_format(csv_file_path, output_file=None, marketplace="meta", max_rows=1000):
     """
     Transform a CSV file to Meta (Facebook) product catalog format
     

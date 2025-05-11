@@ -36,7 +36,7 @@ REQUIRED_FIELDS = [
     "contains-button-cell-batteries", "uid"
 ]
 
-def transform_to_catch_format(csv_file_path, output_file=None, max_rows=200):
+def transform_to_catch_format(csv_file_path, output_file=None, max_rows=1000):
     """
     Transform a CSV file to Catch/Mirkal marketplace format
     
@@ -60,6 +60,12 @@ def transform_to_catch_format(csv_file_path, output_file=None, max_rows=200):
             column_count = len(df.columns)
             columns = list(df.columns)
             
+            # Apply row limit for cost optimization if needed
+            if row_count > max_rows:
+                print(f"⚠️ Limiting processing to {max_rows} rows (from {row_count}) for cost optimization")
+                df = df.head(max_rows)
+                row_count = max_rows
+                
             # Limit the data sample to prevent exceeding token limits
             sample_rows = min(5, row_count)
             data_sample = df.head(sample_rows).to_csv(index=False)
