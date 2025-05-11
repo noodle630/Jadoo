@@ -11,6 +11,8 @@ import NewFeed from "@/pages/NewFeed";
 import Templates from "@/pages/Templates";
 import History from "@/pages/History";
 import Settings from "@/pages/Settings";
+import Products from "@/pages/Products";
+import ProductCategories from "@/pages/ProductCategories";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -18,6 +20,8 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={Dashboard} />
+        <Route path="/products" component={Products} />
+        <Route path="/products/categories" component={ProductCategories} />
         <Route path="/new-feed" component={NewFeed} />
         <Route path="/templates" component={Templates} />
         <Route path="/history" component={History} />
@@ -30,7 +34,7 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="datafeedsync-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="datafeedsync-theme">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
