@@ -82,7 +82,7 @@ MARKETPLACES = {
 }
 
 # Create Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit upload size to 16MB
 
 # Create a temporary directory for uploads if it doesn't exist
