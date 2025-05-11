@@ -490,8 +490,13 @@ def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
                     # Get counts for each SKU to identify the duplicates
                     sku_counts = df_output['item_sku'].value_counts()
                     duplicated_skus = sku_counts[sku_counts > 1]
-                    if not duplicated_skus.empty:
-                        print(f"Top duplicated SKUs: {duplicated_skus.head(5).to_dict()}")
+                    if len(duplicated_skus) > 0:
+                        # Get top 5 duplicates in a dictionary
+                        top_dups = {}
+                        for i, (sku, count) in enumerate(duplicated_skus.items()):
+                            if i < 5:  # Only take top 5
+                                top_dups[sku] = count
+                        print(f"Top duplicated SKUs: {top_dups}")
                     
                     # Now remove duplicates, keeping the first occurrence
                     df_output = df_output.drop_duplicates(subset=['item_sku'], keep='first')
