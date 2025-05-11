@@ -415,40 +415,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   router.get('/feeds/:id/download', async (req: Request, res: Response) => {
     try {
       const feedId = parseInt(req.params.id);
+      console.log(`Download request for feed ID: ${feedId}`);
+      
       if (isNaN(feedId)) {
+        console.log('Invalid feed ID');
         return res.status(400).json({ message: 'Invalid feed ID' });
       }
       
       const feed = await storage.getFeed(feedId);
       if (!feed) {
+        console.log(`Feed not found: ${feedId}`);
         return res.status(404).json({ message: 'Feed not found' });
       }
       
+      console.log(`Feed found: ${feed.name}, marketplace: ${feed.marketplace}`);
+      
       const sourceDetails = feed.sourceDetails as any;
       if (!sourceDetails || !sourceDetails.outputPath) {
+        console.log('Output path not found in sourceDetails:', sourceDetails);
         return res.status(404).json({ message: 'Output file not found' });
       }
       
       const outputFilePath = sourceDetails.outputPath;
+      console.log(`Output file path: ${outputFilePath}`);
       
-      if (!fs.existsSync(outputFilePath)) {
-        return res.status(404).json({ message: 'Output file does not exist on the server' });
-      }
-      
-      // Generate a user-friendly filename
-      const fileName = `${feed.marketplace}_${feed.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
-      
-      // Set headers for file download
-      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-      res.setHeader('Content-Type', 'text/csv');
-      
-      // Read file and send it directly
       try {
+        const fileExists = fs.existsSync(outputFilePath);
+        console.log(`File exists check: ${fileExists}`);
+        
+        if (!fileExists) {
+          return res.status(404).json({ message: 'Output file does not exist on the server' });
+        }
+        
+        // Generate a user-friendly filename
+        const fileName = `${feed.marketplace}_${feed.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+        console.log(`Generated download filename: ${fileName}`);
+        
+        // Read file content directly
         const fileContent = fs.readFileSync(outputFilePath, 'utf8');
-        res.send(fileContent);
+        console.log(`File content length: ${fileContent.length} bytes`);
+        
+        // Set headers and send the file content
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Content-Type', 'text/csv');
+        res.status(200).send(fileContent);
       } catch (fileError) {
-        console.error('Error reading file:', fileError);
-        res.status(500).json({ message: 'Error reading file' });
+        console.error('Error accessing file:', fileError);
+        res.status(500).json({ message: 'Error accessing output file' });
       }
     } catch (error) {
       console.error('Error downloading feed:', error);
