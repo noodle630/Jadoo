@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -287,7 +287,7 @@ export default function FeedHistory() {
                             className="hover:bg-slate-800/50 border-slate-800"
                           >
                             <TableCell className="font-medium text-cyan-500">
-                              {feed.name ? feed.name : `Untitled Feed ${feed.id}`}
+                              {feed.name && feed.name.trim() !== "" ? feed.name : `Untitled Feed ${feed.id}`}
                             </TableCell>
                             <TableCell className="text-slate-400 capitalize">
                               {feed.source}
