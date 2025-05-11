@@ -67,7 +67,11 @@ import {
   Radio,
   Database,
   Wand2,
-  Zap
+  Zap,
+  RefreshCw,
+  HelpCircle,
+  ListFilter,
+  DownloadCloud
 } from 'lucide-react';
 
 // Define schema for combined upload and marketplace selection
@@ -357,29 +361,34 @@ export default function NewFeedV2() {
                               <div className="grid w-full items-center gap-1.5">
                                 <Label
                                   htmlFor="file"
-                                  className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed rounded-lg cursor-pointer border-slate-700/70 bg-slate-900/40 hover:bg-slate-800/30 hover:border-cyan-700/70 transition-all duration-200 backdrop-blur"
+                                  className="flex flex-col items-center justify-center w-full h-44 border-2 border-dashed rounded-xl cursor-pointer border-slate-700/70 bg-slate-900/40 hover:bg-slate-800/30 hover:border-cyan-700/70 transition-all duration-200 backdrop-blur"
                                 >
-                                  <div className="flex flex-col items-center justify-center py-6">
-                                    <div className="w-12 h-12 mb-2 rounded-full bg-gradient-to-r from-slate-800 to-slate-700 flex items-center justify-center">
-                                      <FileText className="h-6 w-6 text-cyan-400" />
+                                  <div className="flex flex-col items-center justify-center py-6 px-4 text-center w-full">
+                                    <div className="w-14 h-14 mb-3 rounded-full bg-gradient-to-r from-slate-800 to-slate-700 flex items-center justify-center">
+                                      <FileText className="h-7 w-7 text-cyan-400" />
                                     </div>
-                                    <p className="mb-1 text-base text-slate-300 mt-2">
+                                    <p className="mb-1 text-base text-slate-300">
                                       <span className="font-medium">Click to upload</span> or drag and drop
                                     </p>
                                     <p className="text-sm text-slate-500">CSV or Excel file (max 10MB)</p>
-                                    <div className="flex gap-1 mt-3">
-                                      <Badge variant="outline" className="bg-slate-800/50 text-blue-300 border-blue-800/50">
-                                        SKU
-                                      </Badge>
-                                      <Badge variant="outline" className="bg-slate-800/50 text-blue-300 border-blue-800/50">
-                                        Title
-                                      </Badge>
-                                      <Badge variant="outline" className="bg-slate-800/50 text-blue-300 border-blue-800/50">
-                                        Price
-                                      </Badge>
-                                      <Badge variant="outline" className="bg-slate-800/50 text-blue-300 border-blue-800/50">
-                                        Qty
-                                      </Badge>
+                                    
+                                    <div className="mt-4 flex flex-wrap justify-center gap-2">
+                                      <div className="flex border border-slate-700 rounded-full px-3 py-1 items-center bg-slate-800/30">
+                                        <CheckCircle2 className="h-3 w-3 text-emerald-500 mr-1.5" />
+                                        <span className="text-xs text-slate-300">SKU</span>
+                                      </div>
+                                      <div className="flex border border-slate-700 rounded-full px-3 py-1 items-center bg-slate-800/30">
+                                        <CheckCircle2 className="h-3 w-3 text-emerald-500 mr-1.5" />
+                                        <span className="text-xs text-slate-300">Title</span>
+                                      </div>
+                                      <div className="flex border border-slate-700 rounded-full px-3 py-1 items-center bg-slate-800/30">
+                                        <CheckCircle2 className="h-3 w-3 text-emerald-500 mr-1.5" />
+                                        <span className="text-xs text-slate-300">Price</span>
+                                      </div>
+                                      <div className="flex border border-slate-700 rounded-full px-3 py-1 items-center bg-slate-800/30">
+                                        <CheckCircle2 className="h-3 w-3 text-emerald-500 mr-1.5" />
+                                        <span className="text-xs text-slate-300">Qty</span>
+                                      </div>
                                     </div>
                                   </div>
                                   <Input
@@ -596,25 +605,52 @@ export default function NewFeedV2() {
                 </div>
                 
                 {processingError ? (
-                  <div className="relative bg-red-950/30 border border-red-800/50 rounded-md p-4 text-sm text-red-300">
-                    <div className="absolute -top-3 left-3 bg-slate-900 px-2 py-0.5 rounded text-xs text-red-400 font-medium">
-                      Error
-                    </div>
-                    <div className="pt-1 flex items-start gap-2">
-                      <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        {processingError && 
-                         processingError.includes("Cannot read properties of null") ? 
-                         "Unable to process feed. Please check your file format and try again." : 
-                         processingError}
+                  <div className="relative overflow-hidden bg-gradient-to-r from-red-950/40 to-slate-900/80 border border-red-800/30 rounded-lg p-4 text-sm shadow-lg">
+                    <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-red-500/5 -mr-6 -mt-6 blur-2xl"></div>
+                    <div className="absolute -left-3 -bottom-3 h-16 w-16 rounded-full bg-red-500/5 blur-xl"></div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="bg-red-900/30 rounded-full p-2 mt-0.5">
+                        <AlertTriangle className="h-5 w-5 text-red-300" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="font-medium text-red-300">Processing Error</h4>
+                        <p className="text-red-200/80">
+                          {processingError && 
+                           processingError.includes("Cannot read properties of null") ? 
+                           "Your file couldn't be processed. Please ensure your data contains required fields (SKU, title, price, quantity) and try again." : 
+                           processingError}
+                        </p>
+                        <div className="pt-2 flex gap-2">
+                          <Button variant="outline" size="sm" className="bg-transparent border-red-800/50 hover:bg-red-900/30 text-red-300 h-8">
+                            <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                            Try Again
+                          </Button>
+                          <Button variant="outline" size="sm" className="bg-transparent border-slate-700/50 hover:bg-slate-800/50 text-slate-300 h-8">
+                            <HelpCircle className="h-3.5 w-3.5 mr-1" />
+                            View Help
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-sm text-slate-400 italic mt-4">
-                    This process may take a few minutes depending on the size of your data.
-                    The AI is optimizing product titles, descriptions, and other attributes
-                    for maximum marketplace compliance and performance.
+                  <div className="text-sm text-slate-400 mt-3">
+                    <p>This process typically takes 1-2 minutes depending on file size.</p>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <div className="flex items-center bg-slate-800/30 rounded-md p-2 border border-slate-700/30">
+                        <span className="bg-blue-900/30 p-1 rounded-md mr-2">
+                          <Wand2 className="h-4 w-4 text-blue-400" />
+                        </span>
+                        <span className="text-xs text-slate-300">Auto-formatting</span>
+                      </div>
+                      <div className="flex items-center bg-slate-800/30 rounded-md p-2 border border-slate-700/30">
+                        <span className="bg-purple-900/30 p-1 rounded-md mr-2">
+                          <ListFilter className="h-4 w-4 text-purple-400" />
+                        </span>
+                        <span className="text-xs text-slate-300">Data cleaning</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
