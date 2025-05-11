@@ -421,7 +421,7 @@ export default function NewFeedV2() {
                                         const label = document.querySelector('label[for="file"]');
                                         
                                         // Helper function to update the UI based on file info
-                                        const updateFileUI = (file, labelElem = null, rowCount = null) => {
+                                        const updateFileUI = (file: File, labelElem?: Element | null, rowCount?: number) => {
                                           const uiLabel = labelElem || label;
                                           if (uiLabel) {
                                             uiLabel.classList.remove('border-slate-700/70');
@@ -484,15 +484,6 @@ export default function NewFeedV2() {
                                           // For non-CSV files, just proceed normally
                                           onChange(file);
                                           updateFileUI(file);
-                                          
-                                          // Update icon
-                                          const iconContainer = label.querySelector('.rounded-full');
-                                          if (iconContainer) {
-                                            iconContainer.classList.remove('from-slate-800');
-                                            iconContainer.classList.remove('to-slate-700');
-                                            iconContainer.classList.add('from-cyan-900');
-                                            iconContainer.classList.add('to-cyan-800');
-                                          }
                                         }
                                       }
                                     }}
