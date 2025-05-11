@@ -412,31 +412,10 @@ export default function NewFeedV2() {
                     )}
                   />
                   
-                  {/* Data Upload Accelerator - Cool name for best practices */}
-                  <Card className="mt-4 mb-6 bg-slate-900/50 border-slate-800">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base text-cyan-500 flex items-center gap-2">
-                        <Zap className="h-4 w-4" />
-                        DataSync Booster™
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pb-4">
-                      <ul className="space-y-2 text-sm text-slate-400">
-                        <li className="flex items-start gap-2">
-                          <Sparkles className="h-4 w-4 text-indigo-400 mt-0.5 flex-shrink-0" />
-                          <span>Just upload your data – our AI magic handles field mapping & format conversions</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Sparkles className="h-4 w-4 text-indigo-400 mt-0.5 flex-shrink-0" />
-                          <span>Don't worry about messy data – we'll clean, standardize, and transform it all</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Sparkles className="h-4 w-4 text-indigo-400 mt-0.5 flex-shrink-0" />
-                          <span>Any format works! We automatically detect and convert data to marketplace specs</span>
-                        </li>
-                      </ul>
-                    </CardContent>
-                  </Card>
+                  {/* Simple instructions for upload */}
+                  <div className="mt-4 mb-6 text-sm text-slate-400">
+                    <p>Upload a CSV file containing your product data. We'll convert it to the selected marketplace format.</p>
+                  </div>
                   
                   <div className="pt-2">
                     <Button
