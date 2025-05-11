@@ -63,10 +63,11 @@ export default function NewFeed() {
       formData.append('file', values.file);
       
       // API request to upload file and create feed
-      const response = await apiRequest('/api/feeds/upload', {
+      const response = await fetch('/api/feeds/upload', {
         method: 'POST',
         body: formData,
-      });
+      })
+      .then(res => res.json());
       
       return response;
     },
@@ -196,38 +197,42 @@ export default function NewFeed() {
                   </TabsList>
                   
                   <TabsContent value="file" className="space-y-4">
-                    <div 
-                      className={`border-2 border-dashed rounded-lg p-10 text-center ${
-                        fileState.name 
-                          ? 'border-blue-400 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20' 
-                          : 'border-slate-300 dark:border-slate-700'
-                      }`}
-                    >
-                      {fileState.name ? (
-                        <div className="space-y-3">
-                          <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto">
-                            <FileUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                    <div className="relative">
+                      <label 
+                        htmlFor="file-upload"
+                        className={`block border-2 border-dashed rounded-lg p-10 text-center cursor-pointer ${
+                          fileState.name 
+                            ? 'border-blue-400 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20' 
+                            : 'border-slate-300 dark:border-slate-700'
+                        }`}
+                      >
+                        {fileState.name ? (
+                          <div className="space-y-3">
+                            <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <FileUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900 dark:text-white">{fileState.name}</p>
+                              <p className="text-sm text-slate-500 dark:text-slate-400">Click to change file</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium text-slate-900 dark:text-white">{fileState.name}</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Click to change file</p>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="h-12 w-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto">
+                              <FileUp className="h-6 w-6 text-slate-500 dark:text-slate-400" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900 dark:text-white">Drop your CSV file here</p>
+                              <p className="text-sm text-slate-500 dark:text-slate-400">or click to browse</p>
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <div className="h-12 w-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto">
-                            <FileUp className="h-6 w-6 text-slate-500 dark:text-slate-400" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-slate-900 dark:text-white">Drop your CSV file here</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">or click to browse</p>
-                          </div>
-                        </div>
-                      )}
+                        )}
+                      </label>
                       <input 
+                        id="file-upload"
                         type="file" 
                         accept=".csv,.xls,.xlsx" 
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                        className="hidden" 
                         onChange={handleFileChange}
                       />
                     </div>
@@ -236,7 +241,7 @@ export default function NewFeed() {
                       control={form.control}
                       name="file"
                       render={() => (
-                        <FormItem className="hidden">
+                        <FormItem>
                           <FormControl>
                             <Input type="file" className="hidden" />
                           </FormControl>
@@ -245,8 +250,30 @@ export default function NewFeed() {
                       )}
                     />
                     
-                    <div className="text-sm text-slate-500 dark:text-slate-400">
-                      <p>Supported file types: CSV, Excel (.xls, .xlsx)</p>
+                    <div className="space-y-2 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-slate-900 dark:text-white">Upload Tips</h4>
+                        <span className="text-xs text-slate-400">Supported: CSV, Excel (.xls, .xlsx)</span>
+                      </div>
+                      
+                      <div className="space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                        <p className="flex items-center">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-500 mr-2"></span>
+                          Keep it simple - we only need a <span className="font-medium text-blue-600 dark:text-blue-400">SKU</span> to identify your products
+                        </p>
+                        <p className="flex items-center">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-500 mr-2"></span>
+                          Basic info like <span className="font-medium text-blue-600 dark:text-blue-400">price</span> and <span className="font-medium text-blue-600 dark:text-blue-400">quantity</span> are helpful
+                        </p>
+                        <p className="flex items-center">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-500 mr-2"></span>
+                          Don't worry about formatting - our AI will handle the rest 💫
+                        </p>
+                      </div>
+                      
+                      <div className="mt-2 text-xs text-slate-500 dark:text-slate-500">
+                        <p>Having product identifiers like UPC, GTIN, or ASIN helps our system match your products more accurately, but they're not required.</p>
+                      </div>
                     </div>
                   </TabsContent>
                   

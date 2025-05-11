@@ -8,7 +8,9 @@ import {
   Home,
   PlusCircle,
   Settings,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Globe,
+  Radio
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -126,6 +128,39 @@ export default function Sidebar() {
                   }`}>
                     <SlidersHorizontal size={18} />
                     <span>Import Products</span>
+                  </div>
+                </Link>
+              </li>
+            </ul>
+          </li>
+          
+          {/* Channel Manager Section */}
+          <li className="mt-6">
+            <h3 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Channel Manager
+            </h3>
+            <ul className="space-y-1">
+              <li>
+                <Link href="/channels">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/channels") 
+                      ? "bg-slate-800 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <Globe size={18} />
+                    <span>Marketplaces</span>
+                  </div>
+                </Link>
+              </li>
+              <li>
+                <Link href="/connections">
+                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                    isActive("/connections") 
+                      ? "bg-slate-800 text-white" 
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                  }`}>
+                    <Radio size={18} />
+                    <span>API Connections</span>
                   </div>
                 </Link>
               </li>
