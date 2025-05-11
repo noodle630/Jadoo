@@ -21,10 +21,11 @@ function Router() {
     <Layout>
       <Switch>
         <Route path="/" component={Dashboard} />
+        <Route path="/feed/new" component={NewFeed} />
+        <Route path="/feeds/:id" component={Products} />
         <Route path="/products" component={Products} />
         <Route path="/products/categories" component={ProductCategories} />
         <Route path="/products/import" component={ProductsImport} />
-        <Route path="/new-feed" component={NewFeed} />
         <Route path="/templates" component={Templates} />
         <Route path="/history" component={History} />
         <Route path="/settings" component={Settings} />

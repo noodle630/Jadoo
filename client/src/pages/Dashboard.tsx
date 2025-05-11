@@ -1,338 +1,168 @@
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
-import { Eye, Download, Copy, FileWarning, RefreshCw } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from 'react';
+import { Link } from 'wouter';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import ChartPlaceholder from "@/components/ChartPlaceholder";
-import { Feed } from "@shared/schema";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import FeedHistory from "@/components/FeedHistory";
+import { PlusCircle, BarChart3, Zap, TrendingUp, FileSpreadsheet } from "lucide-react";
 
 export default function Dashboard() {
-  // Fetch feeds for the dashboard
-  const { data: feeds, isLoading } = useQuery<Feed[]>({
-    queryKey: ['/api/feeds'],
-    staleTime: 60000,
-  });
-
-  // Calculate dashboard stats
-  const activeFeeds = feeds?.filter(f => f.status === 'completed').length || 0;
-  const totalItems = feeds?.reduce((sum, feed) => sum + (feed.itemCount || 0), 0) || 0;
-  const aiCorrections = feeds?.reduce((sum, feed) => {
-    if (feed.aiChanges) {
-      const changes = feed.aiChanges as any;
-      return sum + (
-        (changes.titleOptimized || 0) + 
-        (changes.categoryCorrected || 0) + 
-        (changes.descriptionEnhanced || 0) + 
-        (changes.pricingFixed || 0)
-      );
-    }
-    return sum;
-  }, 0) || 0;
-
-  const latestFeeds = feeds?.slice(0, 4) || [];
-
-  // Helper to generate status badge
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
-      case 'failed':
-        return <Badge className="bg-red-100 text-red-800">Failed</Badge>;
-      case 'processing':
-        return <Badge className="bg-yellow-100 text-yellow-800">Processing</Badge>;
-      case 'warning':
-        return <Badge className="bg-yellow-100 text-yellow-800">Warnings</Badge>;
-      default:
-        return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>;
-    }
+  const [activeTab, setActiveTab] = useState('overview');
+  
+  // Placeholder for stats - in a real app these would come from API
+  const stats = {
+    totalFeeds: 5,
+    totalProducts: 437,
+    fixedIssues: 27,
+    activeMarketplaces: 3
   };
-
+  
   return (
-    <div className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        {/* Analytics Card 1 */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">Active Feeds</h3>
-              <span className="text-primary"><LayoutDashboardIcon className="h-5 w-5" /></span>
+    <div className="p-6 space-y-6">
+      {/* Header with Actions */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-4">
+        <div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-900 dark:from-slate-100 dark:to-white bg-clip-text text-transparent">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage and monitor your marketplace feeds
+          </p>
+        </div>
+        <Link href="/feed/new">
+          <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+            <PlusCircle className="h-4 w-4 mr-2" />
+            Create Feed
+          </Button>
+        </Link>
+      </div>
+      
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Feeds</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="text-2xl font-bold">{stats.totalFeeds}</div>
+              <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                <FileSpreadsheet className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
             </div>
-            {isLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <>
-                <p className="text-3xl font-bold">{activeFeeds}</p>
-                <p className="text-gray-500 text-sm mt-2">Last updated: Today at {new Date().toLocaleTimeString()}</p>
-              </>
-            )}
           </CardContent>
         </Card>
         
-        {/* Analytics Card 2 */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">Processed Items</h3>
-              <span className="text-cyan-600"><LayersIcon className="h-5 w-5" /></span>
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Products</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="text-2xl font-bold">{stats.totalProducts}</div>
+              <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/20 flex items-center justify-center">
+                <BarChart3 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              </div>
             </div>
-            {isLoading ? (
-              <Skeleton className="h-8 w-24" />
-            ) : (
-              <>
-                <p className="text-3xl font-bold">{totalItems.toLocaleString()}</p>
-                <p className="text-green-500 text-sm mt-2">+{Math.floor(totalItems * 0.1).toLocaleString()} from last week</p>
-              </>
-            )}
           </CardContent>
         </Card>
         
-        {/* Analytics Card 3 */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-700">AI Corrections</h3>
-              <span className="text-orange-500"><SparklesIcon className="h-5 w-5" /></span>
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Fixed Issues</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="text-2xl font-bold">{stats.fixedIssues}</div>
+              <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                <Zap className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
             </div>
-            {isLoading ? (
-              <Skeleton className="h-8 w-20" />
-            ) : (
-              <>
-                <p className="text-3xl font-bold">{aiCorrections.toLocaleString()}</p>
-                <p className="text-gray-500 text-sm mt-2">Improved data quality by 87%</p>
-              </>
-            )}
+          </CardContent>
+        </Card>
+        
+        <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Active Marketplaces</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="text-2xl font-bold">{stats.activeMarketplaces}</div>
+              <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
       
-      {/* Recent Activity */}
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle>Recent Activity</CardTitle>
+      {/* Feed History */}
+      <FeedHistory />
+      
+      {/* Recent Activity & Performance Tabs */}
+      <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="pb-3 border-b border-slate-200 dark:border-slate-800">
+          <CardTitle className="text-xl font-bold">Analytics & Activity</CardTitle>
+          <CardDescription>Performance insights and recent activity</CardDescription>
         </CardHeader>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Feed Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Marketplace</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-card divide-y divide-muted">
-              {isLoading ? (
-                Array(4).fill(0).map((_, idx) => (
-                  <tr key={idx}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Skeleton className="h-4 w-40" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Skeleton className="h-4 w-20" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Skeleton className="h-4 w-16" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Skeleton className="h-4 w-24" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Skeleton className="h-4 w-20" />
-                    </td>
-                  </tr>
-                ))
-              ) : latestFeeds.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                    No feeds found. Create a new feed to get started.
-                  </td>
-                </tr>
-              ) : (
-                latestFeeds.map((feed) => (
-                  <tr key={feed.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{feed.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500 capitalize">{feed.marketplace}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(feed.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(feed.processedAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        {feed.status === 'completed' && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {feed.status === 'failed' && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
-                            <FileWarning className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {feed.status === 'failed' && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <RefreshCw className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {feed.status === 'completed' && (
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <CardContent className="pt-6">
+          <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-6 grid grid-cols-3">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="activity">Activity Log</TabsTrigger>
+              <TabsTrigger value="performance">Performance</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview" className="space-y-4">
+              <div className="rounded-lg bg-slate-50 dark:bg-slate-900/50 p-6 text-center">
+                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">Welcome to S</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-4">
+                  Your marketplace data transformation platform. Start by creating a new product feed 
+                  or check your recent activity below.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Link href="/feed/new">
+                    <Button variant="default">Create Feed</Button>
+                  </Link>
+                  <Button variant="outline">View Tutorials</Button>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="activity" className="space-y-4">
+              <div className="space-y-4">
+                <div className="border-l-2 border-blue-500 pl-4 py-1">
+                  <p className="text-sm font-medium">Feed "Summer Collection 2023" created</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Today, 3:24 PM</p>
+                </div>
+                <div className="border-l-2 border-green-500 pl-4 py-1">
+                  <p className="text-sm font-medium">Feed "Electronics Q2" exported to Walmart format</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Yesterday, 10:15 AM</p>
+                </div>
+                <div className="border-l-2 border-red-500 pl-4 py-1">
+                  <p className="text-sm font-medium">Feed "Home & Kitchen" failed processing</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">2 days ago, 2:30 PM</p>
+                </div>
+                <div className="border-l-2 border-slate-500 pl-4 py-1">
+                  <p className="text-sm font-medium">API connection created for TikTok catalog</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">3 days ago, 11:05 AM</p>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="performance" className="space-y-4">
+              <div className="text-center py-8 px-4">
+                <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
+                  <BarChart3 className="h-6 w-6 text-slate-500 dark:text-slate-400" />
+                </div>
+                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-1">Performance analytics coming soon</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
+                  We're working on detailed analytics about your feeds and transformations.
+                </p>
+                <Button variant="outline">Join Preview</Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
       </Card>
-
-      {/* Marketplace Performance */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Marketplace Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Marketplace Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartPlaceholder 
-              type="pie" 
-              text="Marketplace distribution chart" 
-              height="h-64"
-            />
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-primary mr-2"></div>
-                <span className="text-sm">Amazon (45%)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-cyan-600 mr-2"></div>
-                <span className="text-sm">Walmart (25%)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-orange-500 mr-2"></div>
-                <span className="text-sm">Meta (15%)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-gray-500 mr-2"></div>
-                <span className="text-sm">Others (15%)</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* AI Data Corrections */}
-        <Card>
-          <CardHeader>
-            <CardTitle>AI Data Corrections</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartPlaceholder 
-              type="bar" 
-              text="Data correction statistics chart" 
-              height="h-64"
-            />
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                <span className="text-sm">Title Optimization (38%)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                <span className="text-sm">Missing Data (22%)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                <span className="text-sm">Category Corrections (25%)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-primary/50 mr-2"></div>
-                <span className="text-sm">Format Standardization (15%)</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
-  );
-}
-
-// Icons
-function LayoutDashboardIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect width="7" height="9" x="3" y="3" rx="1" />
-      <rect width="7" height="5" x="14" y="3" rx="1" />
-      <rect width="7" height="9" x="14" y="12" rx="1" />
-      <rect width="7" height="5" x="3" y="16" rx="1" />
-    </svg>
-  );
-}
-
-function LayersIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="12 2 2 7 12 12 22 7 12 2" />
-      <polyline points="2 17 12 22 22 17" />
-      <polyline points="2 12 12 17 22 12" />
-    </svg>
-  );
-}
-
-function SparklesIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-      <path d="M5 3v4" />
-      <path d="M19 17v4" />
-      <path d="M3 5h4" />
-      <path d="M17 19h4" />
-    </svg>
   );
 }
