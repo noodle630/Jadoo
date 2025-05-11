@@ -317,7 +317,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           if (code === 0) {
             // Calculate how many items were processed
-            const fs = require('fs');
             let itemCount = 0;
             
             try {

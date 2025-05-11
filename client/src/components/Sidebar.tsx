@@ -32,7 +32,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-20 flex w-64 flex-col bg-slate-950 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+    <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-slate-950 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
       isOpen ? 'translate-x-0' : '-translate-x-full'
     }`}>
       {/* Logo */}

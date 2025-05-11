@@ -27,11 +27,21 @@ export default function Layout({ children }: LayoutProps) {
         {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </Button>
       
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      {/* Mobile overlay - place BEFORE sidebar to ensure proper z-index stacking */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar - higher z-index than overlay */}
+      <div className="z-40 relative">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      </div>
       
       {/* Main Content */}
-      <div className={`md:pl-64 transition-all duration-300 ${sidebarOpen ? 'pl-64' : 'pl-0'} min-h-screen`}>
+      <div className={`md:pl-64 transition-all duration-300 ${sidebarOpen ? 'pl-0' : 'pl-0'} min-h-screen`}>
         {/* Header bar for mobile */}
         <div className="h-14 md:hidden bg-slate-950 border-b border-slate-800 flex items-center px-16">
           <h1 className="text-white font-semibold">S</h1>
@@ -42,14 +52,6 @@ export default function Layout({ children }: LayoutProps) {
           {children}
         </main>
       </div>
-      
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
     </div>
   );
 }
