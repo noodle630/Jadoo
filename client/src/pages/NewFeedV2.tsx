@@ -503,25 +503,30 @@ export default function NewFeedV2() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center pt-0">
-              <div className="w-full max-w-md mb-4">
-                {/* Simplified progress bar instead of complex animation */}
-                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div className="w-full mb-6">
+                {/* Enhanced progress indication with our AIProcessingAnimation component */}
+                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-3">
                   <div 
-                    className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-300 ease-in-out"
+                    className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-500 ease-in-out"
                     style={{ width: `${(processingStep / 4) * 100}%` }}
                   ></div>
                 </div>
                 
-                <div className="flex justify-between mt-2 text-xs text-slate-400">
-                  <span>Parsing</span>
-                  <span>Analyzing</span>
-                  <span>Transforming</span>
-                  <span>Validating</span>
+                <div className="flex justify-between mb-6 text-xs text-slate-400">
+                  <span className={processingStep >= 1 ? "text-blue-400 font-medium" : ""}>Parsing</span>
+                  <span className={processingStep >= 2 ? "text-blue-400 font-medium" : ""}>Analyzing</span>
+                  <span className={processingStep >= 3 ? "text-blue-400 font-medium" : ""}>Transforming</span>
+                  <span className={processingStep >= 4 ? "text-blue-400 font-medium" : ""}>Validating</span>
                 </div>
               </div>
               
-              <div className="mt-6 text-center text-sm text-slate-400">
-                <p>This may take a few seconds. Please don't close the browser.</p>
+              {/* Enhanced visualization with AIProcessingAnimation */}
+              <div className="w-full h-32 relative mb-4 bg-slate-900/30 rounded-lg overflow-hidden border border-slate-800">
+                <AIProcessingAnimation step={processingStep} maxSteps={4} />
+              </div>
+              
+              <div className="mt-4 text-center text-sm text-slate-400">
+                <p>S is working on your feed. This may take a few seconds. Please don't close the browser.</p>
               </div>
             </CardContent>
           </Card>

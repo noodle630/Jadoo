@@ -112,17 +112,21 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
         
         print("Sending data to OpenAI for transformation...")
         
-        response = client.chat.completions.create(
-            model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-            messages=[
-                {"role": "system", "content": "You are a data transformation expert that converts product data to Amazon Inventory Loader format."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3,  # Lower temperature for more consistent outputs
-        )
-        
-        # Extract the transformed CSV from the response
-        message_content = response.choices[0].message.content
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+                messages=[
+                    {"role": "system", "content": "You are a data transformation expert that converts product data to Amazon Inventory Loader format."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.3,  # Lower temperature for more consistent outputs
+            )
+            
+            # Extract the transformed CSV from the response
+            message_content = response.choices[0].message.content
+        except Exception as api_error:
+            print(f"OpenAI API Error: {str(api_error)}")
+            raise
         if message_content is None:
             print("Error: Received empty response from OpenAI API")
             return None

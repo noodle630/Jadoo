@@ -249,12 +249,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Output file: ${outputFilePath}`);
       console.log(`Using script: ${scriptPath}`);
       
-      // Create a child process to run the Python script
+      // Create a child process to run the Python script with env variables
       const pythonProcess = spawn('python3', [
         scriptPath,
         filePath,
         outputFilePath
-      ]);
+      ], {
+        env: { ...process.env }  // Pass all environment variables including OPENAI_API_KEY
+      });
       
       let stdoutData = '';
       let stderrData = '';
@@ -314,11 +316,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             });
           } else {
+            // Check for specific OpenAI errors in the error output
             console.error('Transformation failed:', stderrData);
+            let errorMessage = stderrData || 'Unknown error during transformation';
+            
+            // Check for common OpenAI API errors
+            if (stderrData.includes('OpenAI API')) {
+              if (stderrData.includes('API key')) {
+                errorMessage = 'OpenAI API key error. Please check your API key configuration.';
+              } else if (stderrData.includes('rate limit')) {
+                errorMessage = 'OpenAI API rate limit exceeded. Please try again later.';
+              }
+            }
+            
             await storage.updateFeed(feedId, {
               status: 'failed',
               aiChanges: {
-                error: stderrData || 'Unknown error during transformation'
+                error: errorMessage
               }
             });
           }
