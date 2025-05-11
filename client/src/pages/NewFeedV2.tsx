@@ -459,51 +459,47 @@ export default function NewFeedV2() {
                 </div>
                 
                 <div className="mt-8 mb-6">
-                  <div className="p-5 rounded-md bg-slate-900/80 border border-slate-800/40 backdrop-blur shadow-lg">
-                    <h3 className="text-xl font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-3">
-                      Dump It In ✨
-                    </h3>
-                    <p className="text-slate-400">Got a name, a price, and a quantity? That's all we ask.</p>
-                    <p className="text-slate-400">We'll clean the rest like it's our job. (It is.)</p>
-                    <p className="text-slate-400 mt-1">Got SKUs, UPCs, or random mystery columns? Even better.</p>
-                    <p className="text-slate-400">Our AI loves a good puzzle — feed it chaos, get back gold.</p>
+                  <div className="p-5 rounded-md bg-slate-900/80 border border-slate-800/40 backdrop-blur shadow-lg flex items-center space-x-4">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center">
+                      <Wand2 className="h-6 w-6 text-slate-950" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                        Messy Data → Marketplace Ready
+                      </h3>
+                      <p className="text-slate-400">Upload any format, get marketplace gold in minutes</p>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="space-y-1 mt-auto">
-                  <h4 className="text-lg font-medium text-slate-300 mb-3">How S Works For You:</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-center">
-                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
-                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
-                      </div>
-                      <span className="ml-2 text-slate-300">Automatically cleans and standardizes product data</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
-                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
-                      </div>
-                      <span className="ml-2 text-slate-300">Maps to marketplace-specific requirements</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
-                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
-                      </div>
-                      <span className="ml-2 text-slate-300">Enhances titles and descriptions with AI</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
-                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
-                      </div>
-                      <span className="ml-2 text-slate-300">Fixes errors and validates required fields</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
-                        <CheckCircle2 className="h-3 w-3 text-slate-950" />
-                      </div>
-                      <span className="ml-2 text-slate-300">Download instantly in marketplace-ready format</span>
-                    </li>
-                  </ul>
+                <div className="grid grid-cols-2 gap-3 mt-6">
+                  <div className="p-3 rounded-md bg-slate-900/60 border border-slate-800/40 flex items-center space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                    </div>
+                    <span className="text-slate-300 text-sm">Auto Format</span>
+                  </div>
+                  
+                  <div className="p-3 rounded-md bg-slate-900/60 border border-slate-800/40 flex items-center space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <span className="text-slate-300 text-sm">Title Enhance</span>
+                  </div>
+                  
+                  <div className="p-3 rounded-md bg-slate-900/60 border border-slate-800/40 flex items-center space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                      <CheckCircle2 className="h-4 w-4 text-purple-400" />
+                    </div>
+                    <span className="text-slate-300 text-sm">Auto Category</span>
+                  </div>
+                  
+                  <div className="p-3 rounded-md bg-slate-900/60 border border-slate-800/40 flex items-center space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                      <Download className="h-4 w-4 text-cyan-400" />
+                    </div>
+                    <span className="text-slate-300 text-sm">Instant Download</span>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -685,25 +681,32 @@ export default function NewFeedV2() {
                   </div>
                 </div>
                 
-                {/* Right column - AI enhancements stats */}
+                {/* Right column - AI enhancements stats - More visual, less text */}
                 <div>
                   <div className="p-5 bg-slate-900/80 rounded-xl border border-emerald-700/20 h-full relative overflow-hidden">
                     <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500/70 to-green-500/70"></div>
                     
-                    <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                      <Sparkles className="h-5 w-5 text-emerald-400 mr-2" />
-                      AI Enhancements Summary
-                    </h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 flex items-center justify-center">
+                          <Sparkles className="h-4 w-4 text-slate-950" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-white">AI Fixes</h3>
+                      </div>
+                      <Badge className="bg-emerald-600 hover:bg-emerald-700">
+                        {uploadedInfo?.skuCount || 511} Products
+                      </Badge>
+                    </div>
                     
-                    <div className="space-y-5 mt-6">
-                      <div className="relative">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-slate-300">Titles Optimized</span>
-                          <span className="text-sm font-bold text-emerald-400">
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/30">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-medium text-slate-400">Titles</span>
+                          <span className="text-xs font-bold text-emerald-400">
                             {uploadedInfo?.aiChanges?.titleOptimized || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.4)}
                           </span>
                         </div>
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
                             style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.titleOptimized || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.4)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
@@ -711,14 +714,14 @@ export default function NewFeedV2() {
                         </div>
                       </div>
                       
-                      <div className="relative">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-slate-300">Descriptions Enhanced</span>
-                          <span className="text-sm font-bold text-emerald-400">
+                      <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/30">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-medium text-slate-400">Descriptions</span>
+                          <span className="text-xs font-bold text-emerald-400">
                             {uploadedInfo?.aiChanges?.descriptionEnhanced || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.6)}
                           </span>
                         </div>
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
                             style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.descriptionEnhanced || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.6)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
@@ -726,14 +729,14 @@ export default function NewFeedV2() {
                         </div>
                       </div>
                       
-                      <div className="relative">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-slate-300">Categories Fixed</span>
-                          <span className="text-sm font-bold text-emerald-400">
+                      <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/30">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-medium text-slate-400">Categories</span>
+                          <span className="text-xs font-bold text-emerald-400">
                             {uploadedInfo?.aiChanges?.categoryCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.2)}
                           </span>
                         </div>
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
                             style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.categoryCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.2)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
@@ -741,14 +744,14 @@ export default function NewFeedV2() {
                         </div>
                       </div>
                       
-                      <div className="relative">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-slate-300">Errors Corrected</span>
-                          <span className="text-sm font-bold text-emerald-400">
+                      <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/30">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-medium text-slate-400">Errors</span>
+                          <span className="text-xs font-bold text-emerald-400">
                             {uploadedInfo?.aiChanges?.errorsCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.25)}
                           </span>
                         </div>
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
                             style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.errorsCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.25)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
