@@ -10,7 +10,7 @@ def test_clean_endpoint(csv_file_path):
         csv_file_path: Path to the CSV file to be cleaned
     """
     # API endpoint
-    url = "http://localhost:5000/clean"
+    url = "http://localhost:5001/clean"
     
     # Check if file exists
     if not os.path.exists(csv_file_path):

@@ -110,17 +110,12 @@ def clean_csv():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Custom error handler for 404 errors
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify({"error": "Route not found"}), 404
-
-# Custom error handler for 500 errors 
-@app.errorhandler(500)
-def server_error(error):
-    return jsonify({"error": "Server error"}), 500
+@app.route('/', methods=['GET'])
+def index():
+    """Simple test endpoint to verify the server is running."""
+    return "CSV Cleaning API is running. Use POST /clean with a CSV file to clean data."
 
 if __name__ == '__main__':
     # Run the app on 0.0.0.0 to make it accessible externally
-    # Use port 5001 to avoid conflict with the Node.js server
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    # Use port 8000 to avoid conflict with the Node.js server on port 5000
+    app.run(host='0.0.0.0', port=8000, debug=True)
