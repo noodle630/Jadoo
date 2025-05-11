@@ -91,7 +91,7 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def transform_csv_with_openai(file_path, marketplace_key, format_param='csv'):
+def transform_csv_with_openai(file_path, marketplace_key, format_param='csv', max_rows=200):
     """
     Transform a CSV file to the specified marketplace format using OpenAI
     
@@ -99,6 +99,7 @@ def transform_csv_with_openai(file_path, marketplace_key, format_param='csv'):
         file_path: Path to the CSV file
         marketplace_key: Key to identify the marketplace (amazon, reebelo, walmart, catch)
         format_param: Response format (csv or json)
+        max_rows: Maximum rows to process for cost efficiency (default: 200)
         
     Returns:
         The transformed CSV content and metadata
@@ -106,6 +107,13 @@ def transform_csv_with_openai(file_path, marketplace_key, format_param='csv'):
     try:
         # Read the CSV
         df = pd.read_csv(file_path)
+        original_row_count = len(df)
+        
+        # Apply row limit for cost optimization
+        if len(df) > max_rows:
+            print(f"⚠️ Limiting processing to {max_rows} rows (from {original_row_count}) for cost optimization")
+            df = df.head(max_rows)
+            
         row_count = len(df)
         column_count = len(df.columns)
         columns = list(df.columns)

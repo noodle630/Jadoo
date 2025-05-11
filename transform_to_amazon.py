@@ -31,8 +31,16 @@ AMAZON_COLUMNS = [
     "are_batteries_included"
 ]
 
-def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
-    """Process a chunk of the dataframe with enhanced validation and cost-optimization guardrails"""
+def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count, max_tokens=2500):
+    """Process a chunk of the dataframe with enhanced validation and cost-optimization guardrails
+    
+    Args:
+        df_chunk: The dataframe chunk to process
+        amazon_columns: Amazon template columns
+        full_df_columns: Columns in the full dataframe
+        full_row_count: Total row count in full dataframe
+        max_tokens: Maximum tokens to use for processing (default: 2500 for cost efficiency)
+    """
     chunk_row_count = len(df_chunk)
     
     # Only use a sample for the prompt to reduce token usage and cost
@@ -108,7 +116,7 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
         start_time = time.time()
         
         response = client.chat.completions.create(
-            model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+            model="gpt-3.5-turbo", # Using GPT-3.5-turbo for cost optimization as explicitly requested by user
             messages=[
                 {
                     "role": "system", 
@@ -238,13 +246,14 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
         print(f"Error processing chunk: {str(e)}")
         return ""
 
-def transform_to_amazon_format(csv_file_path, output_file=None):
+def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=200):
     """
     Transform a CSV file to Amazon Inventory Loader format
     
     Args:
         csv_file_path: Path to the CSV file to transform
         output_file: Path to save the transformed file (default: amazon_<input_filename>)
+        max_rows: Maximum rows to process for cost efficiency (default: 200)
     
     Returns:
         The path to the transformed file
@@ -262,6 +271,12 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
             columns = list(df.columns)
             
             print(f"Successfully parsed CSV: \n            CSV file has {row_count} rows and {column_count} columns.\n            Source columns: {', '.join(columns)}\n            Target Amazon columns: {', '.join(AMAZON_COLUMNS)}")
+            
+            # Apply row limit for cost optimization if needed
+            if row_count > max_rows:
+                print(f"⚠️ Limiting processing to {max_rows} rows (from {row_count}) for cost optimization")
+                df = df.head(max_rows)
+                row_count = max_rows
             
         except Exception as e:
             print(f"Error parsing CSV: {str(e)}")
@@ -367,7 +382,7 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
             """
             
             response = client.chat.completions.create(
-                model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+                model="gpt-3.5-turbo", # Using GPT-3.5-turbo for cost optimization as explicitly requested by user
                 messages=[
                     {
                         "role": "system", 
