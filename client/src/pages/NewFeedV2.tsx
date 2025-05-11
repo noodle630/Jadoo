@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { Zap } from 'lucide-react';
 
 import {
   Dialog,
@@ -65,8 +66,7 @@ import {
   BadgeCheck, 
   Sparkles, 
   Radio,
-  Database,
-  Zap 
+  Database
 } from 'lucide-react';
 
 // Define schemas for form validation
@@ -332,6 +332,32 @@ export default function NewFeedV2() {
                       </FormItem>
                     )}
                   />
+                  
+                  {/* Data Upload Accelerator - Cool name for best practices */}
+                  <Card className="mt-4 mb-6 bg-slate-900/50 border-slate-800">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base text-cyan-500 flex items-center gap-2">
+                        <Zap className="h-4 w-4" />
+                        DataSync Booster™
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pb-4">
+                      <ul className="space-y-2 text-sm text-slate-400">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Include unique IDs or SKUs for each product to prevent duplication</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Product titles under 200 characters perform best across marketplaces</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <span>Include high-res image URLs (min 1000×1000 pixels) for better marketplace visibility</span>
+                        </li>
+                      </ul>
+                    </CardContent>
+                  </Card>
                   
                   <div className="pt-2">
                     <Button
