@@ -117,12 +117,17 @@ def clean_csv_with_openai(csv_file_path):
         return None
 
 if __name__ == "__main__":
-    # Check if a file was provided as an argument
-    if len(sys.argv) < 2:
-        print("Usage: python clean_csv.py <csv_file_path>")
-        sys.exit(1)
-        
-    csv_file_path = sys.argv[1]
+    import argparse
+    
+    # Set up command line argument parsing
+    parser = argparse.ArgumentParser(description="Clean CSV data using OpenAI's GPT-4o model.")
+    parser.add_argument('file', help='Path to the CSV file to clean')
+    parser.add_argument('--output', '-o', help='Output file name (default: cleaned_<input_filename>)')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Show more detailed output')
+    
+    args = parser.parse_args()
+    
+    csv_file_path = args.file
     
     # Check if file exists
     if not os.path.exists(csv_file_path):
@@ -133,15 +138,33 @@ if __name__ == "__main__":
     if not csv_file_path.endswith('.csv'):
         print(f"Error: File {csv_file_path} is not a CSV file")
         sys.exit(1)
-        
+    
+    print(f"Processing {csv_file_path}...")
+    
     # Clean the CSV
     cleaned_csv = clean_csv_with_openai(csv_file_path)
     
     if cleaned_csv:
-        print("\nSample of cleaned data:")
-        print("------------------------")
-        lines = cleaned_csv.split('\n')
-        # Print header and first few lines
-        for i, line in enumerate(lines[:6]):
-            print(line)
-        print("------------------------")
+        # Determine output file name
+        if args.output:
+            output_file = args.output
+            if not output_file.endswith('.csv'):
+                output_file += '.csv'
+        else:
+            output_file = f"cleaned_{os.path.basename(csv_file_path)}"
+        
+        # Save to output file
+        with open(output_file, 'w') as f:
+            f.write(cleaned_csv)
+        
+        print(f"\nCSV cleaning completed successfully!")
+        print(f"Cleaned data saved to: {output_file}")
+        
+        if args.verbose:
+            print("\nSample of cleaned data:")
+            print("------------------------")
+            lines = cleaned_csv.split('\n')
+            # Print header and first few lines
+            for i, line in enumerate(lines[:6]):
+                print(line)
+            print("------------------------")

@@ -121,6 +121,80 @@ def clean_csv():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# Add a route for the index page that displays a form for uploading CSV files
+@app.route('/', methods=['GET'])
+def index():
+    """Simple HTML form for testing the CSV cleaner"""
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>CSV Cleaner</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            h1 {
+                color: #333;
+            }
+            form {
+                border: 1px solid #ddd;
+                padding: 20px;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            input[type="file"] {
+                width: 100%;
+            }
+            button {
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+            .info {
+                background-color: #e7f3fe;
+                border-left: 6px solid #2196F3;
+                padding: 10px;
+                margin: 15px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>CSV Cleaner Tool</h1>
+        <div class="info">
+            <p>This tool uses OpenAI GPT-4o to clean and optimize CSV data for marketplace listings.</p>
+            <p>Upload a CSV file and receive a cleaned version with standardized formatting.</p>
+        </div>
+        
+        <form action="/clean" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Select CSV File:</label>
+                <input type="file" id="file" name="file" accept=".csv" required>
+            </div>
+            <button type="submit">Clean CSV</button>
+        </form>
+    </body>
+    </html>
+    """
+    return html
+
 # Custom error handler for 404 errors
 @app.errorhandler(404)
 def not_found(error):
