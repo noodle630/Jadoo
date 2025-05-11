@@ -368,6 +368,84 @@ def create_catch_prompt(data_info, data_sample, sample_rows):
     
     RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
     """
+    
+def create_meta_prompt(data_info, data_sample, sample_rows):
+    return f"""
+    As an AI data transformation expert, convert the following CSV data to Meta (Facebook) product catalog format.
+    
+    Data information:
+    {data_info}
+    
+    Sample data (first {sample_rows} rows):
+    {data_sample}
+    
+    INSTRUCTIONS:
+    1. Transform the source data to match the Meta product catalog format
+    2. Map the source fields to Meta fields, using your best judgment when direct mappings aren't available
+    3. For missing required fields, generate appropriate values based on existing data
+    4. Clean data by fixing formatting and standardizing values
+    5. Ensure all required Meta fields are included
+    6. Format the output as a valid CSV with all the columns from the Meta template
+    7. The first row must contain the column headers
+    8. Do not include any markdown formatting or explanations, only return the CSV content
+    
+    IMPORTANT GUIDELINES:
+    - For 'id', use a unique identifier for each product
+    - For 'title', ensure it is descriptive and accurate
+    - For 'description', provide a detailed product description
+    - For 'availability', use values like 'in stock', 'out of stock', etc.
+    - For 'condition', use values like 'new', 'used', 'refurbished'
+    - For 'price', include both the amount and currency code (e.g., '9.99 USD')
+    - For 'link', provide a URL to the product page
+    - For 'image_link', provide a URL to the product image
+    - For 'brand', specify the product brand
+    - For 'google_product_category', use values from Google's product taxonomy
+    - For app-related fields (ios_url, android_url, etc.), leave them blank if not applicable
+    
+    REQUIRED FIELDS (these MUST be in the output):
+    id, title, description, availability, condition, price, link, image_link, brand
+    
+    RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
+    """
+    
+def create_tiktok_prompt(data_info, data_sample, sample_rows):
+    return f"""
+    As an AI data transformation expert, convert the following CSV data to TikTok catalog format for Video Shopping Ads.
+    
+    Data information:
+    {data_info}
+    
+    Sample data (first {sample_rows} rows):
+    {data_sample}
+    
+    INSTRUCTIONS:
+    1. Transform the source data to match the TikTok catalog format
+    2. Map the source fields to TikTok fields, using your best judgment when direct mappings aren't available
+    3. For missing required fields, generate appropriate values based on existing data
+    4. Clean data by fixing formatting and standardizing values
+    5. Ensure all required TikTok fields are included
+    6. Format the output as a valid CSV with all the columns from the TikTok template
+    7. The first row must contain the column headers
+    8. Do not include any markdown formatting or explanations, only return the CSV content
+    
+    IMPORTANT GUIDELINES:
+    - For 'sku_id', use a unique ID for the item
+    - For 'title', ensure it is descriptive without promotional text
+    - For 'description', provide a short description of the item
+    - For 'availability', use values from: "in stock", "available for order", "preorder", "out of stock", "discontinued"
+    - For 'condition', use values from: "new", "refurbished", "used"
+    - For 'price', include the price with currency (e.g., "9.99 USD")
+    - For 'link', provide the URL of the product landing page
+    - For 'image_link', provide a URL for the product image
+    - For 'brand', provide the product brand name
+    - For 'google_product_category', use a preset value from Google's product taxonomy
+    - For video or image URLs, ensure they meet TikTok's format requirements
+    
+    REQUIRED FIELDS (these MUST be in the output):
+    sku_id, title, description, availability, condition, price, link, image_link, brand
+    
+    RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
+    """
 
 @app.route('/')
 def index():

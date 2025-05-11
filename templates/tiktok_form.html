@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TikTok Shopping Catalog Format Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #000000;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(254, 44, 85, 0.3);
+        }
+        h2 {
+            margin-top: 20px;
+            color: #444;
+        }
+        form {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        button {
+            background: linear-gradient(90deg, rgba(254,44,85,1) 0%, rgba(0,0,0,1) 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: linear-gradient(90deg, rgba(254,44,85,0.8) 0%, rgba(0,0,0,0.8) 100%);
+        }
+        pre {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+        .header-logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, rgba(254,44,85,1) 0%, rgba(0,0,0,1) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TikTok <span class="gradient-text">Shopping Catalog</span> Format Converter</h1>
+        
+        <p>Convert your product data to TikTok's catalog format with the help of AI. Perfect for creating TikTok Shop and Video Shopping Ads.</p>
+        
+        <h2>Upload your CSV file:</h2>
+        <form action="/clean-csv" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".csv" required>
+            <button type="submit">Transform to TikTok Format</button>
+        </form>
+        
+        <h2>What this does:</h2>
+        <ul>
+            <li>Transforms your product data to TikTok catalog format</li>
+            <li>Maps your current fields to TikTok's required fields</li>
+            <li>Cleans and standardizes the data to comply with TikTok's requirements</li>
+            <li>Ensures all required fields are present and properly formatted</li>
+        </ul>
+        
+        <h2>Required Fields for TikTok Catalog:</h2>
+        <pre>sku_id, title, description, availability, condition, price, link, image_link, brand</pre>
+        
+        <h2>How it works:</h2>
+        <ol>
+            <li>Upload your CSV file containing product data</li>
+            <li>Our AI analyzes your data and maps it to TikTok's format</li>
+            <li>The system generates a properly formatted CSV ready for TikTok Business Center</li>
+            <li>Download the transformed file and upload it to your TikTok business account</li>
+        </ol>
+        
+        <div class="footer">
+            <a href="/">Back to All Marketplaces</a> | Powered by OpenAI GPT-4o
+        </div>
+    </div>
+</body>
+</html>
