@@ -115,10 +115,15 @@ export default function FeedHistory() {
     }));
   };
 
-  // Filter feeds based on active tab
-  const filteredFeeds = activeTab === "all" 
+  // Filter feeds based on active tab and ensure feed names are displayed
+  const filteredFeeds = (activeTab === "all" 
     ? sortedFeeds 
-    : sortedFeeds.filter((feed) => feed.marketplace === activeTab);
+    : sortedFeeds.filter((feed) => feed.marketplace === activeTab))
+    // Make sure all feeds have a display name
+    .map(feed => ({
+      ...feed,
+      name: feed.name && feed.name.trim() !== "" ? feed.name : `Untitled Feed ${feed.id}`
+    }));
 
   // Get unique marketplaces for tabs
   const marketplaces = Array.from(new Set(feeds.map((feed) => feed.marketplace))).filter(Boolean);
@@ -132,7 +137,12 @@ export default function FeedHistory() {
 
   // Show feed details dialog
   const showDetails = (feed: Feed) => {
-    setDetailsDialog({ open: true, feed });
+    // Create a copy of the feed to ensure name is displayed correctly
+    const feedWithName = {
+      ...feed,
+      name: feed.name && feed.name.trim() !== "" ? feed.name : `Untitled Feed ${feed.id}`
+    };
+    setDetailsDialog({ open: true, feed: feedWithName });
   };
 
   // Close feed details dialog
@@ -297,7 +307,7 @@ export default function FeedHistory() {
                             className="hover:bg-slate-800/50 border-slate-800"
                           >
                             <TableCell className="font-medium text-white">
-                              {!feed.name || feed.name.trim() === "" ? `Untitled Feed ${feed.id}` : feed.name}
+                              {feed.name}
                             </TableCell>
                             <TableCell className="text-slate-400 capitalize">
                               {feed.source}
@@ -404,7 +414,7 @@ export default function FeedHistory() {
           <Dialog open={detailsDialog.open} onOpenChange={closeDetails}>
             <DialogContent className="max-w-2xl bg-slate-900 border-slate-800">
               <DialogHeader>
-                <DialogTitle className="text-xl">{!detailsDialog.feed.name || detailsDialog.feed.name.trim() === "" ? `Untitled Feed ${detailsDialog.feed.id}` : detailsDialog.feed.name}</DialogTitle>
+                <DialogTitle className="text-xl">{detailsDialog.feed.name}</DialogTitle>
                 <DialogDescription>
                   Created on {formatDate(detailsDialog.feed.createdAt)}
                 </DialogDescription>
@@ -478,7 +488,7 @@ export default function FeedHistory() {
                             // Create a download link and trigger it
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
-                            const fileName = `${!detailsDialog.feed.name || detailsDialog.feed.name.trim() === "" ? `Untitled Feed ${detailsDialog.feed.id}` : detailsDialog.feed.name}.csv`;
+                            const fileName = `${detailsDialog.feed.name}.csv`;
                             a.href = url;
                             a.download = fileName;
                             document.body.appendChild(a);
