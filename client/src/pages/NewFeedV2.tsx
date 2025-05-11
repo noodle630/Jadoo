@@ -299,34 +299,43 @@ export default function NewFeedV2() {
                         <div className="relative">
                           <label 
                             htmlFor="file-upload"
-                            className={`block border-2 border-dashed rounded-lg p-10 text-center cursor-pointer ${
-                              fileState.name 
-                                ? 'border-blue-400 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20' 
-                                : 'border-slate-300 dark:border-slate-700'
-                            }`}
+                            className={`block border border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 ease-in-out 
+                            ${fileState.name 
+                              ? 'border-blue-500/50 bg-blue-500/5 shadow-[0_0_15px_rgba(59,130,246,0.15)] hover:shadow-[0_0_20px_rgba(59,130,246,0.25)]' 
+                              : 'border-slate-700 hover:border-slate-600 hover:shadow-[0_0_15px_rgba(30,41,59,0.25)]'}
+                            `}
                           >
                             {fileState.name ? (
-                              <div className="space-y-3">
-                                <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto">
-                                  <FileUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                              <div className="space-y-4">
+                                <div className="h-20 w-20 bg-slate-900/80 rounded-lg flex items-center justify-center mx-auto shadow-lg 
+                                  border border-blue-500/40 backdrop-blur-sm relative overflow-hidden group">
+                                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent group-hover:opacity-80 transition-opacity"></div>
+                                  <FileText className="h-8 w-8 text-blue-400 group-hover:scale-110 transition-transform z-10" />
+                                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500"></div>
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-900 dark:text-white">{fileState.name}</p>
-                                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                                  <p className="font-medium text-white/90 text-lg mb-1">{fileState.name}</p>
+                                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-slate-800/80 text-sm text-slate-300 border border-slate-700">
                                     {fileState.size 
                                       ? `${Math.round(fileState.size / 1024)} KB • Click to change file` 
                                       : 'Click to change file'}
-                                  </p>
+                                  </div>
                                 </div>
                               </div>
                             ) : (
-                              <div className="space-y-3">
-                                <div className="h-12 w-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto">
-                                  <FileUp className="h-6 w-6 text-slate-500 dark:text-slate-400" />
+                              <div className="space-y-5">
+                                <div className="h-20 w-20 bg-slate-900/60 rounded-lg flex items-center justify-center mx-auto relative group
+                                  border border-slate-700/50 hover:border-slate-600 transition-all duration-300">
+                                  <div className="absolute inset-0 bg-gradient-to-br from-slate-700/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                  <FileUp className="h-8 w-8 text-slate-400 group-hover:text-blue-400 transition-colors" />
                                 </div>
                                 <div>
-                                  <p className="font-medium text-slate-900 dark:text-white">Drop your CSV file here</p>
-                                  <p className="text-sm text-slate-500 dark:text-slate-400">or click to browse</p>
+                                  <p className="font-medium text-white/90 text-lg">Drop your inventory file here</p>
+                                  <div className="flex items-center justify-center gap-1.5 text-sm text-slate-400 mt-2">
+                                    <div className="h-5 px-2 rounded-full bg-slate-800/80 text-xs flex items-center">CSV</div>
+                                    <div className="h-5 px-2 rounded-full bg-slate-800/80 text-xs flex items-center">XLS</div>
+                                    <div className="h-5 px-2 rounded-full bg-slate-800/80 text-xs flex items-center">XLSX</div>
+                                  </div>
                                 </div>
                               </div>
                             )}
@@ -353,63 +362,87 @@ export default function NewFeedV2() {
                           )}
                         />
                         
-                        <div className="space-y-2 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-slate-900 dark:text-white">Upload Tips</h4>
-                            <span className="text-xs text-slate-400">Supported: CSV, Excel (.xls, .xlsx)</span>
+                        <div className="space-y-4 p-5 bg-slate-900/60 rounded-lg border border-slate-800 backdrop-blur-sm transition-all duration-300 hover:border-slate-700 shadow-lg">
+                          <div className="flex items-center justify-between pb-1 border-b border-slate-800">
+                            <h4 className="font-medium text-white/90">Minimum magic, maximum results.</h4>
+                            <span className="text-xs text-blue-400">CSV, Excel supported</span>
                           </div>
                           
-                          <div className="space-y-4 py-3 text-sm text-slate-600 dark:text-slate-400">
-                            <div className="flex items-center">
-                              <span className="inline-block h-2 w-2 rounded-full bg-blue-500 mr-3"></span>
-                              <div>Keep it simple — we only need a <span className="font-medium text-blue-600 dark:text-blue-400">SKU</span> to identify your products</div>
-                            </div>
-                            <div className="flex items-center">
-                              <span className="inline-block h-2 w-2 rounded-full bg-blue-500 mr-3"></span>
-                              <div>Include <span className="font-medium text-blue-600 dark:text-blue-400">price</span> and <span className="font-medium text-blue-600 dark:text-blue-400">quantity</span> for best results</div>
-                            </div>
-                            <div className="flex items-center">
-                              <span className="inline-block h-2 w-2 rounded-full bg-blue-500 mr-3"></span>
-                              <div>Don't worry about formatting — our AI handles that for you ✨</div>
+                          <div className="pt-2">
+                            <p className="text-sm text-slate-300 mb-4">Just give us a few essentials:</p>
+                            
+                            <div className="space-y-3 pl-1 text-sm text-slate-400">
+                              <div className="flex items-start gap-3">
+                                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500/20 text-blue-400 text-xs mt-0.5">•</span>
+                                <div><span className="font-medium text-blue-400">SKU</span> – your internal identifier</div>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500/20 text-blue-400 text-xs mt-0.5">•</span>
+                                <div><span className="font-medium text-blue-400">Title</span> – what the product is</div>
+                              </div>
+                              <div className="flex items-start gap-3">
+                                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-500/20 text-blue-400 text-xs mt-0.5">•</span>
+                                <div><span className="font-medium text-blue-400">Price & Quantity</span> – so we can list it</div>
+                              </div>
                             </div>
                           </div>
                           
-                          <div className="mt-2 text-xs text-slate-500 dark:text-slate-500">
-                            <p>Product identifiers like UPC, GTIN, or ASIN help match your products more accurately but aren't required.</p>
+                          <div className="pt-2 text-sm text-slate-400 border-t border-slate-800/60">
+                            <p className="mb-2">Want better matches? Add attributes like brand, GTIN, or category if you have them.</p>
+                            <p className="flex items-center"><span className="text-blue-400 mr-2">✨</span>Don't worry about formatting — our AI handles the mess, fills in the gaps, and matches the right template automatically.</p>
                           </div>
                         </div>
                       </TabsContent>
                       
                       <TabsContent value="api" className="space-y-4">
-                        <Alert variant="default" className="bg-slate-900 border-slate-800">
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertTitle>API connection coming soon</AlertTitle>
-                          <AlertDescription>
-                            Connect directly to your e-commerce platform or inventory management system for real-time feed creation.
-                            This feature is currently in development.
-                          </AlertDescription>
-                        </Alert>
-                        
-                        <div className="text-sm text-slate-500 dark:text-slate-400">
-                          <p>Please use file upload for now.</p>
+                        <div className="space-y-4 p-5 bg-slate-900/60 rounded-lg border border-slate-800 backdrop-blur-sm transition-all duration-300 hover:border-slate-700 shadow-lg">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 h-9 w-9 rounded-full bg-blue-500/20 flex items-center justify-center">
+                              <AlertCircle className="h-5 w-5 text-blue-400" />
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-white/90">Direct API connections</h4>
+                              <p className="text-sm text-slate-400">Coming soon to S</p>
+                            </div>
+                          </div>
+                          
+                          <div className="pl-12">
+                            <p className="text-sm text-slate-300 mb-3">
+                              Connect directly to your e-commerce platform or inventory management 
+                              system for real-time feed creation and automated syncing.
+                            </p>
+                            <div className="flex items-center text-blue-400 text-sm">
+                              <span className="mr-2">✨</span>
+                              <p>Please use file upload for now while we build this.</p>
+                            </div>
+                          </div>
                         </div>
                       </TabsContent>
                     </Tabs>
                   </div>
                   
-                  <div className="pt-4">
+                  <div className="pt-6">
                     <Button 
                       type="submit" 
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                      className={`relative overflow-hidden text-white font-medium px-6 py-6 h-auto rounded-lg transition-all duration-300 shadow-lg
+                        ${uploadFileMutation.isPending || !fileState.name 
+                          ? 'bg-slate-800 text-slate-400 border border-slate-700' 
+                          : 'bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-500 hover:to-indigo-600 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] border border-blue-500/20'
+                        }`}
                       disabled={uploadFileMutation.isPending || !fileState.name}
                     >
+                      <span className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.15)_0%,_transparent_70%)] opacity-0 hover:opacity-100 transition-opacity"></span>
                       {uploadFileMutation.isPending ? (
-                        <>Uploading...</>
+                        <div className="flex items-center">
+                          <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent mr-2"></span>
+                          <span>Uploading...</span>
+                        </div>
                       ) : (
-                        <>
-                          Continue
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </>
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-5 w-5 text-blue-300" />
+                          <span>Continue to transformation</span>
+                          <ArrowRight className="ml-1 h-4 w-4" />
+                        </div>
                       )}
                     </Button>
                   </div>
@@ -424,23 +457,28 @@ export default function NewFeedV2() {
           <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
             <CardHeader>
               <CardTitle className="text-2xl">Target Marketplace</CardTitle>
-              <CardDescription>
-                Select the platform where you want to list your products
+              <CardDescription className="text-slate-400">
+                Choose your target marketplace platform
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <div className="mb-6 p-4 bg-slate-900/60 rounded-lg border border-slate-800/80 backdrop-blur-sm transition-all duration-300 hover:border-slate-700/80 shadow-md">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-slate-900/80 rounded-lg flex items-center justify-center border border-blue-500/30 shadow-md relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent"></div>
+                    <FileText className="h-5 w-5 text-blue-400 z-10" />
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500/70"></div>
                   </div>
                   <div>
-                    <h4 className="font-medium text-slate-900 dark:text-white">{uploadedInfo?.fileName}</h4>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {uploadedInfo?.fileSize 
-                        ? `${Math.round((uploadedInfo.fileSize || 0) / 1024)} KB • Ready to process` 
-                        : 'Ready to process'}
-                    </p>
+                    <h4 className="font-medium text-white mb-1 text-lg">{uploadedInfo?.fileName}</h4>
+                    <div className="flex gap-3 text-sm text-slate-400">
+                      <div className="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 flex items-center">
+                        {uploadedInfo?.fileSize ? `${Math.round((uploadedInfo.fileSize || 0) / 1024)} KB` : 'File'}
+                      </div>
+                      <div className="px-2 py-0.5 rounded-full bg-green-900/30 border border-green-700/30 text-green-400 flex items-center">
+                        <CheckCircle2 className="h-3 w-3 mr-1" /> Ready
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
