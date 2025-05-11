@@ -43,7 +43,7 @@ def transform_to_catch_format(csv_file_path, output_file=None, max_rows=1000):
     Args:
         csv_file_path: Path to the CSV file to transform
         output_file: Path to save the transformed file (default: catch_<input_filename>)
-        max_rows: Maximum rows to process for cost efficiency (default: 200)
+        max_rows: Maximum rows to process for cost efficiency (default: 1000)
     
     Returns:
         The path to the transformed file
