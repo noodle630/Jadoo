@@ -30,7 +30,7 @@ const sampleIssues = [
 
 export default function NewFeed() {
   const { toast } = useToast();
-  const [, navigate] = useNavigate();
+  const [, navigate] = useLocation();
   
   // Feed creation state
   const [currentStep, setCurrentStep] = useState(1);
