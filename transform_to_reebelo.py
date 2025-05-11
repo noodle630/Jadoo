@@ -41,13 +41,14 @@ REEBELO_COLUMNS_NEW = [
 # Use the new format by default
 REEBELO_COLUMNS = REEBELO_COLUMNS_NEW
 
-def transform_to_reebelo_format(csv_file_path, output_file=None):
+def transform_to_reebelo_format(csv_file_path, output_file=None, max_rows=200):
     """
     Transform a CSV file to Reebelo marketplace format
     
     Args:
         csv_file_path: Path to the CSV file to transform
         output_file: Path to save the transformed file (default: reebelo_<input_filename>)
+        max_rows: Maximum rows to process for cost efficiency (default: 200)
     
     Returns:
         The path to the transformed file
