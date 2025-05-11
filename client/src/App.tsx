@@ -10,6 +10,7 @@ import Dashboard from "@/pages/Dashboard";
 import NewFeedV2 from "@/pages/NewFeedV2";
 import Templates from "@/pages/Templates";
 import History from "@/pages/History";
+import FeedHistory from "@/pages/FeedHistory";
 import Settings from "@/pages/Settings";
 import Products from "@/pages/Products";
 import ProductCategories from "@/pages/ProductCategories";
@@ -30,8 +31,8 @@ function Router() {
         <Route path="/products/categories" component={ProductCategories} />
         <Route path="/products/import" component={ProductsImport} />
         <Route path="/templates" component={Templates} />
-        <Route path="/history" component={History} />
-        <Route path="/feeds" component={History} />
+        <Route path="/history" component={FeedHistory} />
+        <Route path="/feeds" component={FeedHistory} />
         <Route path="/settings" component={Settings} />
         <Route path="/channels" component={Channels} />
         <Route path="/connections" component={Channels} />
