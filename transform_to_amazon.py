@@ -99,6 +99,10 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
         # Extract and clean the response
         content = response.choices[0].message.content
         
+        if content is None:
+            print("Warning: Empty response from OpenAI")
+            return ""
+            
         # Clean up the response
         cleaned_content = content.strip()
         if cleaned_content.startswith("```csv"):
@@ -107,8 +111,15 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
             cleaned_content = cleaned_content[3:]
         if cleaned_content.endswith("```"):
             cleaned_content = cleaned_content[:-3]
+        
+        processed_content = cleaned_content.strip()
+        
+        # Simple validation - make sure we have roughly the right number of rows
+        lines = [line for line in processed_content.split('\n') if line.strip()]
+        if len(lines) < len(df_chunk) * 0.7:  # We should get at least 70% of input rows
+            print(f"WARNING: Chunk produced only {len(lines)} rows from {len(df_chunk)} inputs")
             
-        return cleaned_content.strip()
+        return processed_content
         
     except Exception as e:
         print(f"Error processing chunk: {str(e)}")
@@ -145,10 +156,17 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
         
         print("Processing data using chunked approach for better handling of large datasets...")
         
-        # Define our chunking settings
-        CHUNK_SIZE = 50  # Process in reasonable chunks
+        # Define our chunking settings based on input file size
+        total_rows = len(df)
+        if total_rows < 100:
+            CHUNK_SIZE = total_rows  # Small file, process all at once
+        elif total_rows < 300:
+            CHUNK_SIZE = 100  # Medium file, larger chunks
+        else:
+            CHUNK_SIZE = 75  # Large file, smaller chunks for reliability
+        
         chunks = [df.iloc[i:i+CHUNK_SIZE] for i in range(0, len(df), CHUNK_SIZE)]
-        print(f"Splitting data into {len(chunks)} chunks of approximately {CHUNK_SIZE} rows each")
+        print(f"Splitting data into {len(chunks)} chunks of approximately {CHUNK_SIZE} rows each for {total_rows} total rows")
         
         # Process the first chunk to get the header structure
         print("Processing first chunk to establish template...")
@@ -226,15 +244,39 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
             for chunk_idx, chunk in enumerate(chunks[1:], 1):
                 print(f"Processing chunk {chunk_idx+1}/{len(chunks)}...")
                 
-                # Process this chunk
-                chunk_result = process_chunk(chunk, AMAZON_COLUMNS, columns, row_count)
+                # Process this chunk with retries if needed
+                max_retries = 2
+                chunk_result = ""
+                for retry in range(max_retries + 1):
+                    try:
+                        if retry > 0:
+                            print(f"Retry {retry}/{max_retries} for chunk {chunk_idx+1}...")
+                        
+                        chunk_result = process_chunk(chunk, AMAZON_COLUMNS, columns, row_count)
+                        
+                        # Quick validation check
+                        if chunk_result and len(chunk_result.split('\n')) > len(chunk) * 0.5:
+                            # We got a reasonable number of rows back
+                            break
+                        else:
+                            if retry < max_retries:
+                                print(f"Chunk {chunk_idx+1} produced insufficient data, retrying...")
+                            else:
+                                print(f"WARNING: Chunk {chunk_idx+1} failed to produce sufficient data after {max_retries} retries")
+                    except Exception as chunk_err:
+                        if retry < max_retries:
+                            print(f"Error processing chunk {chunk_idx+1}, will retry: {str(chunk_err)}")
+                        else:
+                            print(f"ERROR: Failed to process chunk {chunk_idx+1} after {max_retries} retries: {str(chunk_err)}")
                 
                 # Add the non-empty lines from this chunk
+                added_rows = 0
                 for line in chunk_result.split('\n'):
                     if line.strip():  # Only add non-empty lines
                         full_output.append(line)
+                        added_rows += 1
                         
-                print(f"Added {len(chunk_result.split('\n'))} rows from chunk {chunk_idx+1}")
+                print(f"Added {added_rows} rows from chunk {chunk_idx+1}/{len(chunks)}")
             
             # Combine into a single CSV
             transformed_csv = '\n'.join(full_output)
@@ -252,18 +294,39 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
             output_rows = len(df_output)
             print(f"Successfully validated output: {output_rows} rows produced")
             
-            # If we got too few rows, add a warning
+            # If we got too few rows, add a warning but continue
             if output_rows < row_count:
                 print(f"WARNING: Expected {row_count} rows, but only got {output_rows} rows.")
                 
-            # Make sure all required columns are present
-            required_columns = ["item_sku", "external_product_id", "item_name", "standard_price", "quantity"]
-            missing_cols = [col for col in required_columns if col not in df_output.columns]
-            if missing_cols:
-                print(f"WARNING: Missing required columns: {', '.join(missing_cols)}")
+                # Try to recover by adjusting output for correct display
+                if output_rows > 0:
+                    print(f"Continuing with {output_rows} valid rows")
+                    
+                    # Check required Amazon fields
+                    required_columns = ["item_sku", "external_product_id", "item_name", "standard_price", "quantity"]
+                    missing_cols = [col for col in required_columns if col not in df_output.columns]
+                    
+                    if not missing_cols:
+                        print("Output contains all required columns, format is valid")
+                    else:
+                        print(f"WARNING: Missing required columns: {', '.join(missing_cols)}")
+                else:
+                    print("ERROR: No valid rows in output")
+            else:
+                print(f"SUCCESS: All {row_count} rows processed successfully!")
                 
         except Exception as val_error:
             print(f"Warning: Unable to validate CSV format: {str(val_error)}")
+            
+        # Log a few sample outputs
+        try:
+            print("\nSample of transformed data (first 2 rows):")
+            sample_lines = transformed_csv.split('\n')[:3]  # Header + 2 rows 
+            for line in sample_lines:
+                print(line[:100] + "..." if len(line) > 100 else line)
+            print("...")
+        except Exception as e:
+            pass
         
         # Determine output file name
         if output_file:
