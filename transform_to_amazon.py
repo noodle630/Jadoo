@@ -99,6 +99,9 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
     NO HEADER ROW, NO EXPLANATIONS, NO MARKDOWN FORMATTING.
     """
     
+    # Initialize content variable at the function level
+    content = ""
+    
     try:
         # Track start time for cost analysis
         import time
@@ -119,6 +122,15 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
         
         # Track API usage for cost optimization with robust error handling
         try:
+            # First safely extract the content
+            content = ""
+            if hasattr(response, 'choices') and len(response.choices) > 0:
+                if hasattr(response.choices[0], 'message') and hasattr(response.choices[0].message, 'content'):
+                    content = response.choices[0].message.content
+                    if content is None:
+                        content = ""
+            
+            # Calculate and record usage statistics
             usage = getattr(response, 'usage', None)
             if usage:
                 completion_tokens = getattr(usage, 'completion_tokens', 0)
@@ -131,40 +143,58 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
             total_tokens = prompt_tokens + completion_tokens
             
             # Calculate estimated cost (using gpt-4o pricing)
-            prompt_cost = prompt_tokens * 0.00001  # $0.01 per 1K tokens for input
-            completion_cost = completion_tokens * 0.00003  # $0.03 per 1K tokens for output
+            prompt_cost = (prompt_tokens / 1000) * 0.01  # $0.01 per 1K tokens for input
+            completion_cost = (completion_tokens / 1000) * 0.03  # $0.03 per 1K tokens for output
             total_cost = prompt_cost + completion_cost
+            
+            # Calculate per-row metrics if possible
+            process_time = time.time() - start_time
+            if chunk_row_count > 0 and isinstance(total_cost, (int, float)):
+                cost_per_row = total_cost / chunk_row_count 
+                tokens_per_row = total_tokens / chunk_row_count if isinstance(total_tokens, (int, float)) else 0
+                
+                # Log usage metrics with clear formatting
+                print(f"✓ API call completed in {process_time:.2f}s")
+                print(f"  └─ {prompt_tokens:,} input tokens, {completion_tokens:,} output tokens ({total_tokens:,} total)")
+                print(f"  └─ Est. cost: ${total_cost:.4f} total (${cost_per_row:.6f}/row, {tokens_per_row:.1f} tokens/row)")
+            else:
+                # Simple logging if per-row metrics can't be calculated
+                print(f"✓ API call completed in {process_time:.2f}s")
+                print(f"  └─ {prompt_tokens:,} input tokens, {completion_tokens:,} output tokens ({total_tokens:,} total)")
+                print(f"  └─ Est. cost: ${total_cost:.4f} total")
+            
         except Exception as e:
             # Fallback if we can't get token usage
             print(f"Could not calculate token usage: {str(e)}")
-            total_tokens = "unknown"
-            total_cost = "unknown"
-        
-        # Log usage metrics
-        process_time = time.time() - start_time
-        cost_per_row = total_cost / chunk_row_count if chunk_row_count > 0 else 0
-        print(f"API call: {total_tokens} tokens, est. cost: ${total_cost:.4f} (${cost_per_row:.6f}/row), time: {process_time:.2f}s")
-        
-        # Extract and clean the response
-        content = response.choices[0].message.content
-        
-        if content is None:
+            process_time = time.time() - start_time
+            print(f"API call completed in {process_time:.2f}s (usage tracking failed)")
+            
+        # Check for empty response
+        if not content:
             print("Warning: Empty response from OpenAI")
             return ""
             
-        # Clean up the response
-        cleaned_content = content.strip()
-        if cleaned_content.startswith("```csv"):
-            cleaned_content = cleaned_content[6:]
-        elif cleaned_content.startswith("```"):
-            cleaned_content = cleaned_content[3:]
-        if cleaned_content.endswith("```"):
-            cleaned_content = cleaned_content[:-3]
-        
-        processed_content = cleaned_content.strip()
+        # Clean up the response safely
+        try:
+            cleaned_content = content.strip()
+            if cleaned_content.startswith("```csv"):
+                cleaned_content = cleaned_content[6:]
+            elif cleaned_content.startswith("```"):
+                cleaned_content = cleaned_content[3:]
+            if cleaned_content.endswith("```"):
+                cleaned_content = cleaned_content[:-3]
+            
+            processed_content = cleaned_content.strip()
+        except Exception as e:
+            print(f"Error cleaning content: {str(e)}")
+            return ""
         
         # Enhanced validation with detailed feedback
-        lines = [line for line in processed_content.split('\n') if line.strip()]
+        try:
+            lines = [line for line in processed_content.split('\n') if line.strip()]
+        except Exception as e:
+            print(f"Error parsing lines: {str(e)}")
+            return ""
         
         # Row count validation
         coverage = len(lines) / len(df_chunk) if len(df_chunk) > 0 else 0
@@ -252,6 +282,8 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
         
         # Check if this is a mobile phone dataset by examining names
         has_phones = False
+        has_electronics = False  # Initialize this variable to avoid the "possibly unbound" error
+        
         if 'item_name' in df.columns:
             name_col = 'item_name'
         else:
