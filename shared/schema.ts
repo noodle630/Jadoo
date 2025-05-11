@@ -12,6 +12,9 @@ export const users = pgTable("users", {
   company: text("company"),
   role: text("role"),
   createdAt: timestamp("created_at").defaultNow(),
+  githubId: text("github_id").unique(),
+  githubToken: text("github_token"),
+  profileImageUrl: text("profile_image_url"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -215,3 +218,38 @@ export type FeedSource = z.infer<typeof feedSourceEnum>;
 // Define product status types for validation
 export const productStatusEnum = z.enum(['active', 'inactive', 'archived']);
 export type ProductStatus = z.infer<typeof productStatusEnum>;
+
+// GitHub repositories linked to feeds
+export const githubRepositories = pgTable("github_repositories", {
+  id: serial("id").primaryKey(),
+  feedId: integer("feed_id").notNull().unique(),
+  userId: integer("user_id").notNull(),
+  repoName: text("repo_name").notNull(),
+  repoOwner: text("repo_owner").notNull(),
+  repoUrl: text("repo_url").notNull(),
+  branch: text("branch").default("main"),
+  path: text("path").default("/"),
+  lastSync: timestamp("last_sync"),
+  autoSync: boolean("auto_sync").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const githubRepositoriesRelations = relations(githubRepositories, ({ one }) => ({
+  feed: one(feeds, {
+    fields: [githubRepositories.feedId],
+    references: [feeds.id],
+  }),
+  user: one(users, {
+    fields: [githubRepositories.userId],
+    references: [users.id],
+  }),
+}));
+
+export const insertGithubRepositorySchema = createInsertSchema(githubRepositories).omit({
+  id: true,
+  createdAt: true,
+  lastSync: true,
+});
+
+export type GithubRepository = typeof githubRepositories.$inferSelect;
+export type InsertGithubRepository = z.infer<typeof insertGithubRepositorySchema>;

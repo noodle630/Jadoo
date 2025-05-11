@@ -9,7 +9,10 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByGithubId(githubId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, updateData: Partial<User>): Promise<User | undefined>;
+  storeGithubToken(userId: number, token: string): Promise<boolean>;
   
   // Feed operations
   getFeed(id: number): Promise<Feed | undefined>;
@@ -25,12 +28,18 @@ export interface IStorage {
   updateTemplate(id: number, template: Partial<Template>): Promise<Template | undefined>;
   deleteTemplate(id: number): Promise<boolean>;
   incrementTemplateUsage(id: number): Promise<boolean>;
+  
+  // GitHub repository operations
+  linkRepoToFeed(feedId: number, repoInfo: any): Promise<boolean>;
+  getRepoByFeedId(feedId: number): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private feeds: Map<number, Feed>;
   private templates: Map<number, Template>;
+  private githubTokens: Map<number, string>; // userId -> token
+  private githubRepos: Map<number, any>; // feedId -> repo info
   private userId: number;
   private feedId: number;
   private templateId: number;
@@ -39,6 +48,8 @@ export class MemStorage implements IStorage {
     this.users = new Map();
     this.feeds = new Map();
     this.templates = new Map();
+    this.githubTokens = new Map();
+    this.githubRepos = new Map();
     this.userId = 1;
     this.feedId = 1;
     this.templateId = 1;
