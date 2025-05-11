@@ -1,19 +1,21 @@
-import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
   BarChart3,
   Clock,
   FileSpreadsheet,
-  GanttChart,
   Home,
   PlusCircle,
   Settings,
   SlidersHorizontal,
   Globe,
-  Radio
 } from "lucide-react";
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [location] = useLocation();
   
   const isActive = (path: string) => {
@@ -22,12 +24,21 @@ export default function Sidebar() {
     return location === path || location.startsWith(`${path}/`);
   };
 
+  const handleLinkClick = () => {
+    // Close sidebar on mobile when a link is clicked
+    if (window.innerWidth < 768) {
+      onClose();
+    }
+  };
+
   return (
-    <aside className="fixed inset-y-0 left-0 z-10 flex w-64 flex-col bg-slate-950 text-white">
+    <aside className={`fixed inset-y-0 left-0 z-20 flex w-64 flex-col bg-slate-950 text-white transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+      isOpen ? 'translate-x-0' : '-translate-x-full'
+    }`}>
       {/* Logo */}
       <div className="flex h-14 items-center border-b border-slate-800 px-4">
         <Link href="/">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" onClick={handleLinkClick}>
             <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white">
               <span className="text-lg font-semibold">S</span>
             </div>
@@ -42,11 +53,14 @@ export default function Sidebar() {
           {/* Dashboard */}
           <li>
             <Link href="/">
-              <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                isActive("/") 
-                  ? "bg-slate-800 text-white" 
-                  : "text-slate-400 hover:bg-slate-900 hover:text-white"
-              }`}>
+              <div 
+                className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                  isActive("/") 
+                    ? "bg-slate-800 text-white" 
+                    : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                }`}
+                onClick={handleLinkClick}
+              >
                 <Home size={18} />
                 <span>Dashboard</span>
               </div>
@@ -61,12 +75,15 @@ export default function Sidebar() {
             <ul className="space-y-1">
               {/* Create Feed - The main action */}
               <li>
-                <Link href="/feed/new">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/feed/new") 
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
+                <Link href="/create-feed">
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive("/create-feed") 
+                        ? "bg-blue-600 text-white" 
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
+                    onClick={handleLinkClick}
+                  >
                     <PlusCircle size={18} />
                     <span>Create Feed</span>
                   </div>
@@ -76,11 +93,14 @@ export default function Sidebar() {
               {/* Feed History */}
               <li>
                 <Link href="/feeds">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/feeds") || isActive("/history")
-                      ? "bg-slate-800 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive("/feeds") || isActive("/history")
+                        ? "bg-slate-800 text-white" 
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
+                    onClick={handleLinkClick}
+                  >
                     <Clock size={18} />
                     <span>Feed History</span>
                   </div>
@@ -90,11 +110,14 @@ export default function Sidebar() {
               {/* Templates */}
               <li>
                 <Link href="/templates">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/templates") 
-                      ? "bg-slate-800 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive("/templates") 
+                        ? "bg-slate-800 text-white" 
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
+                    onClick={handleLinkClick}
+                  >
                     <FileSpreadsheet size={18} />
                     <span>Templates</span>
                   </div>
@@ -104,63 +127,36 @@ export default function Sidebar() {
             
             {/* Products Section */}
             <h3 className="mt-6 mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Products
-            </h3>
-            <ul className="space-y-1">
-              <li>
-                <Link href="/products">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/products") && !isActive("/products/categories") && !isActive("/products/import")
-                      ? "bg-slate-800 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
-                    <GanttChart size={18} />
-                    <span>All Products</span>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/products/import">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/products/import") 
-                      ? "bg-slate-800 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
-                    <SlidersHorizontal size={18} />
-                    <span>Import Products</span>
-                  </div>
-                </Link>
-              </li>
-            </ul>
-          </li>
-          
-          {/* Channel Manager Section */}
-          <li className="mt-6">
-            <h3 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Channel Manager
+              Channels
             </h3>
             <ul className="space-y-1">
               <li>
                 <Link href="/channels">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/channels") 
-                      ? "bg-slate-800 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive("/channels") 
+                        ? "bg-slate-800 text-white" 
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
+                    onClick={handleLinkClick}
+                  >
                     <Globe size={18} />
                     <span>Marketplaces</span>
                   </div>
                 </Link>
               </li>
               <li>
-                <Link href="/connections">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/connections") 
-                      ? "bg-slate-800 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
-                    <Radio size={18} />
-                    <span>API Connections</span>
+                <Link href="/products">
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive("/products") && !isActive("/products/import")
+                        ? "bg-slate-800 text-white" 
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
+                    onClick={handleLinkClick}
+                  >
+                    <SlidersHorizontal size={18} />
+                    <span>Products</span>
                   </div>
                 </Link>
               </li>
@@ -170,16 +166,19 @@ export default function Sidebar() {
           {/* Analytics Section */}
           <li className="mt-6">
             <h3 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Analytics
+              Stats
             </h3>
             <ul className="space-y-1">
               <li>
                 <Link href="/analytics">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/analytics") 
-                      ? "bg-slate-800 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive("/analytics") 
+                        ? "bg-slate-800 text-white" 
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
+                    onClick={handleLinkClick}
+                  >
                     <BarChart3 size={18} />
                     <span>Performance</span>
                   </div>
@@ -196,11 +195,14 @@ export default function Sidebar() {
             <ul className="space-y-1">
               <li>
                 <Link href="/settings">
-                  <div className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
-                    isActive("/settings") 
-                      ? "bg-slate-800 text-white" 
-                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
-                  }`}>
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive("/settings") 
+                        ? "bg-slate-800 text-white" 
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
+                    onClick={handleLinkClick}
+                  >
                     <Settings size={18} />
                     <span>Preferences</span>
                   </div>
@@ -220,10 +222,9 @@ export default function Sidebar() {
             </div>
             <div className="text-xs">
               <p className="font-medium text-slate-300">S</p>
-              <p className="text-slate-500">Marketplace feeds</p>
+              <p className="text-slate-500">© 2025</p>
             </div>
           </div>
-          <span className="text-xs text-slate-500">© 2025</span>
         </div>
       </div>
     </aside>

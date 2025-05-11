@@ -1,45 +1,49 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import Sidebar from "./Sidebar";
-import { MoonIcon, SunIcon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/lib/theme-provider";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const { theme, setTheme } = useTheme();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
   
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-slate-900">
+      {/* Mobile menu button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 left-4 z-50 md:hidden text-white"
+        onClick={toggleSidebar}
+      >
+        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+      </Button>
+      
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Main Content */}
-      <div className="pl-64">
-        {/* Top Bar */}
-        <header className="h-14 flex items-center justify-end border-b border-slate-200 dark:border-slate-800 px-6">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-full"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? (
-              <SunIcon className="h-5 w-5" />
-            ) : (
-              <MoonIcon className="h-5 w-5" />
-            )}
-          </Button>
-        </header>
-        
+      <div className="md:pl-64 transition-all duration-300">
         {/* Page Content */}
         <main>
           {children}
         </main>
       </div>
+      
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-10 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 }

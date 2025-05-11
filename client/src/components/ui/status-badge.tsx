@@ -1,103 +1,113 @@
-import { ReactNode } from "react";
-import { Badge } from "@/components/ui/badge";
+import React from "react";
+import { CheckCircle, AlertCircle, Clock, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  CheckCircle,
-  AlertTriangle,
-  XCircle,
-  Clock,
-  Info,
-} from "lucide-react";
 
-// Status types supported by the component
 export type StatusType = 
   | "success" 
-  | "warning" 
   | "error" 
   | "processing" 
   | "pending" 
-  | "info" 
-  | "neutral";
+  | "warning"
+  | "completed"
+  | "failed"
+  | "warnings";
 
-export interface StatusBadgeProps {
+interface StatusBadgeProps {
   status: StatusType;
-  label?: string;
-  size?: "sm" | "md" | "lg";
-  showIcon?: boolean;
+  size?: "xs" | "sm" | "md" | "lg";
+  withIcon?: boolean;
   className?: string;
-  icon?: ReactNode;
 }
 
-// Default labels for status types
-const statusLabels: Record<StatusType, string> = {
-  success: "Success",
-  warning: "Warning",
-  error: "Error",
-  processing: "Processing",
-  pending: "Pending",
-  info: "Info",
-  neutral: "",
-};
-
-// Default icons for status types
-const statusIcons: Record<StatusType, ReactNode> = {
-  success: <CheckCircle className="h-3.5 w-3.5" />,
-  warning: <AlertTriangle className="h-3.5 w-3.5" />,
-  error: <XCircle className="h-3.5 w-3.5" />,
-  processing: <Clock className="h-3.5 w-3.5 animate-spin" />,
-  pending: <Clock className="h-3.5 w-3.5" />,
-  info: <Info className="h-3.5 w-3.5" />,
-  neutral: null,
-};
-
-// CSS classes for different status types
-const statusClasses: Record<StatusType, string> = {
-  success: "bg-green-900/20 text-green-400 border-green-800",
-  warning: "bg-yellow-900/20 text-yellow-400 border-yellow-800",
-  error: "bg-red-900/20 text-red-400 border-red-800",
-  processing: "bg-blue-900/20 text-blue-400 border-blue-800 animate-pulse",
-  pending: "bg-yellow-900/20 text-yellow-400 border-yellow-800",
-  info: "bg-blue-900/20 text-blue-400 border-blue-800",
-  neutral: "bg-slate-800 text-slate-400 border-slate-700",
-};
-
-// Size classes
-const sizeClasses = {
-  sm: "text-xs py-0.5 px-1.5",
-  md: "text-xs py-1 px-2",
-  lg: "text-sm py-1 px-2.5",
-};
-
-export function StatusBadge({
-  status,
-  label,
-  size = "md",
-  showIcon = true,
-  className,
-  icon,
+export function StatusBadge({ 
+  status, 
+  size = "md", 
+  withIcon = true,
+  className 
 }: StatusBadgeProps) {
-  // Use custom label if provided, otherwise use default
-  const displayLabel = label || statusLabels[status];
+  // Normalize the status
+  const normalizedStatus = normalizeStatus(status);
   
-  // Use custom icon if provided, otherwise use default
-  const displayIcon = icon !== undefined ? icon : statusIcons[status];
-
+  // Map sizes to classes
+  const sizeClasses = {
+    xs: "text-xs px-1.5 py-0.5",
+    sm: "text-xs px-2 py-0.5",
+    md: "text-sm px-2.5 py-1",
+    lg: "text-base px-3 py-1.5"
+  };
+  
+  // Get the color and text based on status
+  const { bg, text, icon: Icon, label } = getStatusStyles(normalizedStatus);
+  
   return (
-    <Badge
-      variant="outline"
+    <div 
       className={cn(
-        "font-medium border",
-        statusClasses[status],
+        "inline-flex items-center font-medium rounded-full",
+        bg,
+        text,
         sizeClasses[size],
         className
       )}
     >
-      {showIcon && displayIcon && (
-        <span className="mr-1 flex items-center">{displayIcon}</span>
-      )}
-      {displayLabel}
-    </Badge>
+      {withIcon && <Icon className="mr-1" size={size === "xs" ? 12 : size === "sm" ? 14 : size === "md" ? 16 : 18} />}
+      <span>{label}</span>
+    </div>
   );
 }
 
-export default StatusBadge;
+// Helper to normalize status values
+function normalizeStatus(status: StatusType): "success" | "error" | "processing" | "pending" | "warning" {
+  const statusMap: Record<StatusType, "success" | "error" | "processing" | "pending" | "warning"> = {
+    "success": "success",
+    "completed": "success",
+    "error": "error", 
+    "failed": "error",
+    "warning": "warning",
+    "warnings": "warning",
+    "processing": "processing",
+    "pending": "pending"
+  };
+  
+  return statusMap[status] || "pending";
+}
+
+// Helper to get the status styles
+function getStatusStyles(status: ReturnType<typeof normalizeStatus>) {
+  switch (status) {
+    case "success":
+      return {
+        bg: "bg-green-500/10",
+        text: "text-green-500",
+        icon: CheckCircle,
+        label: "Success"
+      };
+    case "error":
+      return {
+        bg: "bg-red-500/10",
+        text: "text-red-500",
+        icon: AlertCircle,
+        label: "Error"
+      };
+    case "processing":
+      return {
+        bg: "bg-blue-500/10",
+        text: "text-blue-500",
+        icon: Clock,
+        label: "Processing"
+      };
+    case "pending":
+      return {
+        bg: "bg-yellow-500/10",
+        text: "text-yellow-500",
+        icon: Clock,
+        label: "Pending"
+      };
+    case "warning":
+      return {
+        bg: "bg-orange-500/10",
+        text: "text-orange-500",
+        icon: AlertTriangle,
+        label: "Warning"
+      };
+  }
+}
