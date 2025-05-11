@@ -249,8 +249,8 @@ export default function NewFeedV2() {
             
             // Show success toast
             toast({
-              title: 'Products Ready to Sell 💲🚀',
-              description: `Your feed with ${feedData.itemCount || estimatedRows || 511} products has been processed and is ready for marketplace.`,
+              title: 'Feed Transformation Complete',
+              description: `${feedData.itemCount || estimatedRows || 511} products have been processed according to marketplace requirements.`,
             });
           } else if (feedData.status === 'failed') {
             throw new Error(feedData.aiChanges?.error || 'Feed processing failed');
@@ -714,10 +714,10 @@ export default function NewFeedV2() {
                     </div>
                     <div>
                       <h2 className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text text-3xl font-bold">
-                        Products Ready to Sell 💲🚀
+                        Feed Transformation Complete
                       </h2>
                       <p className="text-slate-300">
-                        Optimized for <span className="text-white font-semibold">{feedForm.getValues('marketplace')?.charAt(0).toUpperCase() + feedForm.getValues('marketplace')?.slice(1)}</span> marketplace
+                        Prepared for <span className="text-white font-semibold">{feedForm.getValues('marketplace')?.charAt(0).toUpperCase() + feedForm.getValues('marketplace')?.slice(1)}</span> marketplace requirements
                       </p>
                     </div>
                   </div>
@@ -792,17 +792,17 @@ export default function NewFeedV2() {
                 
                 {/* Right column - AI enhancements stats - More visual, less text */}
                 <div>
-                  <div className="p-5 bg-slate-900/80 rounded-xl border border-emerald-700/20 h-full relative overflow-hidden">
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500/70 to-green-500/70"></div>
+                  <div className="p-5 bg-slate-900/80 rounded-xl border border-indigo-700/20 h-full relative overflow-hidden">
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500/70 to-indigo-500/70"></div>
                     
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
                           <Sparkles className="h-4 w-4 text-slate-950" />
                         </div>
-                        <h3 className="text-lg font-semibold text-white">AI Fixes</h3>
+                        <h3 className="text-lg font-semibold text-white">Data Analysis</h3>
                       </div>
-                      <Badge className="bg-emerald-600 hover:bg-emerald-700">
+                      <Badge className="bg-blue-600 hover:bg-blue-700">
                         {uploadedInfo?.skuCount || 511} Products
                       </Badge>
                     </div>
