@@ -93,7 +93,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(feed);
     } catch (error) {
+      console.error('Error retrieving feed:', error);
       res.status(500).json({ message: 'Error retrieving feed' });
+    }
+  });
+  
+  // Update a feed
+  router.patch('/feeds/:id', async (req: Request, res: Response) => {
+    try {
+      const feedId = parseInt(req.params.id);
+      if (isNaN(feedId)) {
+        return res.status(400).json({ message: 'Invalid feed ID' });
+      }
+      
+      const feed = await storage.getFeed(feedId);
+      if (!feed) {
+        return res.status(404).json({ message: 'Feed not found' });
+      }
+      
+      // Validate update fields - only allow specific fields to be updated
+      const allowedFields = ['name', 'marketplace', 'status'];
+      const updateData: Partial<typeof feed> = {};
+      
+      for (const field of allowedFields) {
+        if (field in req.body) {
+          updateData[field] = req.body[field];
+        }
+      }
+      
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ 
+          message: 'No valid fields to update. Allowed fields: ' + allowedFields.join(', ') 
+        });
+      }
+      
+      console.log(`Updating feed ${feedId} with:`, updateData);
+      const updatedFeed = await storage.updateFeed(feedId, updateData);
+      
+      res.json(updatedFeed);
+    } catch (error) {
+      console.error('Error updating feed:', error);
+      res.status(500).json({ message: 'Error updating feed' });
     }
   });
 
