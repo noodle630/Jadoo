@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, ArrowRight, ChevronRight, FileUp, Upload, CheckCircle2, FileText, Download, ExternalLink, Sparkles, Radio } from 'lucide-react';
+import { AlertCircle, ArrowRight, ChevronRight, FileUp, Upload, CheckCircle2, FileText, Download, ExternalLink, Sparkles, Radio, FileSpreadsheet } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -681,27 +681,42 @@ export default function NewFeedV2() {
         
       case 'complete':
         return (
-          <Card className="border-slate-800 shadow-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="bg-gradient-to-r from-blue-500 to-indigo-500 text-transparent bg-clip-text text-xl font-semibold">
-                S is Ready!
-              </CardTitle>
-              <CardDescription>
-                Transformed for {marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex items-center mb-6 p-3 bg-slate-800/40 rounded-lg border border-slate-700">
-                <div className="mr-3 h-10 w-10 bg-slate-900 rounded-full flex items-center justify-center text-green-400">
-                  <CheckCircle2 className="h-5 w-5" />
+          <Card className="border-slate-800 shadow-lg relative overflow-hidden backdrop-blur-sm">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-blue-900/10 z-0"></div>
+            <CardHeader className="pb-3 relative z-10">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="h-10 w-10 bg-green-900/30 rounded-lg flex items-center justify-center border border-green-500/30">
+                  <CheckCircle2 className="h-5 w-5 text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-base font-medium text-slate-100">
-                    {uploadedInfo?.name}
-                  </h3>
-                  <p className="text-sm text-slate-400">
-                    <span className="text-blue-400">{uploadedInfo?.skuCount}</span> products processed
-                  </p>
+                  <CardTitle className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text text-3xl font-medium">
+                    Feed Ready
+                  </CardTitle>
+                  <CardDescription className="text-slate-400">
+                    Optimized for <span className="text-white font-medium">{marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)}</span> with AI-powered enhancements
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0 relative z-10">
+              <div className="mb-6 p-4 bg-slate-900/60 rounded-lg border border-slate-700/50 backdrop-blur-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-blue-500 opacity-20 group-hover:opacity-90 transition-opacity duration-500"></div>
+                <div className="flex items-center relative z-10">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-blue-500/20 animate-pulse rounded-lg"></div>
+                    <div className="mr-4 h-12 w-12 bg-slate-900 rounded-lg flex items-center justify-center border border-blue-500/30 relative">
+                      <FileSpreadsheet className="h-6 w-6 text-blue-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-medium text-slate-100">
+                      {uploadedInfo?.name}
+                    </h3>
+                    <p className="text-sm text-slate-400">
+                      <span className="text-blue-400">{uploadedInfo?.skuCount}</span> products processed
+                    </p>
+                  </div>
                 </div>
               </div>
               
