@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, primaryKey, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // User schema
 export const users = pgTable("users", {
@@ -13,10 +14,106 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const usersRelations = relations(users, ({ many }) => ({
+  products: many(products),
+  feeds: many(feeds),
+  templates: many(templates),
+}));
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
 });
+
+// Product schema - represents a product in the vendor's inventory
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  sku: text("sku").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  brand: text("brand"),
+  category: text("category"),
+  imageUrl: text("image_url"),
+  additionalImages: jsonb("additional_images").default([]),
+  price: real("price"),
+  salePrice: real("sale_price"),
+  cost: real("cost"),
+  quantity: integer("quantity").default(0),
+  barcode: text("barcode"), // UPC, EAN, GTIN, etc.
+  barcodeType: text("barcode_type"), // UPC, EAN, GTIN, etc.
+  marketplaceData: jsonb("marketplace_data").default({}), // Stores marketplace-specific data
+  attributes: jsonb("attributes").default({}), // Arbitrary product attributes
+  dimensions: jsonb("dimensions").default({}), // height, width, length, weight
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  status: text("status").default("active"), // active, inactive, archived
+  variantOf: integer("variant_of"), // For products that are variants of others
+});
+
+export const productsRelations = relations(products, ({ one }) => ({
+  user: one(users, {
+    fields: [products.userId],
+    references: [users.id],
+  }),
+  parent: one(products, {
+    fields: [products.variantOf],
+    references: [products.id],
+  }),
+}));
+
+export const insertProductSchema = createInsertSchema(products).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Product Category schema for organizing products
+export const productCategories = pgTable("product_categories", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  parentId: integer("parent_id"),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const productCategoriesRelations = relations(productCategories, ({ one }) => ({
+  parent: one(productCategories, {
+    fields: [productCategories.parentId],
+    references: [productCategories.id],
+  }),
+  user: one(users, {
+    fields: [productCategories.userId],
+    references: [users.id],
+  }),
+}));
+
+export const insertProductCategorySchema = createInsertSchema(productCategories).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Products to categories many-to-many relationship
+export const productsToCategories = pgTable("products_to_categories", {
+  productId: integer("product_id").notNull(),
+  categoryId: integer("category_id").notNull(),
+}, (t) => {
+  return {
+    pk: primaryKey(t.productId, t.categoryId),
+  };
+});
+
+export const productsToCategoriesRelations = relations(productsToCategories, ({ one }) => ({
+  product: one(products, {
+    fields: [productsToCategories.productId],
+    references: [products.id],
+  }),
+  category: one(productCategories, {
+    fields: [productsToCategories.categoryId],
+    references: [productCategories.id],
+  }),
+}));
 
 // Feed schema - this represents a data feed the user has processed
 export const feeds = pgTable("feeds", {
@@ -32,6 +129,13 @@ export const feeds = pgTable("feeds", {
   aiChanges: jsonb("ai_changes"), // record of what AI changed
   outputUrl: text("output_url"), // where the processed feed is stored
 });
+
+export const feedsRelations = relations(feeds, ({ one }) => ({
+  user: one(users, {
+    fields: [feeds.userId],
+    references: [users.id],
+  }),
+}));
 
 export const insertFeedSchema = createInsertSchema(feeds).omit({
   id: true,
@@ -49,6 +153,13 @@ export const templates = pgTable("templates", {
   usageCount: integer("usage_count").default(0),
 });
 
+export const templatesRelations = relations(templates, ({ one }) => ({
+  user: one(users, {
+    fields: [templates.userId],
+    references: [users.id],
+  }),
+}));
+
 export const insertTemplateSchema = createInsertSchema(templates).omit({
   id: true,
   lastUpdated: true,
@@ -58,6 +169,12 @@ export const insertTemplateSchema = createInsertSchema(templates).omit({
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = z.infer<typeof insertProductSchema>;
+
+export type ProductCategory = typeof productCategories.$inferSelect;
+export type InsertProductCategory = z.infer<typeof insertProductCategorySchema>;
 
 export type Feed = typeof feeds.$inferSelect;
 export type InsertFeed = z.infer<typeof insertFeedSchema>;
@@ -69,8 +186,10 @@ export type InsertTemplate = z.infer<typeof insertTemplateSchema>;
 export const marketplaceEnum = z.enum([
   'amazon', 
   'walmart', 
-  'meta', 
-  'tiktok', 
+  'meta',
+  'tiktok',
+  'catch',
+  'reebelo',
   'etsy', 
   'ebay',
   'shopify'
@@ -92,3 +211,7 @@ export type FeedStatus = z.infer<typeof feedStatusEnum>;
 // Define feed source types for validation
 export const feedSourceEnum = z.enum(['csv', 'api']);
 export type FeedSource = z.infer<typeof feedSourceEnum>;
+
+// Define product status types for validation
+export const productStatusEnum = z.enum(['active', 'inactive', 'archived']);
+export type ProductStatus = z.infer<typeof productStatusEnum>;
