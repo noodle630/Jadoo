@@ -645,7 +645,7 @@ export default function NewFeedV2() {
                 </div>
                 <div>
                   <CardTitle className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text text-3xl font-medium">
-                    Feed Ready
+                    Products Ready to Sell 💲🚀
                   </CardTitle>
                   <CardDescription className="text-slate-400">
                     Optimized for <span className="text-white font-medium">{marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)}</span> with AI-powered enhancements
