@@ -16,6 +16,7 @@ import ProductCategories from "@/pages/ProductCategories";
 import ProductsImport from "@/pages/ProductsImport";
 import Channels from "@/pages/Channels";
 import NotFound from "@/pages/not-found";
+import FeedHistoryDebug from "@/pages/FeedHistoryDebug";
 
 function Router() {
   return (
@@ -24,6 +25,7 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/feed/new" component={NewFeedV2} />
         <Route path="/feeds/:id" component={Products} />
+        <Route path="/feeds-debug" component={FeedHistoryDebug} />
         <Route path="/products" component={Products} />
         <Route path="/products/categories" component={ProductCategories} />
         <Route path="/products/import" component={ProductsImport} />
