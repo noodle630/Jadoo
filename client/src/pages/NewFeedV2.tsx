@@ -510,97 +510,7 @@ export default function NewFeedV2() {
           </div>
         );
         
-      case 'marketplace':
-        return (
-          <Card className="border-slate-800 shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-2xl font-medium flex items-center">
-                <Database className="h-5 w-5 mr-2 text-slate-400" />
-                Select Marketplace
-              </CardTitle>
-              <CardDescription className="text-slate-400">
-                Choose the marketplace where you want to publish your products
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-6 p-4 bg-slate-900/60 rounded-lg border border-slate-700/50">
-                <div className="flex items-center">
-                  <div className="mr-4 h-10 w-10 bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700/50">
-                    <FileSpreadsheet className="h-5 w-5 text-slate-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-medium text-slate-100">
-                      {uploadedInfo?.name}
-                    </h3>
-                    <div className="flex items-center gap-3 text-sm text-slate-400">
-                      <span>{uploadedInfo?.size}</span>
-                      <span>•</span>
-                      <span>{uploadedInfo?.rowCount} rows</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <Form {...marketplaceForm}>
-                <form onSubmit={marketplaceForm.handleSubmit(handleProcess)} className="space-y-6">
-                  <FormField
-                    control={marketplaceForm.control}
-                    name="marketplace"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-slate-300">Target Marketplace</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="bg-slate-950 border-slate-800">
-                              <SelectValue placeholder="Select marketplace" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="bg-slate-900 border-slate-700">
-                            <SelectItem value="amazon">Amazon</SelectItem>
-                            <SelectItem value="walmart">Walmart</SelectItem>
-                            <SelectItem value="catch">Catch/Mirkal</SelectItem>
-                            <SelectItem value="meta">Meta (Facebook)</SelectItem>
-                            <SelectItem value="tiktok">TikTok Shop</SelectItem>
-                            <SelectItem value="reebelo">Reebelo</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="pt-3 flex items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => setStep('upload')}
-                    >
-                      Back
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="flex-1"
-                      disabled={processFeedMutation.isPending}
-                    >
-                      {processFeedMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        'Transform Feed'
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        );
+      /* Marketplace selection has been integrated into the upload step */
       
       case 'processing':
         // Use a single progress bar that doesn't rely on specific percentage calculations
@@ -612,7 +522,7 @@ export default function NewFeedV2() {
                 Processing Data
               </CardTitle>
               <CardDescription className="text-slate-400">
-                Converting your data for {marketplaceForm.getValues().marketplace} marketplace format
+                Converting your data for {feedForm.getValues().marketplace} marketplace format
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -638,7 +548,7 @@ export default function NewFeedV2() {
                   {/* Always show processing step with spinning indicator */}
                   <div className="flex items-center text-sm">
                     <Loader2 className="h-4 w-4 animate-spin text-blue-500 mr-2" />
-                    <span className="text-slate-300">Transforming data for {marketplaceForm.getValues().marketplace?.charAt(0).toUpperCase() + marketplaceForm.getValues().marketplace?.slice(1)} format</span>
+                    <span className="text-slate-300">Transforming data for {feedForm.getValues().marketplace?.charAt(0).toUpperCase() + feedForm.getValues().marketplace?.slice(1)} format</span>
                   </div>
                 </div>
                 
