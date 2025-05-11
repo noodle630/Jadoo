@@ -21,24 +21,23 @@ import FeedHistoryDebug from "@/pages/FeedHistoryDebug";
 
 function Router() {
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/feed/new" component={NewFeedV2} />
-        <Route path="/feeds/:id" component={Products} />
-        <Route path="/feeds-debug" component={FeedHistoryDebug} />
-        <Route path="/products" component={Products} />
-        <Route path="/products/categories" component={ProductCategories} />
-        <Route path="/products/import" component={ProductsImport} />
-        <Route path="/templates" component={Templates} />
-        <Route path="/history" component={FeedHistory} />
-        <Route path="/feeds" component={FeedHistory} />
-        <Route path="/settings" component={Settings} />
-        <Route path="/channels" component={Channels} />
-        <Route path="/connections" component={Channels} />
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <Switch>
+      <Route path="/" component={Dashboard} />
+      <Route path="/feed/new" component={NewFeedV2} />
+      <Route path="/create-feed" component={NewFeedV2} />
+      <Route path="/feeds/:id" component={Products} />
+      <Route path="/feeds-debug" component={FeedHistoryDebug} />
+      <Route path="/products" component={Products} />
+      <Route path="/products/categories" component={ProductCategories} />
+      <Route path="/products/import" component={ProductsImport} />
+      <Route path="/templates" component={Templates} />
+      <Route path="/history" component={FeedHistory} />
+      <Route path="/feeds" component={FeedHistory} />
+      <Route path="/settings" component={Settings} />
+      <Route path="/channels" component={Channels} />
+      <Route path="/connections" component={Channels} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
