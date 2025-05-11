@@ -239,16 +239,16 @@ export default function NewFeedV2() {
     switch (currentStep) {
       case 'upload':
         return (
-          <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-2xl">Create Feed</CardTitle>
+          <Card className="border-slate-800 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-medium">Create Feed</CardTitle>
               <CardDescription>
                 Transform your product data for marketplace platforms
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               <Form {...uploadForm}>
-                <form onSubmit={uploadForm.handleSubmit(handleUpload)} className="space-y-6">
+                <form onSubmit={uploadForm.handleSubmit(handleUpload)} className="space-y-5">
                   <FormField
                     control={uploadForm.control}
                     name="name"
@@ -266,9 +266,9 @@ export default function NewFeedV2() {
                     )}
                   />
                   
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <Tabs defaultValue="file" value={selectedTab} onValueChange={setSelectedTab}>
-                      <TabsList className="mb-6 grid grid-cols-2">
+                      <TabsList className="mb-4 grid grid-cols-2">
                         <TabsTrigger value="file" className="flex items-center gap-2">
                           <FileUp className="h-4 w-4" />
                           <span>File Upload</span>
@@ -343,22 +343,22 @@ export default function NewFeedV2() {
                             <span className="text-xs text-slate-400">Supported: CSV, Excel (.xls, .xlsx)</span>
                           </div>
                           
-                          <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                            <p className="flex items-center">
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-500 mr-2"></span>
-                              Keep it simple — we only need a <span className="font-medium text-blue-600 dark:text-blue-400">SKU</span> to identify your products
-                            </p>
-                            <p className="flex items-center">
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-500 mr-2"></span>
-                              Include <span className="font-medium text-blue-600 dark:text-blue-400">price</span> and <span className="font-medium text-blue-600 dark:text-blue-400">quantity</span> for best results
-                            </p>
-                            <p className="flex items-center">
-                              <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-500 mr-2"></span>
-                              Don't worry about formatting — our AI handles that for you ✨
-                            </p>
+                          <div className="space-y-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                            <div className="flex items-center">
+                              <span className="inline-block h-2 w-2 rounded-full bg-blue-500 mr-3"></span>
+                              <div>Keep it simple — we only need a <span className="font-medium text-blue-600 dark:text-blue-400">SKU</span> to identify your products</div>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="inline-block h-2 w-2 rounded-full bg-blue-500 mr-3"></span>
+                              <div>Include <span className="font-medium text-blue-600 dark:text-blue-400">price</span> and <span className="font-medium text-blue-600 dark:text-blue-400">quantity</span> for best results</div>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="inline-block h-2 w-2 rounded-full bg-blue-500 mr-3"></span>
+                              <div>Don't worry about formatting — our AI handles that for you ✨</div>
+                            </div>
                           </div>
                           
-                          <div className="mt-3 text-xs text-slate-500 dark:text-slate-500">
+                          <div className="mt-2 text-xs text-slate-500 dark:text-slate-500">
                             <p>Product identifiers like UPC, GTIN, or ASIN help match your products more accurately but aren't required.</p>
                           </div>
                         </div>
@@ -495,23 +495,33 @@ export default function NewFeedV2() {
         
       case 'processing':
         return (
-          <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-2xl">Processing Feed</CardTitle>
+          <Card className="border-slate-800 shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-medium">Processing Feed</CardTitle>
               <CardDescription>
-                Our AI is transforming your data for {marketplaceForm.getValues('marketplace')}
+                Transforming your data for {marketplaceForm.getValues('marketplace')}
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col items-center">
-              <div className="w-full max-w-lg mb-6">
-                <AIProcessingAnimation 
-                  step={processingStep} 
-                  maxSteps={4}
-                />
+            <CardContent className="flex flex-col items-center pt-0">
+              <div className="w-full max-w-md mb-4">
+                {/* Simplified progress bar instead of complex animation */}
+                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-300 ease-in-out"
+                    style={{ width: `${(processingStep / 4) * 100}%` }}
+                  ></div>
+                </div>
+                
+                <div className="flex justify-between mt-2 text-xs text-slate-400">
+                  <span>Parsing</span>
+                  <span>Analyzing</span>
+                  <span>Transforming</span>
+                  <span>Validating</span>
+                </div>
               </div>
               
-              <div className="w-full mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-                <p>This may take a few minutes. Please don't close the browser.</p>
+              <div className="mt-6 text-center text-sm text-slate-400">
+                <p>This may take a few seconds. Please don't close the browser.</p>
               </div>
             </CardContent>
           </Card>
@@ -519,117 +529,81 @@ export default function NewFeedV2() {
         
       case 'complete':
         return (
-          <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-            <CardHeader>
-              <CardTitle className="bg-gradient-to-r from-blue-500 to-indigo-500 text-transparent bg-clip-text text-2xl font-bold">
+          <Card className="border-slate-800 shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="bg-gradient-to-r from-blue-500 to-indigo-500 text-transparent bg-clip-text text-xl font-semibold">
                 S is Ready!
               </CardTitle>
               <CardDescription>
-                Your data has been magically transformed for {marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)}
+                Transformed for {marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center text-center mb-8">
-                <div className="relative mb-4">
-                  {/* Success animation */}
-                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full opacity-75 blur-sm animate-pulse"></div>
-                  <div className="relative h-20 w-20 bg-slate-900 rounded-full flex items-center justify-center">
-                    <CheckCircle2 className="h-10 w-10 text-green-400" />
-                  </div>
+            <CardContent className="pt-0">
+              <div className="flex items-center mb-6 p-3 bg-slate-800/40 rounded-lg border border-slate-700">
+                <div className="mr-3 h-10 w-10 bg-slate-900 rounded-full flex items-center justify-center text-green-400">
+                  <CheckCircle2 className="h-5 w-5" />
                 </div>
-                
-                <h3 className="text-xl font-semibold text-slate-100 mb-2">
-                  {uploadedInfo?.name}
-                </h3>
-                <p className="text-slate-400">
-                  <span className="font-semibold text-blue-400">{uploadedInfo?.skuCount}</span> products processed successfully
-                </p>
-              </div>
-              
-              {/* Enhancement summary */}
-              <div className="p-4 bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 mb-6">
-                <h4 className="font-medium text-slate-100 mb-3">AI Enhanced Your Data</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-blue-900/60 flex items-center justify-center">
-                      <Sparkles className="h-4 w-4 text-blue-400" /> 
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-slate-300">Titles Optimized</div>
-                      <div className="text-xs text-slate-500">{Math.round(Number(uploadedInfo?.skuCount) * 0.3)} products</div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-indigo-900/60 flex items-center justify-center">
-                      <FileText className="h-4 w-4 text-indigo-400" /> 
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-slate-300">Descriptions Enhanced</div>
-                      <div className="text-xs text-slate-500">{Math.round(Number(uploadedInfo?.skuCount) * 0.5)} products</div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-purple-900/60 flex items-center justify-center">
-                      <RadioTower className="h-4 w-4 text-purple-400" /> 
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-slate-300">Categories Fixed</div>
-                      <div className="text-xs text-slate-500">{Math.round(Number(uploadedInfo?.skuCount) * 0.2)} products</div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-green-900/60 flex items-center justify-center">
-                      <CheckCircle2 className="h-4 w-4 text-green-400" /> 
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-slate-300">Data Validated</div>
-                      <div className="text-xs text-slate-500">{uploadedInfo?.skuCount} products</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div className="p-4 bg-slate-800/40 rounded-lg border border-slate-700">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FileText className="h-4 w-4 text-slate-400" />
-                    <h4 className="font-medium text-slate-200">Source</h4>
-                  </div>
+                <div>
+                  <h3 className="text-base font-medium text-slate-100">
+                    {uploadedInfo?.name}
+                  </h3>
                   <p className="text-sm text-slate-400">
-                    {uploadedInfo?.fileName} ({Math.round((uploadedInfo?.fileSize || 0) / 1024)} KB)
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-slate-800/40 rounded-lg border border-slate-700">
-                  <div className="flex items-center gap-2 mb-2">
-                    <RadioTower className="h-4 w-4 text-slate-400" />
-                    <h4 className="font-medium text-slate-200">Marketplace Format</h4>
-                  </div>
-                  <p className="text-sm text-slate-400 capitalize flex items-center">
-                    {marketplaceForm.getValues('marketplace')} Product Feed
+                    <span className="text-blue-400">{uploadedInfo?.skuCount}</span> products processed
                   </p>
                 </div>
               </div>
               
-              <div className="space-y-4">
+              {/* Summary of AI enhancements - simplified */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700">
+                  <div className="flex items-center mb-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-blue-400 mr-2" />
+                    <div className="text-sm font-medium text-slate-200">Titles Optimized</div>
+                  </div>
+                  <div className="text-xs text-slate-400">{Math.round(Number(uploadedInfo?.skuCount) * 0.3)} products</div>
+                </div>
+                
+                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700">
+                  <div className="flex items-center mb-1.5">
+                    <FileText className="h-3.5 w-3.5 text-indigo-400 mr-2" />
+                    <div className="text-sm font-medium text-slate-200">Descriptions</div>
+                  </div>
+                  <div className="text-xs text-slate-400">{Math.round(Number(uploadedInfo?.skuCount) * 0.5)} enhanced</div>
+                </div>
+                
+                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700">
+                  <div className="flex items-center mb-1.5">
+                    <RadioTower className="h-3.5 w-3.5 text-purple-400 mr-2" />
+                    <div className="text-sm font-medium text-slate-200">Categories</div>
+                  </div>
+                  <div className="text-xs text-slate-400">{Math.round(Number(uploadedInfo?.skuCount) * 0.2)} fixed</div>
+                </div>
+                
+                <div className="p-3 bg-slate-800/40 rounded-lg border border-slate-700">
+                  <div className="flex items-center mb-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-green-400 mr-2" />
+                    <div className="text-sm font-medium text-slate-200">Data Validated</div>
+                  </div>
+                  <div className="text-xs text-slate-400">{uploadedInfo?.skuCount} products</div>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
                 <Button 
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-12 font-medium"
+                  className="w-full bg-blue-600 hover:bg-blue-700 h-10 font-medium"
                   onClick={() => window.open(uploadedInfo?.outputUrl, '_blank')}
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Download Transformed Feed
                 </Button>
                 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <Button 
                     variant="outline"
                     className="flex-1"
                     onClick={goToDashboard}
                   >
-                    Go to Dashboard
+                    Dashboard
                   </Button>
                   
                   <Button 
@@ -637,7 +611,7 @@ export default function NewFeedV2() {
                     className="flex-1"
                     onClick={goToFeedHistory}
                   >
-                    View Feed History
+                    Feed History
                   </Button>
                 </div>
               </div>

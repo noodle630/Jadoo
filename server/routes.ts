@@ -8,6 +8,7 @@ import { z } from "zod";
 import { v4 as uuidv4 } from 'uuid';
 import { insertFeedSchema, insertTemplateSchema, feedStatusEnum, marketplaceEnum, feedSourceEnum } from '@shared/schema';
 import { fromZodError } from "zod-validation-error";
+import { spawn } from 'child_process';
 
 // Create a temporary directory for file uploads
 const uploadDir = path.resolve("temp_uploads");
@@ -213,7 +214,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const filePath = sourceDetails.path;
-      const { spawn } = require('child_process');
       
       // Determine which transformation script to use based on marketplace
       let scriptPath = '';
