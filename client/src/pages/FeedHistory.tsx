@@ -57,6 +57,7 @@ interface Feed {
 
 export default function FeedHistory() {
   const [, navigate] = useLocation();
+  const { toast } = useToast();
   const [sortConfig, setSortConfig] = useState<{ key: keyof Feed; direction: "asc" | "desc" }>({
     key: "processedAt",
     direction: "desc",
