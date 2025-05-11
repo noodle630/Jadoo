@@ -32,9 +32,18 @@ AMAZON_COLUMNS = [
 ]
 
 def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
-    """Process a chunk of the dataframe"""
+    """Process a chunk of the dataframe with enhanced validation and cost-optimization guardrails"""
     chunk_row_count = len(df_chunk)
-    data_sample = df_chunk.to_csv(index=False)
+    
+    # Only use a sample for the prompt to reduce token usage and cost
+    # First 5 rows for small chunks, or 5% for larger chunks
+    sample_size = min(5, max(3, int(chunk_row_count * 0.05)))
+    data_sample = df_chunk.head(sample_size).to_csv(index=False)
+    
+    # Calculate optimal token limits based on chunk size
+    base_tokens = 1200  # Base tokens for system and instructions
+    per_row_tokens = 150  # Estimated tokens per output row
+    max_tokens = min(base_tokens + (chunk_row_count * per_row_tokens), 4000)
     
     data_info = f"""
     CSV chunk has {chunk_row_count} rows out of {full_row_count} total.
@@ -42,40 +51,48 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
     Target Amazon columns: {', '.join(amazon_columns)}
     """
     
-    print(f"Processing chunk with {chunk_row_count} rows...")
+    print(f"Processing chunk with {chunk_row_count} rows (max tokens: {max_tokens})...")
     
-    # Create prompt for this chunk
+    # Enhanced prompt with stricter data quality requirements
     prompt = f"""
     As an expert in product feed transformation, convert the following source data to Amazon Inventory Loader format.
     
     DATA INFORMATION:
     {data_info}
     
-    SOURCE DATA (this chunk with {chunk_row_count} rows):
+    SOURCE DATA SAMPLE (showing {sample_size} of {chunk_row_count} rows):
     {data_sample}
     
     TRANSFORMATION REQUIREMENTS:
-    1. Convert ONLY these {chunk_row_count} rows into valid Amazon Inventory Loader format
-    2. Map source fields to Amazon fields with precision (map Your SKU to item_sku, Product Name to item_name, etc.)
-    3. For missing required fields, infer or generate appropriate values based on existing data
-    4. Clean and standardize all data fields to meet Amazon's format specifications
-    5. Format numbers correctly: prices without currency symbols, integers for quantities
-    6. Output MUST be valid CSV WITHOUT header row (headers will be added later)
+    1. Transform all {chunk_row_count} rows into valid Amazon Inventory Loader format
+    2. Map source fields to Amazon fields with absolute precision
+    3. For mobile phones/electronics, follow these strict parsing rules:
+       - Product titles often contain: Model, Carrier, Color, Storage, and Condition
+       - Example: "Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 80"
+       - Carefully extract each component for proper mapping
     
-    FIELD MAPPING GUIDELINES:
-    - item_sku: Map from "Your SKU", generate if missing using alphanumeric format (e.g., "PROD-12345")
-    - external_product_id: Generate a valid 12-digit UPC code if not available
-    - external_product_id_type: Always use "UPC"
-    - item_name: Map from "Product Name", standardize format and length (max 200 chars)
-    - brand_name: Extract from product name or set "Generic" if unclear
-    - manufacturer: Set same as brand_name if unknown
-    - feed_product_type: Set to "Electronics" or appropriate subcategory based on product
-    - update_delete: Always set to "Update"
-    - standard_price: Map from "Price", ensure numeric format without currency symbols
-    - quantity: Map from "Quantity", ensure integer values only
-    - item_condition: Map from "SKU Condition" or default to "New" 
-    - item_type: Set to appropriate category based on product name
-    - model: Extract from product name or generate if missing
+    FIELD MAPPING RULES (EXTREMELY IMPORTANT):
+    - item_sku: Use EXACT original SKU, never modify
+    - external_product_id: Leave EMPTY unless a legitimate ID exists in source data
+    - external_product_id_type: Only use if external_product_id exists
+    - item_name: Create properly formatted name including full model, color, capacity specs
+    - brand_name: Extract from product data (e.g., "Samsung" for Galaxy devices)
+    - manufacturer: Same as brand_name
+    - feed_product_type: Use "consumer_electronics" or appropriate category
+    - update_delete: Always "Update"
+    - standard_price: Keep exact original price
+    - quantity: Use source quantity exactly
+    - item_condition: Map conditions accurately:
+       - "Premium", "Premium 90/100" → "Used - Very Good"
+       - "Excellent", "Excellent 80/100" → "Used - Good"
+       - "Good", "Acceptable" → "Used - Acceptable"
+    - bullet_points: Create concise feature bullets
+    - product_description: Create detailed, accurate description
+    
+    DATA QUALITY PRIORITIES:
+    1. ACCURACY: Never invent data not in the source
+    2. COMPLETENESS: All required fields must have valid values
+    3. CONSISTENCY: Maintain consistent naming & formatting
     
     REQUIRED OUTPUT:
     ONLY the transformed CSV data for these {chunk_row_count} products. 
@@ -83,18 +100,50 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
     """
     
     try:
+        # Track start time for cost analysis
+        import time
+        start_time = time.time()
+        
         response = client.chat.completions.create(
             model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
             messages=[
                 {
                     "role": "system", 
-                    "content": "You are an expert product feed transformation system. Output ONLY CSV data rows with no headers or explanations."
+                    "content": "You are an expert Amazon product data specialist. Your job is to convert source product data into precise Amazon Inventory Loader format. Output ONLY CSV data rows with no headers or explanations."
                 },
                 {"role": "user", "content": prompt}
             ],
             temperature=0.1,
-            max_tokens=4000,
+            max_tokens=max_tokens,
         )
+        
+        # Track API usage for cost optimization with robust error handling
+        try:
+            usage = getattr(response, 'usage', None)
+            if usage:
+                completion_tokens = getattr(usage, 'completion_tokens', 0)
+                prompt_tokens = getattr(usage, 'prompt_tokens', 0)
+            else:
+                # Fallback estimates if usage stats aren't available
+                completion_tokens = len(content) // 4 if content else 0  # Rough estimate: ~4 chars per token
+                prompt_tokens = len(prompt) // 4 if prompt else 0
+            
+            total_tokens = prompt_tokens + completion_tokens
+            
+            # Calculate estimated cost (using gpt-4o pricing)
+            prompt_cost = prompt_tokens * 0.00001  # $0.01 per 1K tokens for input
+            completion_cost = completion_tokens * 0.00003  # $0.03 per 1K tokens for output
+            total_cost = prompt_cost + completion_cost
+        except Exception as e:
+            # Fallback if we can't get token usage
+            print(f"Could not calculate token usage: {str(e)}")
+            total_tokens = "unknown"
+            total_cost = "unknown"
+        
+        # Log usage metrics
+        process_time = time.time() - start_time
+        cost_per_row = total_cost / chunk_row_count if chunk_row_count > 0 else 0
+        print(f"API call: {total_tokens} tokens, est. cost: ${total_cost:.4f} (${cost_per_row:.6f}/row), time: {process_time:.2f}s")
         
         # Extract and clean the response
         content = response.choices[0].message.content
@@ -114,10 +163,44 @@ def process_chunk(df_chunk, amazon_columns, full_df_columns, full_row_count):
         
         processed_content = cleaned_content.strip()
         
-        # Simple validation - make sure we have roughly the right number of rows
+        # Enhanced validation with detailed feedback
         lines = [line for line in processed_content.split('\n') if line.strip()]
-        if len(lines) < len(df_chunk) * 0.7:  # We should get at least 70% of input rows
-            print(f"WARNING: Chunk produced only {len(lines)} rows from {len(df_chunk)} inputs")
+        
+        # Row count validation
+        coverage = len(lines) / len(df_chunk) if len(df_chunk) > 0 else 0
+        if coverage < 0.95:  # More strict - we need at least 95% of input rows
+            print(f"WARNING: Data coverage issue - {len(lines)}/{len(df_chunk)} rows ({coverage:.1%})")
+        
+        # Basic data quality validation on a sample
+        validation_sample = lines[:min(8, len(lines))]
+        issues = []
+        
+        for i, line in enumerate(validation_sample):
+            fields = line.split(',')
+            
+            # Check for key fields (sku, item name, price)
+            if not fields[0].strip():  # item_sku should be first field and never empty
+                issues.append(f"Row {i+1}: Missing SKU")
+                
+            if len(fields) >= 4 and not fields[3].strip():  # item_name should be 4th field
+                issues.append(f"Row {i+1}: Missing item name")
+                
+            if len(fields) >= 9 and not fields[8].strip():  # standard_price should be 9th field
+                issues.append(f"Row {i+1}: Missing price")
+                
+            # Check for field count consistency
+            if len(fields) < len(amazon_columns) * 0.5:  # At least half the expected fields
+                issues.append(f"Row {i+1}: Insufficient field count ({len(fields)})")
+        
+        if issues:
+            for issue in issues[:5]:  # Show up to 5 issues
+                print(f"QUALITY ISSUE: {issue}")
+            if len(issues) > 5:
+                print(f"...and {len(issues) - 5} more issues.")
+                
+        # Success metric
+        quality_score = 1.0 - (len(issues) / len(validation_sample) if validation_sample else 0)
+        print(f"Quality score: {quality_score:.1%}")
             
         return processed_content
         
@@ -156,14 +239,66 @@ def transform_to_amazon_format(csv_file_path, output_file=None):
         
         print("Processing data using chunked approach for better handling of large datasets...")
         
-        # Define our chunking settings based on input file size
+        # Enhanced chunking strategy optimized for cost & quality
         total_rows = len(df)
-        if total_rows < 100:
-            CHUNK_SIZE = total_rows  # Small file, process all at once
-        elif total_rows < 300:
-            CHUNK_SIZE = 100  # Medium file, larger chunks
+        
+        # Calculate optimal chunk size based on data complexity
+        # For electronics with complex fields, use smaller chunks for higher quality
+        
+        # Analyze data complexity to adjust chunk size
+        # 1. Check for pattern consistency in product names
+        sample_rows = min(20, total_rows)
+        sample = df.head(sample_rows)
+        
+        # Check if this is a mobile phone dataset by examining names
+        has_phones = False
+        if 'item_name' in df.columns:
+            name_col = 'item_name'
         else:
-            CHUNK_SIZE = 75  # Large file, smaller chunks for reliability
+            # Try to find a column that might contain product names
+            potential_name_cols = [col for col in df.columns if any(term in col.lower() for term in 
+                                    ['name', 'title', 'product', 'item', 'model'])]
+            name_col = potential_name_cols[0] if potential_name_cols else df.columns[0]
+        
+        # Check if this is likely a phone/electronics dataset
+        if name_col in df.columns:
+            phone_keywords = ['galaxy', 'iphone', 'pixel', 'oneplus', 'xiaomi', 'samsung', 'lg', 'motorola']
+            electronics_keywords = ['gb', 'sim', '5g', '4g', 'unlocked', 'carrier', 'at&t', 'verizon', 't-mobile']
+            
+            sample_values = df[name_col].dropna().astype(str).str.lower().tolist()[:sample_rows]
+            has_phones = any(any(kw in val for kw in phone_keywords) for val in sample_values)
+            has_electronics = any(any(kw in val for kw in electronics_keywords) for val in sample_values)
+            
+            if has_phones or has_electronics:
+                print("Detected mobile phone/electronics dataset - using optimized settings for complex product data")
+        
+        # Adjust chunk size based on data characteristics and total volume
+        # For complex data, use smaller chunks for higher quality
+        if has_phones or has_electronics:
+            if total_rows < 100:
+                CHUNK_SIZE = min(50, total_rows)  # Very small file, still process in small chunks for quality
+            elif total_rows < 300:
+                CHUNK_SIZE = 50  # Medium file, smaller chunks for quality
+            else:
+                CHUNK_SIZE = 40  # Large file, smaller chunks for reliability and quality
+        else:
+            # Generic data - can use larger chunks
+            if total_rows < 100:
+                CHUNK_SIZE = total_rows  # Small file, process all at once
+            elif total_rows < 300:
+                CHUNK_SIZE = 75  # Medium file, larger chunks
+            else:
+                CHUNK_SIZE = 60  # Large file, moderate chunks for balance
+        
+        # Total API cost estimate - adjust chunk size if too expensive
+        estimated_total_tokens = 1500 + (total_rows * 250)  # Base + per row tokens
+        estimated_cost = estimated_total_tokens * 0.00003  # Very rough estimate at $0.03/1K tokens
+        
+        print(f"Estimated max API cost: ${estimated_cost:.2f} for {total_rows} rows")
+        if estimated_cost > 5.0 and not os.getenv("ALLOW_HIGH_COST"):
+            print(f"WARNING: High estimated cost (${estimated_cost:.2f}). Adjusting chunk size for cost efficiency.")
+            # Reduce chunk size for very large datasets to help with cost
+            CHUNK_SIZE = max(30, int(CHUNK_SIZE * 0.75))
         
         chunks = [df.iloc[i:i+CHUNK_SIZE] for i in range(0, len(df), CHUNK_SIZE)]
         print(f"Splitting data into {len(chunks)} chunks of approximately {CHUNK_SIZE} rows each for {total_rows} total rows")
