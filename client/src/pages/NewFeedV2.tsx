@@ -175,8 +175,8 @@ export default function NewFeedV2() {
         
         // Show toast notification
         toast({
-          title: 'File uploaded',
-          description: 'Your file has been uploaded successfully.',
+          title: 'File uploaded to S',
+          description: 'Your file has been uploaded successfully and is ready for transformation.',
         });
       } catch (error) {
         console.error("Upload error:", error);
@@ -291,8 +291,8 @@ export default function NewFeedV2() {
             
             // Show success toast
             toast({
-              title: 'Processing complete',
-              description: 'Your feed has been processed and is ready for marketplace.',
+              title: 'Products Ready to Sell 💲🚀',
+              description: `Your feed with ${feedData.itemCount || uploadedInfo.rowCount || 0} products has been processed and is ready for marketplace.`,
             });
           } else if (feedData.status === 'failed') {
             throw new Error(feedData.aiChanges?.error || 'Feed processing failed');
@@ -591,7 +591,7 @@ export default function NewFeedV2() {
                   {/* Always show processing step with spinning indicator */}
                   <div className="flex items-center text-sm">
                     <Loader2 className="h-4 w-4 animate-spin text-blue-500 mr-2" />
-                    <span className="text-slate-300">Transforming data for {marketplaceForm.getValues().marketplace}</span>
+                    <span className="text-slate-300">Transforming data for {marketplaceForm.getValues().marketplace?.charAt(0).toUpperCase() + marketplaceForm.getValues().marketplace?.slice(1)} format</span>
                   </div>
                 </div>
                 
