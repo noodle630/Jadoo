@@ -489,55 +489,112 @@ export default function NewFeedV2() {
                     control={marketplaceForm.control}
                     name="marketplace"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Target Marketplace</FormLabel>
+                      <FormItem className="space-y-3 mb-2">
+                        <FormLabel className="text-white/80 text-base">Choose marketplace</FormLabel>
                         <Select 
                           onValueChange={field.onChange} 
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select marketplace" />
+                            <SelectTrigger className="h-12 bg-slate-900/60 border border-slate-700 hover:border-slate-600 transition-colors text-white rounded-lg
+                              backdrop-blur-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 group">
+                              <SelectValue placeholder="Select target marketplace" className="group-hover:text-white/90" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="amazon">Amazon</SelectItem>
-                            <SelectItem value="walmart">Walmart</SelectItem>
-                            <SelectItem value="catch">Catch / Mirkal</SelectItem>
-                            <SelectItem value="meta">Meta (Facebook)</SelectItem>
-                            <SelectItem value="tiktok">TikTok Shop</SelectItem>
-                            <SelectItem value="reebelo">Reebelo</SelectItem>
+                          <SelectContent className="bg-slate-900 border border-slate-700 text-white shadow-xl backdrop-blur-xl rounded-lg">
+                            <SelectItem value="amazon" className="focus:bg-blue-600/20 focus:text-white py-3">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-slate-800 rounded-md flex items-center justify-center mr-3 border border-slate-700">
+                                  <span className="text-amber-400 text-sm font-bold">A</span>
+                                </div>
+                                <span>Amazon</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="walmart" className="focus:bg-blue-600/20 focus:text-white py-3">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-slate-800 rounded-md flex items-center justify-center mr-3 border border-slate-700">
+                                  <span className="text-blue-500 text-sm font-bold">W</span>
+                                </div>
+                                <span>Walmart</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="catch" className="focus:bg-blue-600/20 focus:text-white py-3">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-slate-800 rounded-md flex items-center justify-center mr-3 border border-slate-700">
+                                  <span className="text-teal-400 text-sm font-bold">C</span>
+                                </div>
+                                <span>Catch / Mirkal</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="meta" className="focus:bg-blue-600/20 focus:text-white py-3">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-slate-800 rounded-md flex items-center justify-center mr-3 border border-slate-700">
+                                  <span className="text-blue-400 text-sm font-bold">M</span>
+                                </div>
+                                <span>Meta (Facebook)</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="tiktok" className="focus:bg-blue-600/20 focus:text-white py-3">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-slate-800 rounded-md flex items-center justify-center mr-3 border border-slate-700">
+                                  <span className="text-pink-400 text-sm font-bold">T</span>
+                                </div>
+                                <span>TikTok Shop</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="reebelo" className="focus:bg-blue-600/20 focus:text-white py-3">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-slate-800 rounded-md flex items-center justify-center mr-3 border border-slate-700">
+                                  <span className="text-green-400 text-sm font-bold">R</span>
+                                </div>
+                                <span>Reebelo</span>
+                              </div>
+                            </SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormDescription>
-                          Each marketplace has different data requirements that our AI will optimize for
+                        <FormDescription className="text-slate-400">
+                          <div className="flex items-center">
+                            <Sparkles className="h-3.5 w-3.5 text-blue-400 mr-2" />
+                            <span>Our AI will optimize your data for the selected marketplace requirements</span>
+                          </div>
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   
-                  <div className="pt-4 flex items-center justify-between">
+                  <div className="pt-6 flex items-center justify-between">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => setCurrentStep('upload')}
+                      className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors h-11"
                     >
-                      Back
+                      <ChevronRight className="h-4 w-4 mr-1 rotate-180" />
+                      Back to file
                     </Button>
                     
                     <Button 
                       type="submit" 
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                      className={`relative overflow-hidden text-white font-medium px-6 py-6 h-auto rounded-lg transition-all duration-300 shadow-lg
+                        ${processFeedMutation.isPending 
+                          ? 'bg-indigo-900/50 text-indigo-300 border border-indigo-900' 
+                          : 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] border border-indigo-500/20'
+                        }`}
                       disabled={processFeedMutation.isPending}
                     >
+                      <span className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.15)_0%,_transparent_70%)] opacity-0 hover:opacity-100 transition-opacity"></span>
                       {processFeedMutation.isPending ? (
-                        <>Processing...</>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></span>
+                          <span>Processing...</span>
+                        </div>
                       ) : (
-                        <>
-                          Process Feed
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </>
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-5 w-5 text-blue-300" />
+                          <span>Transform Feed</span>
+                          <ArrowRight className="ml-1 h-4 w-4" />
+                        </div>
                       )}
                     </Button>
                   </div>
@@ -549,38 +606,74 @@ export default function NewFeedV2() {
         
       case 'processing':
         return (
-          <Card className="border-slate-800 shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xl font-medium">Processing Feed</CardTitle>
-              <CardDescription>
-                Transforming your data for {marketplaceForm.getValues('marketplace')}
+          <Card className="border-slate-800 shadow-lg relative overflow-hidden backdrop-blur-sm">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-indigo-900/10 z-0"></div>
+            <CardHeader className="pb-4 relative z-10">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-8 w-8 rounded-lg bg-blue-600/30 flex items-center justify-center border border-blue-600/30">
+                  <Sparkles className="h-4 w-4 text-blue-400" />
+                </div>
+                <CardTitle className="text-2xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
+                  AI Processing
+                </CardTitle>
+              </div>
+              <CardDescription className="text-slate-400">
+                Transforming <span className="text-white/90">{uploadedInfo?.fileName}</span> for <span className="uppercase font-medium text-blue-400/90">{marketplaceForm.getValues('marketplace')}</span>
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col items-center pt-0">
-              <div className="w-full mb-6">
-                {/* Enhanced progress indication with our AIProcessingAnimation component */}
-                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-3">
+            <CardContent className="flex flex-col items-center pt-0 relative z-10">
+              <div className="w-full mb-8">
+                <div className="w-full bg-slate-800/50 h-3 rounded-full overflow-hidden mb-3 backdrop-blur-sm border border-slate-700/30">
                   <div 
-                    className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-500 ease-in-out"
+                    className="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-500 ease-in-out relative"
                     style={{ width: `${(processingStep / 4) * 100}%` }}
-                  ></div>
+                  >
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] animate-shimmer"></div>
+                  </div>
                 </div>
                 
-                <div className="flex justify-between mb-6 text-xs text-slate-400">
-                  <span className={processingStep >= 1 ? "text-blue-400 font-medium" : ""}>Parsing</span>
-                  <span className={processingStep >= 2 ? "text-blue-400 font-medium" : ""}>Analyzing</span>
-                  <span className={processingStep >= 3 ? "text-blue-400 font-medium" : ""}>Transforming</span>
-                  <span className={processingStep >= 4 ? "text-blue-400 font-medium" : ""}>Validating</span>
+                <div className="flex justify-between mb-6 text-xs">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center 
+                      ${processingStep >= 1 
+                        ? "bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                        : "bg-slate-800 text-slate-500 border border-slate-700"}`}>1</span>
+                    <span className={processingStep >= 1 ? "text-blue-400 font-medium" : "text-slate-500"}>Parsing</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center 
+                      ${processingStep >= 2 
+                        ? "bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                        : "bg-slate-800 text-slate-500 border border-slate-700"}`}>2</span>
+                    <span className={processingStep >= 2 ? "text-blue-400 font-medium" : "text-slate-500"}>Analyzing</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center 
+                      ${processingStep >= 3 
+                        ? "bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                        : "bg-slate-800 text-slate-500 border border-slate-700"}`}>3</span>
+                    <span className={processingStep >= 3 ? "text-blue-400 font-medium" : "text-slate-500"}>Transforming</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center 
+                      ${processingStep >= 4 
+                        ? "bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+                        : "bg-slate-800 text-slate-500 border border-slate-700"}`}>4</span>
+                    <span className={processingStep >= 4 ? "text-blue-400 font-medium" : "text-slate-500"}>Validating</span>
+                  </div>
                 </div>
               </div>
               
               {/* Enhanced visualization with AIProcessingAnimation */}
-              <div className="w-full h-32 relative mb-4 bg-slate-900/30 rounded-lg overflow-hidden border border-slate-800">
+              <div className="w-full h-40 relative mb-6 bg-slate-900/80 rounded-lg overflow-hidden border border-slate-800 shadow-lg backdrop-blur-sm">
                 <AIProcessingAnimation step={processingStep} maxSteps={4} />
               </div>
               
-              <div className="mt-4 text-center text-sm text-slate-400">
-                <p>S is working on your feed. This may take a few seconds. Please don't close the browser.</p>
+              <div className="mt-2 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/70 text-sm text-slate-300 border border-slate-700/50 backdrop-blur-sm">
+                  <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-blue-500"></span>
+                  <p>S is optimizing your feed with AI • Please don't close this window</p>
+                </div>
               </div>
             </CardContent>
           </Card>
