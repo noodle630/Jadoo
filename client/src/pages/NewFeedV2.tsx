@@ -400,6 +400,26 @@ export default function NewFeedV2() {
                                   const file = e.target.files?.[0];
                                   if (file) {
                                     onChange(file);
+                                    // Show visual confirmation that file was selected
+                                    const label = document.querySelector('label[for="file"]');
+                                    if (label) {
+                                      label.classList.add('border-green-500');
+                                      label.classList.add('bg-green-950/20');
+                                      
+                                      // Update the text content
+                                      const fileNameElem = label.querySelector('p.text-sm.text-slate-400');
+                                      if (fileNameElem) {
+                                        fileNameElem.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                                        fileNameElem.classList.add('text-green-400');
+                                      }
+                                      
+                                      // Update icon
+                                      const iconElem = label.querySelector('.text-slate-500');
+                                      if (iconElem) {
+                                        iconElem.classList.remove('text-slate-500');
+                                        iconElem.classList.add('text-green-500');
+                                      }
+                                    }
                                   }
                                 }}
                                 {...fieldProps}

@@ -293,7 +293,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pythonProcess = spawn('python3', [
         scriptPath,
         filePath,
-        outputFilePath
+        '--output', outputFilePath
       ], {
         env: { ...process.env }  // Pass all environment variables including OPENAI_API_KEY
       });
