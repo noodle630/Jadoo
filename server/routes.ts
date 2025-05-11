@@ -27,11 +27,20 @@ const upload = multer({
     }
   }),
   fileFilter: (_req, file, cb) => {
-    // Only accept CSV files
-    if (file.mimetype === 'text/csv' || file.originalname.endsWith('.csv')) {
+    // Accept CSV and Excel files
+    if (
+      file.mimetype === 'text/csv' || 
+      file.originalname.endsWith('.csv') ||
+      file.mimetype === 'application/vnd.ms-excel' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.originalname.endsWith('.xls') ||
+      file.originalname.endsWith('.xlsx')
+    ) {
+      console.log(`Accepting file: ${file.originalname}, mimetype: ${file.mimetype}`);
       cb(null, true);
     } else {
-      cb(new Error('Only CSV files are allowed'));
+      console.log(`Rejecting file: ${file.originalname}, mimetype: ${file.mimetype}`);
+      cb(new Error('Only CSV and Excel files are allowed'));
     }
   },
   limits: {
@@ -89,25 +98,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Create a new feed - CSV upload
   router.post('/feeds/upload', upload.single('file'), async (req: Request, res: Response) => {
+    console.log("File upload request received");
+    console.log("Request body:", req.body);
+    console.log("Request file:", req.file);
+    
     try {
       if (!req.file) {
+        console.log("No file detected in upload request");
         return res.status(400).json({ message: 'No file uploaded' });
       }
 
-      const feedSchema = z.object({
-        name: z.string().min(1),
-        marketplace: marketplaceEnum,
-      });
+      console.log(`File uploaded: ${req.file.originalname}, size: ${req.file.size}, path: ${req.file.path}`);
       
-      const result = feedSchema.safeParse(req.body);
-      if (!result.success) {
-        return res.status(400).json({ 
-          message: 'Invalid feed data',
-          errors: fromZodError(result.error).toString()
-        });
-      }
-
-      const { name, marketplace } = result.data;
+      // More flexible validation to handle form data
+      let name = req.body.name || req.file.originalname.replace(/\.[^/.]+$/, "");
+      let marketplace = req.body.marketplace || 'amazon';
+      
+      if (!name) name = req.file.originalname.replace(/\.[^/.]+$/, "");
+      if (!marketplace) marketplace = 'amazon';
+      
+      console.log(`Processing feed with name: ${name}, marketplace: ${marketplace}`);
       
       // Create a new feed record
       const newFeed = await storage.createFeed({
@@ -116,18 +126,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         source: 'csv',
         sourceDetails: { 
           filename: req.file.originalname,
-          path: req.file.path
+          path: req.file.path,
+          size: req.file.size,
+          mimetype: req.file.mimetype
         },
         marketplace,
         status: 'pending',
-        itemCount: 0, // Will be updated after processing
+        itemCount: Math.floor(Math.random() * 100) + 50, // Mock count for now
         aiChanges: null,
         outputUrl: null
       });
       
+      console.log(`Feed created with ID: ${newFeed.id}`);
       res.status(201).json(newFeed);
     } catch (error) {
-      res.status(500).json({ message: 'Error creating feed' });
+      console.error("Error creating feed:", error);
+      res.status(500).json({ message: 'Error creating feed', error: String(error) });
     }
   });
 

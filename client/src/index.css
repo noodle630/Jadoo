@@ -2,6 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .button-hovered:hover span {
+    opacity: 1;
+  }
+  
+  .text-field-with-icon input {
+    @apply pl-10;
+  }
+  
+  /* Animation Utilities */
+  .animate-spin-slow {
+    animation: spin 7s linear infinite;
+  }
+  
+  .animate-spin-slower {
+    animation: spin 9s linear infinite;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-float-slow {
+    animation: float 5s ease-in-out infinite 1s;
+  }
+  
+  .animate-float-slower {
+    animation: float 7s ease-in-out infinite 2s;
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0px) translateX(0px);
+      opacity: 0.3;
+    }
+    50% {
+      transform: translateY(-10px) translateX(5px);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(0px) translateX(0px);
+      opacity: 0.3;
+    }
+  }
+}
+
 :root {
   --background: 0 0% 100%;
   --foreground: 20 14.3% 4.1%;

@@ -13,6 +13,7 @@ import FileUploader from "@/components/FileUploader";
 import DataPreview from "@/components/DataPreview";
 import MarketplaceSelector from "@/components/MarketplaceSelector";
 import ProcessingStatus from "@/components/ProcessingStatus";
+import AIProcessingAnimation from "@/components/AIProcessingAnimation";
 import FeedExport from "@/components/FeedExport";
 
 // Sample data for preview
@@ -64,9 +65,15 @@ export default function NewFeed() {
       
       // Log the form data being submitted
       console.log("Uploading file with FormData");
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}: ${value instanceof File ? value.name : value}`);
-      }
+      
+      // Log formData content safely
+      const fileField = formData.get('file');
+      const nameField = formData.get('name');
+      const marketplaceField = formData.get('marketplace');
+      
+      console.log(`File: ${fileField instanceof File ? fileField.name : 'No file'}`);
+      console.log(`Name: ${nameField}`);
+      console.log(`Marketplace: ${marketplaceField}`);
       
       const response = await apiRequest("POST", "/api/feeds/upload", formData, true);
       clearInterval(interval);
@@ -335,6 +342,7 @@ export default function NewFeed() {
                         <input 
                           type="file" 
                           id="file-upload" 
+                          name="file"
                           accept=".csv,.xls,.xlsx" 
                           onChange={(e) => {
                             console.log("File selected:", e.target.files);
