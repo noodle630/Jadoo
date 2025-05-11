@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Feed Manager - Marketplace Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #444;
+        }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        .btn {
+            display: inline-block;
+            background: #f8f8f8;
+            color: #555;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            background: #eee;
+        }
+        .btn-primary {
+            background: #4a6cf7;
+            color: white;
+            border-color: #3a5ce7;
+        }
+        .btn-primary:hover {
+            background: #3a5ce7;
+        }
+        .marketplace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .marketplace-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #eee;
+        }
+        .marketplace-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            padding: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .card-body {
+            padding: 15px;
+        }
+        .card-footer {
+            padding: 15px;
+            background: #f8f8f8;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            border-top: 1px solid #eee;
+        }
+        .logo {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #4a6cf7;
+        }
+        .description {
+            color: #666;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+            height: 63px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Product Feed Manager</h1>
+            <div class="header-actions">
+                <a href="/history" class="btn">Transformation History</a>
+                <a href="/templates" class="btn">Saved Templates</a>
+            </div>
+        </header>
+
+        <h2>Select a Marketplace</h2>
+        <p>Choose a marketplace to transform your product data for:</p>
+
+        <div class="marketplace-grid">
+            {% for key, marketplace in marketplaces.items() %}
+            <div class="marketplace-card">
+                <div class="card-header" style="background-color: {{ marketplace.color }}">
+                    {{ marketplace.name }}
+                </div>
+                <div class="card-body">
+                    <div class="description">
+                        Transform your product data to {{ marketplace.name }} format. Our AI will map your fields to the required format and clean up your data.
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/marketplace/{{ key }}" class="btn btn-primary">Select</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="footer">
+            <p>Product Feed Manager - Powered by OpenAI GPT-4o</p>
+            <p>Transform your product data into marketplace-ready formats</p>
+        </div>
+    </div>
+</body>
+</html>

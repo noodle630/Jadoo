@@ -454,6 +454,26 @@ def create_tiktok_prompt(data_info, data_sample, sample_rows):
 def index():
     """Landing page showing options for different marketplaces"""
     return render_template('marketplace_selector.html', marketplaces=MARKETPLACES)
+    
+@app.route('/history')
+def history():
+    """View transformation history"""
+    transformations = get_recent_transformations(limit=50)
+    return render_template('history.html', history=transformations)
+    
+@app.route('/download/<filename>')
+def download_file(filename):
+    """Download a transformed file"""
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(filepath):
+        return send_file(
+            filepath,
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name=filename
+        )
+    else:
+        return jsonify({"error": "File not found"}), 404
 
 @app.route('/marketplace/<marketplace_key>')
 def marketplace_form(marketplace_key):

@@ -20,7 +20,10 @@ def get_db_params():
 def get_db_connection():
     """Create a database connection"""
     try:
-        conn = psycopg2.connect(**get_db_params())
+        params = get_db_params()
+        # Filter out None values to avoid type errors
+        filtered_params = {k: v for k, v in params.items() if v is not None}
+        conn = psycopg2.connect(**filtered_params)
         return conn
     except Exception as e:
         print(f"Error connecting to database: {str(e)}")
