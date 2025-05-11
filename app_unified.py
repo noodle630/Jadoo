@@ -474,6 +474,13 @@ def download_file(filename):
         )
     else:
         return jsonify({"error": "File not found"}), 404
+        
+@app.route('/templates')
+def templates():
+    """View transformation templates"""
+    from db_utils import get_templates
+    templates_data = get_templates()
+    return render_template('templates.html', templates=templates_data)
 
 @app.route('/marketplace/<marketplace_key>')
 def marketplace_form(marketplace_key):

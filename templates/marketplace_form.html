@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ marketplace.name }} Transformation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: {{ marketplace.color }};
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .upload-container {
+            border: 2px dashed #ccc;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+        .upload-container:hover {
+            border-color: {{ marketplace.color }};
+            background: #f5f5f5;
+        }
+        form {
+            margin-bottom: 30px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            display: inline-block;
+            background: {{ marketplace.color }};
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .file-label:hover {
+            background: {{ marketplace.hover_color }};
+        }
+        .selected-file {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: {{ marketplace.color }};
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background: {{ marketplace.hover_color }};
+        }
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .instructions {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid {{ marketplace.color }};
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        .instructions ul {
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: #333;
+            text-decoration: underline;
+        }
+        .column-preview {
+            margin-top: 30px;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+        .column-preview h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        .column-list {
+            display: flex;
+            flex-wrap: wrap;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .column-list li {
+            background: #fff;
+            padding: 6px 12px;
+            margin: 5px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+        .required {
+            border-left: 3px solid #f44336 !important;
+        }
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+        .progress-bar {
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background: {{ marketplace.color }};
+            width: 0;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ marketplace.name }} Transformation</h1>
+        
+        <p>Upload your product data CSV file to transform it into the {{ marketplace.name }} format. Our AI will map your fields and clean your data automatically.</p>
+        
+        <form action="/transform-csv" method="post" enctype="multipart/form-data" id="upload-form">
+            <input type="hidden" name="marketplace" value="{{ marketplace_key }}">
+            
+            <div class="upload-container" id="drop-area">
+                <input type="file" name="file" id="file-input" accept=".csv" required>
+                <label for="file-input" class="file-label">Choose CSV File</label>
+                <p class="selected-file" id="file-name">No file selected</p>
+                <p>or drag and drop a file here</p>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submit-btn" disabled>Transform to {{ marketplace.name }} Format</button>
+            
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+                <div class="progress-text" id="progress-text">Processing...</div>
+            </div>
+        </form>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ul>
+                <li>Upload a CSV file containing your product data</li>
+                <li>Your file should have headers in the first row</li>
+                <li>Our AI will map your columns to the {{ marketplace.name }} format</li>
+                <li>Missing required fields will be automatically generated where possible</li>
+                <li>You'll receive a transformed CSV file ready for upload to {{ marketplace.name }}</li>
+            </ul>
+        </div>
+        
+        <div class="column-preview">
+            <h3>{{ marketplace.name }} Template Columns:</h3>
+            <ul class="column-list">
+                {% for column in marketplace.columns %}
+                <li {% if column in required_columns %}class="required"{% endif %}>{{ column }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <a href="/" class="back-link">← Back to Marketplace Selection</a>
+    </div>
+
+    <script>
+        // File upload preview
+        const fileInput = document.getElementById('file-input');
+        const fileName = document.getElementById('file-name');
+        const submitBtn = document.getElementById('submit-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const dropArea = document.getElementById('drop-area');
+        const form = document.getElementById('upload-form');
+
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                fileName.textContent = fileInput.files[0].name;
+                submitBtn.disabled = false;
+            } else {
+                fileName.textContent = 'No file selected';
+                submitBtn.disabled = true;
+            }
+        });
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+            dropArea.addEventListener(event, preventDefaults, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(event => {
+            dropArea.addEventListener(event, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(event => {
+            dropArea.addEventListener(event, unhighlight, false);
+        });
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight() {
+            dropArea.style.borderColor = '{{ marketplace.color }}';
+            dropArea.style.background = '#f0f0f0';
+        }
+
+        function unhighlight() {
+            dropArea.style.borderColor = '#ccc';
+            dropArea.style.background = '#fafafa';
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                fileInput.files = files;
+                fileName.textContent = files[0].name;
+                submitBtn.disabled = false;
+            } else {
+                fileName.textContent = 'Please select a CSV file';
+            }
+        }
+
+        // Form submission and progress simulation
+        form.addEventListener('submit', function(e) {
+            submitBtn.disabled = true;
+            progressContainer.style.display = 'block';
+            
+            // Simulate progress (in a real app, this would be based on actual progress)
+            let progress = 0;
+            const interval = setInterval(function() {
+                progress += Math.random() * 10;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '% - Processing...';
+                
+                if (progress === 100) {
+                    clearInterval(interval);
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
