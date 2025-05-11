@@ -570,8 +570,21 @@ def transform_csv():
                 csv_data = result
                 output_filename = f"transformed_{marketplace_key}.csv"
                 
+            # Ensure csv_data is a string for encoding
+            if not isinstance(csv_data, str):
+                if isinstance(csv_data, bytes):
+                    # Already bytes, no need to encode
+                    csv_bytes = csv_data
+                else:
+                    # Convert to string then encode
+                    csv_data = str(csv_data)
+                    csv_bytes = csv_data.encode('utf-8')
+            else:
+                # String, just encode
+                csv_bytes = csv_data.encode('utf-8')
+                
             return send_file(
-                io.BytesIO(csv_data.encode('utf-8')),
+                io.BytesIO(csv_bytes),
                 mimetype='text/csv',
                 as_attachment=True,
                 download_name=output_filename

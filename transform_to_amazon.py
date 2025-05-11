@@ -476,6 +476,68 @@ def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
             output_rows = len(df_output)
             print(f"Successfully validated output: {output_rows} rows produced")
             
+            # Check for duplicates in SKUs
+            if 'item_sku' in df_output.columns:
+                total_rows = len(df_output)
+                unique_skus = df_output['item_sku'].nunique()
+                duplicate_count = total_rows - unique_skus
+                
+                if duplicate_count > 0:
+                    dup_percent = (duplicate_count / total_rows) * 100
+                    print(f"WARNING: Found {duplicate_count} duplicate SKUs ({dup_percent:.1f}% of rows)")
+                    print(f"Total rows: {total_rows}, Unique SKUs: {unique_skus}")
+                    
+                    # Get counts for each SKU to identify the duplicates
+                    sku_counts = df_output['item_sku'].value_counts()
+                    duplicated_skus = sku_counts[sku_counts > 1]
+                    if not duplicated_skus.empty:
+                        print(f"Top duplicated SKUs: {duplicated_skus.head(5).to_dict()}")
+                    
+                    # Now remove duplicates, keeping the first occurrence
+                    df_output = df_output.drop_duplicates(subset=['item_sku'], keep='first')
+                    print(f"Removed duplicates, now have {len(df_output)} unique product rows")
+                    
+                    # Update the transformed CSV with deduplicated data
+                    transformed_csv = df_output.to_csv(index=False)
+            
+            # Check for empty or missing brand names
+            if 'brand_name' in df_output.columns:
+                missing_brands = df_output['brand_name'].isna().sum()
+                empty_brands = (df_output['brand_name'] == '').sum()
+                total_brand_issues = missing_brands + empty_brands
+                
+                if total_brand_issues > 0:
+                    brand_issue_percent = (total_brand_issues / len(df_output)) * 100
+                    print(f"WARNING: {total_brand_issues} products ({brand_issue_percent:.1f}%) have missing or empty brand names")
+                    
+                    # Try to extract brand from item_name if available
+                    if 'item_name' in df_output.columns:
+                        mask = (df_output['brand_name'].isna()) | (df_output['brand_name'] == '')
+                        fixes = 0
+                        for idx in df_output[mask].index:
+                            item_name = df_output.loc[idx, 'item_name']
+                            if isinstance(item_name, str):
+                                # Simple brand extraction - take first word if it looks like a brand
+                                potential_brand = item_name.split()[0] if ' ' in item_name else None
+                                if potential_brand and len(potential_brand) > 2:
+                                    df_output.loc[idx, 'brand_name'] = potential_brand
+                                    fixes += 1
+                        
+                        if fixes > 0:
+                            print(f"Auto-extracted brands for {fixes} products from item names")
+                            # Update the transformed CSV after brand fixes
+                            transformed_csv = df_output.to_csv(index=False)
+            
+            # Check for external product IDs having descriptive text (should be IDs only)
+            if 'external_product_id' in df_output.columns:
+                problematic_ids = 0
+                for idx, product_id in enumerate(df_output['external_product_id']):
+                    if isinstance(product_id, str) and len(product_id) > 20 and ' ' in product_id:
+                        problematic_ids += 1
+                
+                if problematic_ids > 0:
+                    print(f"WARNING: {problematic_ids} products have possibly invalid external_product_id format")
+            
             # If we got too few rows, add a warning but continue
             if output_rows < row_count:
                 print(f"WARNING: Expected {row_count} rows, but only got {output_rows} rows.")
