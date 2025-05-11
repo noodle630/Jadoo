@@ -84,7 +84,7 @@ export class MemStorage implements IStorage {
     // Add some sample feed history
     this.createFeed({
       userId: 1,
-      name: "Summer Collection 2023",
+      name: "",  // Empty name to test our fallback
       source: "csv",
       sourceDetails: { filename: "summer_collection.csv" },
       marketplace: "amazon",
@@ -101,7 +101,7 @@ export class MemStorage implements IStorage {
     
     this.createFeed({
       userId: 1,
-      name: "Electronics Inventory",
+      name: "",  // Empty name to test our fallback
       source: "api",
       sourceDetails: { endpoint: "https://api.example.com/products" },
       marketplace: "walmart",
@@ -113,7 +113,7 @@ export class MemStorage implements IStorage {
     
     this.createFeed({
       userId: 1,
-      name: "Holiday Promotions",
+      name: "",  // Empty name to test our fallback
       source: "csv",
       sourceDetails: { filename: "holiday_promotions.csv" },
       marketplace: "meta",
@@ -130,7 +130,7 @@ export class MemStorage implements IStorage {
     
     this.createFeed({
       userId: 1,
-      name: "Spring Apparel",
+      name: "",  // Empty name to test our fallback
       source: "api",
       sourceDetails: { endpoint: "https://api.inventory.com/spring" },
       marketplace: "tiktok",
@@ -147,7 +147,7 @@ export class MemStorage implements IStorage {
     
     this.createFeed({
       userId: 1,
-      name: "Home Decor Catalog",
+      name: "",  // Empty name to test our fallback
       source: "csv",
       sourceDetails: { filename: "home_decor.csv" },
       marketplace: "etsy",
