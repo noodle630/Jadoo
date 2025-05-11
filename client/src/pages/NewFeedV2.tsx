@@ -622,11 +622,35 @@ export default function NewFeedV2() {
                            processingError}
                         </p>
                         <div className="pt-2 flex gap-2">
-                          <Button variant="outline" size="sm" className="bg-transparent border-red-800/50 hover:bg-red-900/30 text-red-300 h-8">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="bg-transparent border-red-800/50 hover:bg-red-900/30 text-red-300 h-8"
+                            onClick={() => {
+                              setProcessingError(null);
+                              setStep('upload');
+                              toast({
+                                title: "Reset successful",
+                                description: "Please try uploading your file again"
+                              });
+                            }}
+                          >
                             <RefreshCw className="h-3.5 w-3.5 mr-1" />
                             Try Again
                           </Button>
-                          <Button variant="outline" size="sm" className="bg-transparent border-slate-700/50 hover:bg-slate-800/50 text-slate-300 h-8">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="bg-transparent border-slate-700/50 hover:bg-slate-800/50 text-slate-300 h-8"
+                            onClick={() => {
+                              toast({
+                                title: "Data Requirements",
+                                description: "Your file must contain SKU, title, price, and quantity fields at minimum",
+                                variant: "default",
+                                duration: 8000,
+                              });
+                            }}
+                          >
                             <HelpCircle className="h-3.5 w-3.5 mr-1" />
                             View Help
                           </Button>
