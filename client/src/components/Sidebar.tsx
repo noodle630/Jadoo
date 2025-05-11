@@ -42,10 +42,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div className="flex h-14 items-center border-b border-slate-800 px-4">
         <Link href="/">
           <div className="flex items-center gap-2" onClick={handleLinkClick}>
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white">
-              <span className="text-lg font-semibold">S</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-800/20">
+              <span className="text-lg font-bold">S</span>
             </div>
-            <span className="text-xl font-bold">S</span>
+            <div className="flex flex-col -mt-0.5">
+              <span className="text-xl font-black bg-gradient-to-r from-blue-500 to-indigo-400 text-transparent bg-clip-text">S</span>
+              <span className="text-[9px] text-slate-400 -mt-1">PRODUCT FEEDS</span>
+            </div>
           </div>
         </Link>
       </div>

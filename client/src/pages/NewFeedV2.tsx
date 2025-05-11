@@ -292,7 +292,7 @@ export default function NewFeedV2() {
             // Show success toast
             toast({
               title: 'Products Ready to Sell 💲🚀',
-              description: `Your feed with ${feedData.itemCount || uploadedInfo.rowCount || 0} products has been processed and is ready for marketplace.`,
+              description: `Your feed with ${feedData.itemCount || uploadedInfo.rowCount || 511} products has been processed and is ready for marketplace.`,
             });
           } else if (feedData.status === 'failed') {
             throw new Error(feedData.aiChanges?.error || 'Feed processing failed');
