@@ -196,7 +196,9 @@ export class MemStorage implements IStorage {
   async createFeed(feed: InsertFeed): Promise<Feed> {
     const id = this.feedId++;
     const now = new Date();
-    const newFeed: Feed = { ...feed, id, processedAt: now };
+    // Make sure feed has a name if it's empty or undefined
+    const feedName = feed.name && feed.name.trim() !== "" ? feed.name : `Untitled Feed ${id}`;
+    const newFeed: Feed = { ...feed, id, name: feedName, processedAt: now };
     this.feeds.set(id, newFeed);
     return newFeed;
   }
@@ -204,6 +206,11 @@ export class MemStorage implements IStorage {
   async updateFeed(id: number, feedUpdate: Partial<Feed>): Promise<Feed | undefined> {
     const feed = this.feeds.get(id);
     if (!feed) return undefined;
+    
+    // If name is being updated but is empty, use fallback
+    if ('name' in feedUpdate && (!feedUpdate.name || feedUpdate.name.trim() === "")) {
+      feedUpdate.name = `Untitled Feed ${id}`;
+    }
     
     const updatedFeed = { ...feed, ...feedUpdate };
     this.feeds.set(id, updatedFeed);
