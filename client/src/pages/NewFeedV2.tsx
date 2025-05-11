@@ -104,17 +104,11 @@ export default function NewFeedV2() {
   } | null>(null);
   
   // Initialize forms
-  const uploadForm = useForm<UploadFormValues>({
-    resolver: zodResolver(uploadFormSchema),
+  const feedForm = useForm<FeedFormValues>({
+    resolver: zodResolver(feedFormSchema),
     defaultValues: {
       name: '',
-    },
-  });
-  
-  const marketplaceForm = useForm<MarketplaceFormValues>({
-    resolver: zodResolver(marketplaceFormSchema),
-    defaultValues: {
-      marketplace: '',
+      marketplace: 'amazon', // Default to Amazon marketplace
     },
   });
   
@@ -123,17 +117,25 @@ export default function NewFeedV2() {
   const goToDashboard = () => setLocation('/');
   const goToFeedHistory = () => setLocation('/feeds');
   
-  // File upload mutation
-  const [isUploading, setIsUploading] = useState(false);
-  const uploadFileMutation = {
-    mutate: async (values: UploadFormValues) => {
+  // Combined upload and process mutation
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [processingStage, setProcessingStage] = useState(0);
+  const [processingError, setProcessingError] = useState<string | null>(null);
+  
+  const submitFeedMutation = {
+    mutate: async (values: FeedFormValues) => {
       try {
-        setIsUploading(true);
+        setIsSubmitting(true);
+        setProcessingError(null);
+        setProcessingStage(0);
+        
+        // Step 1: Upload the file with marketplace info
         const formData = new FormData();
         formData.append('name', values.name);
         formData.append('file', values.file);
+        formData.append('marketplace', values.marketplace);
         
-        console.log("Uploading file:", values.file.name, "Size:", values.file.size);
+        console.log("Uploading file:", values.file.name, "Size:", values.file.size, "Marketplace:", values.marketplace);
         
         const response = await fetch('/api/feeds/upload', {
           method: 'POST',
@@ -164,83 +166,23 @@ export default function NewFeedV2() {
           size: fileSizeFormatted,
           rowCount: estimatedRows,
           skuCount: estimatedRows,
+          marketplace: values.marketplace
         });
         
-        // Proceed to next step
-        setStep('marketplace');
-        
-        // Show toast notification
-        toast({
-          title: 'File uploaded to S',
-          description: 'Your file has been uploaded successfully and is ready for transformation.',
-        });
-      } catch (error) {
-        console.error("Upload error:", error);
-        toast({
-          title: 'Upload failed',
-          description: error instanceof Error ? error.message : 'There was an error uploading your file. Please try again.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsUploading(false);
-      }
-    },
-    isPending: isUploading
-  };
-  
-  // Process feed mutation
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingStage, setProcessingStage] = useState(0);
-  const [processingError, setProcessingError] = useState<string | null>(null);
-  
-  const processFeedMutation = {
-    mutate: async (values: MarketplaceFormValues) => {
-      try {
-        if (!uploadedInfo?.id) {
-          throw new Error('No feed ID available');
-        }
-        
-        setIsProcessing(true);
-        setProcessingError(null);
-        setProcessingStage(0);
-        
-        // Move to processing step first
+        // Move directly to processing step
         setStep('processing');
-        
-        console.log(`Starting processing for feed ID ${uploadedInfo.id} with marketplace ${values.marketplace}`);
-        
-        // First update the feed with marketplace selection
-        const updateResponse = await fetch(`/api/feeds/${uploadedInfo.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            marketplace: values.marketplace,
-          }),
-        });
-        
-        if (!updateResponse.ok) {
-          const errorText = await updateResponse.text();
-          console.error("Failed to update feed marketplace:", errorText);
-          throw new Error(`Failed to update feed marketplace: ${errorText}`);
-        }
-        
         setProcessingStage(1);
         
-        // Now start the processing
-        const response = await fetch(`/api/feeds/${uploadedInfo.id}/process`, {
+        // Step 2: Process the feed
+        const processResponse = await fetch(`/api/feeds/${data.id}/process`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            marketplace: values.marketplace,
-          }),
         });
         
-        if (!response.ok) {
-          const errorText = await response.text();
+        if (!processResponse.ok) {
+          const errorText = await processResponse.text();
           console.error("Failed to process feed:", errorText);
           throw new Error(`Failed to process feed: ${errorText}`);
         }
@@ -307,8 +249,8 @@ export default function NewFeedV2() {
         console.error("Processing error:", error);
         setProcessingError(error instanceof Error ? error.message : 'Unknown error occurred');
         
-        // Revert to marketplace step if there's an error
-        setStep('marketplace');
+        // Revert to upload step if there's an error
+        setStep('upload');
         
         toast({
           title: 'Processing failed',
@@ -316,20 +258,15 @@ export default function NewFeedV2() {
           variant: 'destructive',
         });
       } finally {
-        setIsProcessing(false);
+        setIsSubmitting(false);
       }
     },
-    isPending: isProcessing
+    isPending: isSubmitting
   };
   
-  // Handle upload form submission
-  const handleUpload = (values: UploadFormValues) => {
-    uploadFileMutation.mutate(values);
-  };
-  
-  // Handle marketplace selection and process initiation
-  const handleProcess = (values: MarketplaceFormValues) => {
-    processFeedMutation.mutate(values);
+  // Handle combined form submission
+  const handleSubmit = (values: FeedFormValues) => {
+    submitFeedMutation.mutate(values);
   };
   
   // Render the current step
