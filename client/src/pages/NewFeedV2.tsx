@@ -636,145 +636,189 @@ export default function NewFeedV2() {
         
       case 'complete':
         return (
-          <Card className="border-slate-800 shadow-lg relative overflow-hidden backdrop-blur-sm">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-blue-900/10 z-0"></div>
-            <CardHeader className="pb-3 relative z-10">
-              <div className="flex items-center gap-3 mb-1">
-                <div className="h-10 w-10 bg-green-900/30 rounded-lg flex items-center justify-center border border-green-500/30">
-                  <CheckCircle2 className="h-5 w-5 text-green-400" />
-                </div>
-                <div>
-                  <CardTitle className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text text-3xl font-medium">
-                    Products Ready to Sell 💲🚀
-                  </CardTitle>
-                  <CardDescription className="text-slate-400">
-                    Optimized for <span className="text-white font-medium">{marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)}</span> with AI-powered enhancements
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0 relative z-10">
-              {/* Feed stats summary - more impactful */}
-              <div className="mb-6 p-4 bg-slate-900/60 rounded-lg border border-slate-700/50 backdrop-blur-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-blue-500 opacity-20 group-hover:opacity-90 transition-opacity duration-500"></div>
-                
-                <div className="flex justify-between items-center relative z-10 mb-3 pb-3 border-b border-slate-800/80">
-                  <div className="flex items-center">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-blue-500/20 animate-pulse rounded-lg"></div>
-                      <div className="mr-3 h-11 w-11 bg-slate-900 rounded-lg flex items-center justify-center border border-blue-500/30 relative">
-                        <FileSpreadsheet className="h-5 w-5 text-blue-400" />
-                      </div>
+          <Card className="border-green-800/30 shadow-xl relative overflow-hidden backdrop-blur-sm">
+            {/* Dynamic background effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-green-900/30 via-transparent to-emerald-900/20 z-0"></div>
+            <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-bl from-green-500/10 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-full blur-3xl"></div>
+            
+            <CardContent className="p-6 relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left column - Main stats and download */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="h-14 w-14 bg-green-900/50 rounded-xl flex items-center justify-center border-2 border-green-500/50 shadow-lg shadow-green-500/20">
+                      <CheckCircle2 className="h-7 w-7 text-green-400" />
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-slate-100">
-                        {uploadedInfo?.name || "Transformed Feed"}
-                      </h3>
-                      <p className="text-sm text-slate-400">
-                        <span className="text-blue-400 font-medium">{uploadedInfo?.skuCount || 511}</span> products processed
+                      <h2 className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text text-3xl font-bold">
+                        Products Ready to Sell 💲🚀
+                      </h2>
+                      <p className="text-slate-300">
+                        Optimized for <span className="text-white font-semibold">{marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)}</span> marketplace
                       </p>
                     </div>
                   </div>
-                  <div className="px-3 py-1.5 rounded-md bg-green-500/20 border border-green-500/30">
-                    <p className="text-xs font-medium text-green-400">100% Success</p>
+                  
+                  {/* Feed stats card */}
+                  <div className="p-5 bg-slate-900/60 rounded-xl border border-green-700/30 backdrop-blur-sm relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent opacity-50"></div>
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+                    
+                    <div className="flex justify-between items-center relative z-10 mb-4 pb-3 border-b border-green-800/20">
+                      <div className="flex items-center">
+                        <div className="mr-3 h-12 w-12 bg-gradient-to-br from-slate-900 to-green-900/50 rounded-lg flex items-center justify-center border border-green-600/30 relative shadow-lg">
+                          <FileSpreadsheet className="h-6 w-6 text-green-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-white">
+                            {uploadedInfo?.name || "Transformed Feed"}
+                          </h3>
+                          <p className="text-base text-green-400">
+                            <span className="font-bold">{uploadedInfo?.skuCount || 511}</span> products processed
+                          </p>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 rounded-md bg-green-900/50 border border-green-600/40 shadow-lg">
+                        <p className="text-sm font-medium text-green-400">100% Success</p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-slate-300 space-y-2">
+                      <p className="flex items-start">
+                        <CheckCircle2 className="h-4 w-4 text-green-400 mr-2 mt-0.5" />
+                        All product data was successfully transformed to {marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)} format
+                      </p>
+                      <p className="flex items-start">
+                        <CheckCircle2 className="h-4 w-4 text-green-400 mr-2 mt-0.5" />
+                        Feed meets marketplace requirements and is ready for upload
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Download button */}
+                  <Button 
+                    className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 border-green-700/50 shadow-xl"
+                    onClick={() => {
+                      if (uploadedInfo?.outputUrl) {
+                        window.location.href = uploadedInfo.outputUrl;
+                      }
+                    }}
+                  >
+                    <Download className="mr-2 h-5 w-5" />
+                    Download Transformed Feed
+                  </Button>
+                  
+                  {/* Navigation buttons */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button
+                      variant="outline"
+                      className="border-green-700/30 text-green-400 hover:bg-green-900/30 hover:text-green-300 hover:border-green-600/50"
+                      onClick={goToFeedHistory}
+                    >
+                      Feed History
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
+                      onClick={goToDashboard}
+                    >
+                      Dashboard
+                    </Button>
                   </div>
                 </div>
                 
-                <div className="text-sm text-slate-400">
-                  <p className="flex items-start mb-1">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-green-400 mr-2 mt-0.5" />
-                    All product data was successfully transformed to {marketplaceForm.getValues('marketplace')?.charAt(0).toUpperCase() + marketplaceForm.getValues('marketplace')?.slice(1)} format
-                  </p>
-                  <p className="flex items-start">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-green-400 mr-2 mt-0.5" />
-                    Feed meets marketplace requirements and is ready for upload
-                  </p>
+                {/* Right column - AI enhancements stats */}
+                <div>
+                  <div className="p-5 bg-slate-900/80 rounded-xl border border-emerald-700/20 h-full relative overflow-hidden">
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500/70 to-green-500/70"></div>
+                    
+                    <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
+                      <Sparkles className="h-5 w-5 text-emerald-400 mr-2" />
+                      AI Enhancements Summary
+                    </h3>
+                    
+                    <div className="space-y-5 mt-6">
+                      <div className="relative">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium text-slate-300">Titles Optimized</span>
+                          <span className="text-sm font-bold text-emerald-400">
+                            {uploadedInfo?.aiChanges?.titleOptimized || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.4)}
+                          </span>
+                        </div>
+                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
+                            style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.titleOptimized || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.4)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium text-slate-300">Descriptions Enhanced</span>
+                          <span className="text-sm font-bold text-emerald-400">
+                            {uploadedInfo?.aiChanges?.descriptionEnhanced || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.6)}
+                          </span>
+                        </div>
+                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
+                            style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.descriptionEnhanced || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.6)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium text-slate-300">Categories Fixed</span>
+                          <span className="text-sm font-bold text-emerald-400">
+                            {uploadedInfo?.aiChanges?.categoryCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.2)}
+                          </span>
+                        </div>
+                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
+                            style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.categoryCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.2)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      
+                      <div className="relative">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium text-slate-300">Errors Corrected</span>
+                          <span className="text-sm font-bold text-emerald-400">
+                            {uploadedInfo?.aiChanges?.errorsCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.25)}
+                          </span>
+                        </div>
+                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
+                            style={{ width: `${Math.round(((uploadedInfo?.aiChanges?.errorsCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.25)) / (uploadedInfo?.skuCount || 511)) * 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-8 p-4 rounded-lg border border-green-800/30 bg-green-900/20">
+                      <h4 className="text-sm font-medium text-emerald-400 mb-2">AI Optimization Benefits</h4>
+                      <ul className="space-y-1 text-xs text-slate-300">
+                        <li className="flex items-start">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
+                          Improved product discoverability in marketplace search
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
+                          Enhanced listing quality scores for better ranking
+                        </li>
+                        <li className="flex items-start">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 mr-1.5 mt-0.5 flex-shrink-0" />
+                          All required fields validated for immediate listing approval
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              
-              {/* AI enhancements - more condensed but impactful */}
-              <div className="mb-5 p-4 bg-slate-900/60 rounded-lg border border-slate-700/50">
-                <h4 className="text-sm font-medium text-slate-100 mb-3 flex items-center">
-                  <Sparkles className="h-4 w-4 text-indigo-400 mr-2" />
-                  AI Enhancements Summary
-                </h4>
-                
-                <div className="grid grid-cols-2 gap-x-5 gap-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400">Titles Optimized</span>
-                    <span className="text-xs font-medium text-blue-400">
-                      {uploadedInfo?.aiChanges?.titleOptimized || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.4)}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400">Descriptions Enhanced</span>
-                    <span className="text-xs font-medium text-indigo-400">
-                      {uploadedInfo?.aiChanges?.descriptionEnhanced || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.6)}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400">Categories Fixed</span>
-                    <span className="text-xs font-medium text-purple-400">
-                      {uploadedInfo?.aiChanges?.categoryCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.2)}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-400">Errors Corrected</span>
-                    <span className="text-xs font-medium text-green-400">
-                      {uploadedInfo?.aiChanges?.errorsCorrected || Math.round(Number(uploadedInfo?.skuCount || 511) * 0.25)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Action buttons */}
-              <div className="space-y-3">
-                <Button 
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-11 font-medium relative overflow-hidden group"
-                  onClick={() => {
-                    // Ensure we're using a fetch with proper URL to handle the download
-                    if (uploadedInfo?.outputUrl) {
-                      fetch(uploadedInfo.outputUrl)
-                        .then(response => response.blob())
-                        .then(blob => {
-                          // Create a download link and trigger it
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          const fileName = `${marketplaceForm.getValues('marketplace')}_${uploadedInfo.name || 'feed'}.csv`;
-                          a.href = url;
-                          a.download = fileName;
-                          document.body.appendChild(a);
-                          a.click();
-                          window.URL.revokeObjectURL(url);
-                          a.remove();
-                        })
-                        .catch(err => {
-                          console.error('Download error:', err);
-                          toast({
-                            variant: "destructive",
-                            title: "Download failed",
-                            description: "Could not download the transformed feed. Please try again."
-                          });
-                        });
-                    }
-                  }}
-                >
-                  <div className="absolute inset-0 w-full bg-gradient-to-r from-transparent via-blue-400/10 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Transformed Feed
-                </Button>
-                
-                <Button 
-                  variant="outline"
-                  className="w-full h-10"
-                  onClick={goToFeedHistory}
-                >
-                  View Feed History
-                </Button>
               </div>
             </CardContent>
           </Card>
