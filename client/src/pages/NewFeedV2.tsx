@@ -179,8 +179,16 @@ export default function NewFeedV2() {
         setStep('processing');
         setProcessingStage(1);
         
+        // Get the feed ID from the response
+        const feedId = data.id;
+        
+        if (!feedId) {
+          console.error("Missing feed ID in upload response:", data);
+          throw new Error("Failed to get feed ID from server response");
+        }
+        
         // Step 2: Process the feed
-        const processResponse = await fetch(`/api/feeds/${data.id}/process`, {
+        const processResponse = await fetch(`/api/feeds/${feedId}/process`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -205,7 +213,7 @@ export default function NewFeedV2() {
           await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds between checks
           attempts++;
           
-          const statusResponse = await fetch(`/api/feeds/${uploadedInfo.id}`);
+          const statusResponse = await fetch(`/api/feeds/${feedId}`);
           if (!statusResponse.ok) {
             console.warn(`Failed to check feed status (attempt ${attempts})`);
             continue;
@@ -218,9 +226,15 @@ export default function NewFeedV2() {
             isComplete = true;
             setProcessingStage(3);
             
-            // Update feed info with results
-            setUploadedInfo(prev => prev ? {
-              ...prev,
+            // Update feed info with results - use direct object instead of functional update
+            // to avoid dependency on previous state which might be null
+            setUploadedInfo({
+              id: feedId,
+              name: data.name,
+              size: fileSizeFormatted,
+              rowCount: estimatedRows,
+              skuCount: estimatedRows,
+              marketplace: values.marketplace,
               outputUrl: feedData.outputUrl,
               aiChanges: feedData.aiChanges || {
                 titleOptimized: Math.floor(Math.random() * 20) + 10,
@@ -228,7 +242,7 @@ export default function NewFeedV2() {
                 categoryCorrected: Math.floor(Math.random() * 15) + 5,
                 errorsCorrected: Math.floor(Math.random() * 10) + 3,
               }
-            } : null);
+            });
             
             // Move to complete step
             setStep('complete');
