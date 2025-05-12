@@ -171,20 +171,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Processing feed with name: ${name}, marketplace: ${marketplace}`);
       
-      // Create a new feed record
+      // Count actual rows in the CSV file
+      let rowCount = 0;
+      try {
+        if (fs.existsSync(req.file.path)) {
+          const fileContent = fs.readFileSync(req.file.path, 'utf8');
+          const lines = fileContent.split('\n').filter(line => line.trim().length > 0);
+          // Subtract 1 for header (if it exists)
+          rowCount = lines.length > 1 ? lines.length - 1 : lines.length;
+          console.log(`Actual row count from file: ${rowCount} rows`);
+        }
+      } catch (err) {
+        console.error("Error counting rows:", err);
+        // If we can't count rows, estimate based on file size
+        rowCount = Math.ceil(req.file.size / 200); // Rough estimate
+      }
+
+      // Create a new feed record with accurate row count
       const newFeed = await storage.createFeed({
-        userId: 1, // Always use the demo user
+        userId: req.user ? (req.user as any).id || 1 : 1, // Use authenticated user or fallback to demo user
         name,
         source: 'csv',
         sourceDetails: { 
           filename: req.file.originalname,
           path: req.file.path,
           size: req.file.size,
-          mimetype: req.file.mimetype
+          mimetype: req.file.mimetype,
+          rowCount: rowCount
         },
         marketplace,
         status: 'pending',
-        itemCount: Math.floor(Math.random() * 100) + 50, // Mock count for now
+        itemCount: rowCount, // Use actual row count instead of random
         aiChanges: null,
         outputUrl: null
       });
@@ -430,16 +447,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const outputUrl = `/api/feeds/${feedId}/download`;
             
             // Store the output file path for later retrieval
+            const updatedSourceDetails = typeof sourceDetails === 'object' ? 
+              { ...sourceDetails, outputPath: outputFilePath, originalRows: sourceRowCount } :
+              { path: filePath, outputPath: outputFilePath, originalRows: sourceRowCount };
+            
+            console.log('Updating feed with output details:', {
+              status: 'success',
+              itemCount: sourceRowCount,
+              aiChanges,
+              outputUrl,
+              sourceDetails: updatedSourceDetails
+            });
+            
             await storage.updateFeed(feedId, {
               status: 'success',
               itemCount: sourceRowCount, // Use the real source row count, not the parsed output count
               aiChanges,
               outputUrl,
-              sourceDetails: {
-                ...sourceDetails,
-                outputPath: outputFilePath,
-                originalRows: sourceRowCount
-              }
+              sourceDetails: updatedSourceDetails
             });
           } else {
             // Check for specific OpenAI errors in the error output
