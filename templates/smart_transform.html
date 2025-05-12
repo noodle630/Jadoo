@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart CSV Transformer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Transform product data to marketplace-ready formats while preserving row count integrity.">
+    
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a6dff 0%, #4891ff 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        select, input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn-full {
+            width: 100%;
+        }
+        
+        .note {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .highlights {
+            display: flex;
+            gap: 20px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .highlight-box {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .highlight-box h3 {
+            margin-top: 0;
+            color: #3498db;
+        }
+        
+        .marketplace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .marketplace-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .marketplace-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        
+        .marketplace-header {
+            padding: 15px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .marketplace-body {
+            padding: 20px;
+        }
+        
+        .marketplace-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .amazon-header { background-color: #ff9900; }
+        .walmart-header { background-color: #0071ce; }
+        .reebelo-header { background-color: #4052b5; }
+        .catch-header { background-color: #00b0b9; }
+        .meta-header { background-color: #1877f2; }
+        .tiktok-header { background-color: #010101; }
+        
+        footer {
+            margin-top: 60px;
+            background: #2c3e50;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+        
+        footer a {
+            color: #3498db;
+        }
+        
+        /* Additional styles for the form */
+        .form-row {
+            margin-bottom: 20px;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-check input {
+            margin-right: 10px;
+        }
+        
+        .file-upload-wrapper {
+            border: 2px dashed #ddd;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-wrapper:hover {
+            border-color: #3498db;
+            background-color: #f0f7fb;
+        }
+        
+        .upload-icon {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .feature-list {
+            padding-left: 20px;
+        }
+        
+        .feature-list li {
+            margin-bottom: 8px;
+        }
+        
+        .highlight {
+            background-color: #f0f7fb;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .nav-tabs li {
+            margin-right: 5px;
+        }
+        
+        .nav-tabs a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 4px 4px 0 0;
+            border: 1px solid transparent;
+        }
+        
+        .nav-tabs a:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .nav-tabs a.active {
+            color: #3498db;
+            border: 1px solid #ddd;
+            border-bottom-color: white;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>Smart CSV Transformer</h1>
+            <p>Transform your product data with guaranteed row mapping integrity</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <ul class="nav-tabs">
+            <li><a href="/">Home</a></li>
+            <li><a href="/smart-transform" class="active">Smart Transform</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/templates">Templates</a></li>
+        </ul>
+        
+        <div class="card">
+            <h2>Smart Transform</h2>
+            <div class="highlight">
+                <strong>NEW:</strong> This enhanced transformation engine guarantees a 1:1 mapping between input and output files. Every row in your source data will produce exactly one row in the output, preserving all SKUs and products.
+            </div>
+            
+            <form action="/api/smart-transform" method="post" enctype="multipart/form-data">
+                <div class="form-row">
+                    <label for="marketplace">Select Target Marketplace:</label>
+                    <select name="marketplace" id="marketplace" required>
+                        <option value="amazon">Amazon Inventory Loader</option>
+                        <option value="walmart">Walmart Marketplace</option>
+                        <option value="reebelo">Reebelo Marketplace</option>
+                        <option value="catch">Catch/Mirkal Marketplace</option>
+                        <option value="meta">Meta (Facebook) Product Catalog</option>
+                        <option value="tiktok">TikTok Catalog</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label for="csv_file">Upload CSV File:</label>
+                    <div class="file-upload-wrapper" onclick="document.getElementById('csv_file').click()">
+                        <div class="upload-icon">📤</div>
+                        <p id="file-name-display">Click to select a CSV file or drag and drop</p>
+                        <input type="file" name="csv_file" id="csv_file" accept=".csv" required style="display: none;">
+                    </div>
+                    <p class="note">Maximum file size: 5MB. CSV files only.</p>
+                </div>
+                
+                <div class="form-row">
+                    <label for="max_rows">Maximum Rows to Process:</label>
+                    <select name="max_rows" id="max_rows">
+                        <option value="100">100 rows (fastest)</option>
+                        <option value="500">500 rows</option>
+                        <option value="1000" selected>1000 rows (recommended)</option>
+                        <option value="2000">2000 rows</option>
+                        <option value="5000">5000 rows (slower)</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <button type="submit" class="btn btn-full">Transform CSV</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="highlights">
+            <div class="highlight-box">
+                <h3>Perfect 1:1 Mapping</h3>
+                <p>Our smart transformation guarantees that every input row produces exactly one output row, preserving all your products and SKUs.</p>
+            </div>
+            <div class="highlight-box">
+                <h3>AI-Enhanced Data</h3>
+                <p>We use advanced AI to improve product descriptions, titles, and other key fields while maintaining data integrity.</p>
+            </div>
+            <div class="highlight-box">
+                <h3>Marketplace Ready</h3>
+                <p>Transform your data into ready-to-upload formats for major marketplaces with proper formatting and validation.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Supported Marketplaces</h2>
+            <div class="marketplace-grid">
+                <div class="marketplace-card">
+                    <div class="marketplace-header amazon-header">Amazon</div>
+                    <div class="marketplace-body">
+                        <div class="marketplace-name">Amazon Inventory Loader</div>
+                        <p>Transform your product data to Amazon's inventory loader format with all required fields.</p>
+                    </div>
+                </div>
+                
+                <div class="marketplace-card">
+                    <div class="marketplace-header walmart-header">Walmart</div>
+                    <div class="marketplace-body">
+                        <div class="marketplace-name">Walmart Marketplace</div>
+                        <p>Convert your data to Walmart's marketplace format with proper category mappings.</p>
+                    </div>
+                </div>
+                
+                <div class="marketplace-card">
+                    <div class="marketplace-header reebelo-header">Reebelo</div>
+                    <div class="marketplace-body">
+                        <div class="marketplace-name">Reebelo Marketplace</div>
+                        <p>Format your products for the Reebelo electronics marketplace.</p>
+                    </div>
+                </div>
+                
+                <div class="marketplace-card">
+                    <div class="marketplace-header catch-header">Catch</div>
+                    <div class="marketplace-body">
+                        <div class="marketplace-name">Catch/Mirkal Format</div>
+                        <p>Prepare your products for the Catch marketplace with proper categorization.</p>
+                    </div>
+                </div>
+                
+                <div class="marketplace-card">
+                    <div class="marketplace-header meta-header">Meta</div>
+                    <div class="marketplace-body">
+                        <div class="marketplace-name">Meta Product Catalog</div>
+                        <p>Transform your data for Facebook and Instagram shops.</p>
+                    </div>
+                </div>
+                
+                <div class="marketplace-card">
+                    <div class="marketplace-header tiktok-header">TikTok</div>
+                    <div class="marketplace-body">
+                        <div class="marketplace-name">TikTok Catalog</div>
+                        <p>Format your products for TikTok Shop integration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; {{ current_year }} CSV Transformer - Preserving data integrity with every transformation</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Handle file selection display
+        document.getElementById('csv_file').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'No file selected';
+            document.getElementById('file-name-display').textContent = fileName;
+        });
+        
+        // Handle drag and drop
+        const dropzone = document.querySelector('.file-upload-wrapper');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropzone.style.borderColor = '#3498db';
+            dropzone.style.backgroundColor = '#e8f4f8';
+        }
+        
+        function unhighlight() {
+            dropzone.style.borderColor = '#ddd';
+            dropzone.style.backgroundColor = '#f9f9f9';
+        }
+        
+        dropzone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const fileInput = document.getElementById('csv_file');
+            fileInput.files = e.dataTransfer.files;
+            
+            // Trigger change event manually
+            const changeEvent = new Event('change', { bubbles: true });
+            fileInput.dispatchEvent(changeEvent);
+        }
+    </script>
+</body>
+</html>

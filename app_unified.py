@@ -7,7 +7,16 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 # Import database utilities
-from db_utils import get_recent_transformations
+from db_utils import get_recent_transformations, record_transformation
+
+# Import smart transformation functions
+try:
+    from smart_transform import transform_to_amazon_format as smart_amazon_transform
+    from smart_transform import transform_to_walmart_format as smart_walmart_transform
+    SMART_TRANSFORM_AVAILABLE = True
+except ImportError:
+    print("Smart transformation module not available. Some features will be disabled.")
+    SMART_TRANSFORM_AVAILABLE = False
 
 # Load environment variables
 load_dotenv()
@@ -494,6 +503,81 @@ def index():
     import datetime
     current_year = datetime.datetime.now().year
     return render_template('marketplace_selector.html', marketplaces=MARKETPLACES, current_year=current_year)
+
+@app.route('/smart-transform')
+def smart_transform_page():
+    """Smart transformation page with guaranteed 1:1 row mapping"""
+    import datetime
+    current_year = datetime.datetime.now().year
+    return render_template('smart_transform.html', marketplaces=MARKETPLACES, current_year=current_year)
+
+@app.route('/api/smart-transform', methods=['POST'])
+def api_smart_transform():
+    """API endpoint for smart transformation with guaranteed 1:1 row mapping"""
+    if not SMART_TRANSFORM_AVAILABLE:
+        return jsonify({"error": "Smart transformation module is not available"}), 500
+        
+    try:
+        # Check if file was uploaded
+        if 'csv_file' not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
+        
+        file = request.files['csv_file']
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+            
+        # Get parameters
+        marketplace = request.form.get('marketplace', 'amazon').lower()
+        max_rows = int(request.form.get('max_rows', 1000))
+        
+        # Save the file temporarily
+        if file.filename:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+        else:
+            return jsonify({"error": "Invalid filename"}), 400
+            
+        # Process the file based on the marketplace
+        result = None
+        
+        if marketplace == 'amazon':
+            result = smart_amazon_transform(filepath, max_rows=max_rows)
+        elif marketplace == 'walmart':
+            result = smart_walmart_transform(filepath, max_rows=max_rows)
+        else:
+            return jsonify({"error": f"Smart transformation for '{marketplace}' is not implemented yet"}), 400
+            
+        # Check for error
+        if "error" in result:
+            return jsonify({"error": result["error"]}), 400
+            
+        # Record the transformation in the database
+        output_file = result["output_file"]
+        source_filename = os.path.basename(filepath)
+        output_filename = os.path.basename(output_file)
+        
+        # Record this transformation in history
+        record_transformation(
+            marketplace_name=marketplace,
+            source_filename=source_filename,
+            output_filename=output_filename,
+            source_row_count=result.get("input_rows", 0),
+            output_row_count=result.get("output_rows", 0),
+            transformation_time=result.get("processing_time", 0),
+            user_id=None  # Add user ID when authentication is implemented
+        )
+        
+        # Return the transformed file
+        return send_file(
+            output_file,
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name=output_filename
+        )
+        
+    except Exception as e:
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
     
 @app.route('/history')
 def history():
