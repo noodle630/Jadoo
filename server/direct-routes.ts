@@ -28,10 +28,28 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// Define transformation storage type
+interface Transformation {
+  inputFile: string;
+  outputFile: string;
+  name: string;
+  marketplace: string;
+  timestamp: string;
+  sourceRows?: number;
+  outputRows?: number;
+}
+
+interface TransformationsStore {
+  [id: string]: Transformation;
+}
+
+// We'll use Express.Multer.File type for file uploads
+import type { Request, Response } from 'express';
+
 // Create direct transformation router
-function setupDirectRoutes(app) {
+function setupDirectRoutes(app: any) {
   // Serve the direct transformation page
-  app.get('/transform-direct', (req, res) => {
+  app.get('/transform-direct', (req: any, res: any) => {
     const filePath = path.join(process.cwd(), 'transform_direct.html');
     if (fs.existsSync(filePath)) {
       console.log(`Serving transform_direct.html from ${filePath}`);
@@ -43,7 +61,7 @@ function setupDirectRoutes(app) {
   });
 
   // Direct transformation API endpoint
-  app.post('/api/direct-transform', upload.single('file'), (req, res) => {
+  app.post('/api/direct-transform', upload.single('file'), (req: Request, res: Response) => {
     console.log('Direct transform endpoint received request');
     try {
       // Check if file was uploaded
@@ -121,7 +139,7 @@ function setupDirectRoutes(app) {
         downloadUrl: `/api/direct-download/${transformationId}`
       });
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in direct transform:', error);
       return res.status(500).json({ 
         message: 'Server error during transformation', 
@@ -131,7 +149,7 @@ function setupDirectRoutes(app) {
   });
   
   // Direct download endpoint
-  app.get('/api/direct-download/:id', (req, res) => {
+  app.get('/api/direct-download/:id', (req: Request, res: Response) => {
     try {
       const id = req.params.id;
       console.log(`Download requested for transformation: ${id}`);
@@ -163,7 +181,7 @@ function setupDirectRoutes(app) {
       // Stream file to response
       fs.createReadStream(outputFilePath).pipe(res);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in direct download:', error);
       res.status(500).json({ message: 'Server error', error: error.message });
     }

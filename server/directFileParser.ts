@@ -7,13 +7,23 @@ import fs from 'fs';
 import path from 'path';
 import readline from 'readline';
 
+interface RowCountResult {
+  success: boolean;
+  error?: string;
+  totalLines?: number;
+  nonEmptyLines?: number;
+  headerRow?: string;
+  dataRows?: number;
+  columns?: string[];
+}
+
 /**
  * Count the exact number of rows in a CSV file
  * 
- * @param {string} filePath - Path to the CSV file
- * @returns {object} Object with row counts and details
+ * @param filePath - Path to the CSV file
+ * @returns Object with row counts and details
  */
-function countExactRows(filePath) {
+function countExactRows(filePath: string): RowCountResult {
   try {
     if (!fs.existsSync(filePath)) {
       return {
@@ -52,15 +62,32 @@ function countExactRows(filePath) {
   }
 }
 
+interface TransformResult {
+  success: boolean;
+  error?: string;
+  inputFile?: string;
+  outputFile?: string;
+  inputRows?: number;
+  outputRows?: number;
+  headerInputColumns?: number;
+  headerOutputColumns?: number;
+}
+
+type TransformFunction = (line: string, index: number, isHeader: boolean) => string;
+
 /**
  * Transform a CSV file with guaranteed 1:1 row mapping
  * 
- * @param {string} inputPath - Path to input CSV file
- * @param {string} outputPath - Path to output CSV file
- * @param {Function} transformFn - Optional function to transform each row
- * @returns {object} Object with transformation results
+ * @param inputPath - Path to input CSV file
+ * @param outputPath - Path to output CSV file
+ * @param transformFn - Optional function to transform each row
+ * @returns Object with transformation results
  */
-function transformWithExactMapping(inputPath, outputPath, transformFn = null) {
+function transformWithExactMapping(
+  inputPath: string, 
+  outputPath: string, 
+  transformFn: TransformFunction | null = null
+): TransformResult {
   try {
     if (!fs.existsSync(inputPath)) {
       return {
