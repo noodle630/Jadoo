@@ -62,9 +62,9 @@ def transform_to_catch_format(csv_file_path, output_file=None, max_rows=1000):
             
             # Apply row limit for cost optimization if needed
             if row_count > max_rows:
-                print(f"⚠️ Limiting processing to {max_rows} rows (from {row_count}) for cost optimization")
-                df = df.head(max_rows)
-                row_count = max_rows
+                print(f"⚠️ Processing all {row_count} rows (exceeds recommended {max_rows} for optimization)")
+                print(f"   This may increase processing time and API costs.")
+            # No longer limiting rows - processing all data
                 
             # Limit the data sample to prevent exceeding token limits
             sample_rows = min(5, row_count)

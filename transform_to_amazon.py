@@ -272,11 +272,11 @@ def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
             
             print(f"Successfully parsed CSV: \n            CSV file has {row_count} rows and {column_count} columns.\n            Source columns: {', '.join(columns)}\n            Target Amazon columns: {', '.join(AMAZON_COLUMNS)}")
             
-            # Apply row limit for cost optimization if needed
+            # Note on row processing
             if row_count > max_rows:
-                print(f"⚠️ Limiting processing to {max_rows} rows (from {row_count}) for cost optimization")
-                df = df.head(max_rows)
-                row_count = max_rows
+                print(f"⚠️ Processing all {row_count} rows (exceeds recommended {max_rows} for optimization)")
+                print(f"   This may increase processing time and API costs.")
+            # No longer limiting rows - processing all data
             
         except Exception as e:
             print(f"Error parsing CSV: {str(e)}")
@@ -509,7 +509,11 @@ def transform_to_amazon_format(csv_file_path, output_file=None, max_rows=1000):
                         # Find top 5 duplicates using standard Python methods
                         skus_with_dups = {k: v for k, v in sku_dict.items() if v > 1}
                         # Get top 5 duplicates (or fewer if less exist)
-                        for j, (sku, count) in enumerate(sorted(skus_with_dups.items(), key=lambda x: x[1], reverse=True)):
+                        # Sort duplicates by count (highest first) 
+                        # Convert to list of tuples first for compatibility
+                        dups_list = [(str(k), int(v)) for k, v in skus_with_dups.items()]
+                        sorted_dups = sorted(dups_list, key=lambda item: item[1], reverse=True)
+                        for j, (sku, count) in enumerate(sorted_dups):
                             if j >= 5:  # Limit to top 5
                                 break
                             top_dups[str(sku)] = int(count)
