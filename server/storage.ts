@@ -221,6 +221,7 @@ export class MemStorage implements IStorage {
       googleToken: user.googleToken || null,
       githubId: user.githubId || null,
       githubToken: user.githubToken || null,
+      replitId: user.replitId || null,
       profileImageUrl: user.profileImageUrl || null,
       lastLogin: user.lastLogin || now,
       isActive: user.isActive !== undefined ? user.isActive : true

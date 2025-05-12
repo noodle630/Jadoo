@@ -130,6 +130,10 @@ export async function setupAuth(app: Express) {
         updateUserSession(user, tokens);
         const dbUser = await upsertUser(tokens.claims());
         
+        if (!dbUser) {
+          throw new Error('Failed to create or retrieve user');
+        }
+        
         // Combine session user with database user
         const combinedUser = {
           ...user,
