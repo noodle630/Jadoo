@@ -217,44 +217,25 @@ export default function FeedHistory() {
     });
   };
 
-  if (isLoading) return (
-    <Card className="mb-6 border-slate-200 dark:border-slate-800 shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold flex items-center">
-          <Clock className="mr-2 h-5 w-5" /> Feed History
-        </CardTitle>
-        <CardDescription>Loading your transformation history...</CardDescription>
-      </CardHeader>
+  // Instead of early returns, use conditional rendering
+  let content;
+  
+  if (isLoading) {
+    content = (
       <CardContent className="grid place-items-center h-40">
         <Loader2 className="h-8 w-8 text-blue-600 dark:text-blue-400 animate-spin" />
       </CardContent>
-    </Card>
-  );
-
-  if (error) return (
-    <Card className="mb-6 border-slate-200 dark:border-slate-800 shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold flex items-center">
-          <Clock className="mr-2 h-5 w-5" /> Feed History
-        </CardTitle>
-        <CardDescription>There was an error loading your transformation history</CardDescription>
-      </CardHeader>
+    );
+  } else if (error) {
+    content = (
       <CardContent>
         <div className="p-4 border border-red-200 rounded-md bg-red-50 dark:bg-red-900/10 dark:border-red-800 text-red-700 dark:text-red-400">
           <p>Could not load feed history. Please try again later.</p>
         </div>
       </CardContent>
-    </Card>
-  );
-
-  return (
-    <Card className="mb-6 border-slate-200 dark:border-slate-800 shadow-sm">
-      <CardHeader className="pb-3 border-b border-slate-200 dark:border-slate-800">
-        <CardTitle className="text-xl font-bold flex items-center">
-          <Clock className="mr-2 h-5 w-5" /> Feed History
-        </CardTitle>
-        <CardDescription>Your recent data transformations</CardDescription>
-      </CardHeader>
+    );
+  } else {
+    content = (
       <CardContent className="pt-6">
         <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6 grid grid-cols-4">
@@ -327,6 +308,26 @@ export default function FeedHistory() {
           </TabsContent>
         </Tabs>
       </CardContent>
+    );
+  }
+
+  // Single return statement to fix the React hooks issue
+  return (
+    <Card className="mb-6 border-slate-200 dark:border-slate-800 shadow-sm">
+      <CardHeader className={`pb-3 ${!isLoading && !error ? 'border-b border-slate-200 dark:border-slate-800' : ''}`}>
+        <CardTitle className="text-xl font-bold flex items-center">
+          <Clock className="mr-2 h-5 w-5" /> Feed History
+        </CardTitle>
+        <CardDescription>
+          {isLoading 
+            ? "Loading your transformation history..." 
+            : error 
+              ? "There was an error loading your transformation history" 
+              : "Your recent data transformations"
+          }
+        </CardDescription>
+      </CardHeader>
+      {content}
     </Card>
   );
 }
