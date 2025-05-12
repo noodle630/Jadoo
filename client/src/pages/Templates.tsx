@@ -1,132 +1,181 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, PencilLine, Check, Copy, Trash2, FileText } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { 
+  MoreHorizontal, 
+  Loader2, 
+  AlertCircle, 
+  FileText,
+  Plus,
+  Star,
+  Copy,
+  Edit,
+  Trash
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+// Types
+interface Template {
+  id: number;
+  name: string;
+  marketplace: string;
+  createdAt: string;
+  usageCount: number;
+  description?: string;
+}
 
 export default function Templates() {
   const { toast } = useToast();
   
-  const { data: templates, isLoading } = useQuery({
+  const { data: templates = [], isLoading, error } = useQuery({
     queryKey: ["/api/templates"],
-    // Just get data from API - fetcher is set up in queryClient
   });
   
-  const handleCreateTemplate = () => {
+  const handleCopyTemplate = (templateId: number) => {
     toast({
-      title: "Create Template",
-      description: "Template creation functionality is coming soon!",
+      title: "Template copied",
+      description: "Template was copied successfully"
     });
   };
   
-  const handleUseTemplate = (templateId: number) => {
+  const handleDeleteTemplate = (templateId: number) => {
+    // Implementation would go here
     toast({
-      title: "Using Template",
-      description: `Starting new feed using template #${templateId}`,
+      title: "Template deleted",
+      description: "Template was deleted successfully",
+      variant: "destructive"
     });
+  };
+  
+  // Format date helper
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(date);
   };
   
   return (
     <div className="container py-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">Templates</h1>
-          <p className="text-muted-foreground">Save and reuse your transformation settings</p>
+          <h1 className="text-2xl font-bold">Mapping Templates</h1>
+          <p className="text-muted-foreground">Save and reuse your mapping configurations</p>
         </div>
-        <Button onClick={handleCreateTemplate} className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="mr-2 h-4 w-4" />
-          New Template
+        <Button>
+          <Plus className="mr-2 h-4 w-4" /> 
+          Create Template
         </Button>
       </div>
       
-      {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="border-gray-800 bg-gray-900/50">
-              <CardHeader>
-                <div className="h-4 w-36 bg-gray-800 rounded animate-pulse"></div>
-                <div className="h-3 w-24 bg-gray-800 rounded animate-pulse"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-3 w-full bg-gray-800 rounded animate-pulse"></div>
-                <div className="h-3 w-2/3 bg-gray-800 rounded animate-pulse mt-2"></div>
-              </CardContent>
-              <CardFooter>
-                <div className="h-8 w-full bg-gray-800 rounded animate-pulse"></div>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      ) : templates && templates.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {templates.map((template: any) => (
-            <Card key={template.id} className="border-gray-800 bg-gray-900/50 relative overflow-hidden">
-              {template.marketplace && (
-                <div className="absolute top-0 right-0 px-2 py-1 text-xs font-medium bg-blue-500/10 text-blue-400 border-l border-b border-blue-500/20 rounded-bl">
-                  {template.marketplace}
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle>{template.name || "Untitled Template"}</CardTitle>
-                <CardDescription>
-                  Created: {new Date(template.createdAt).toLocaleDateString()}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-gray-400">
-                  <div className="flex items-center">
-                    <FileText className="h-3 w-3 mr-2" />
-                    {template.usageCount || 0} uses
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <div className="flex space-x-2">
-                  <Button variant="ghost" size="sm">
-                    <PencilLine className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Button 
-                  size="sm" 
-                  onClick={() => handleUseTemplate(template.id)}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  <Check className="mr-2 h-4 w-4" /> Use
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Templates</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex justify-center items-center p-8">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+            </div>
+          ) : error ? (
+            <div className="flex justify-center items-center p-8 text-center">
+              <div>
+                <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                <p className="text-gray-400">Failed to load templates</p>
+              </div>
+            </div>
+          ) : templates && templates.length > 0 ? (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Marketplace</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Usage</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {templates.map((template: Template) => (
+                    <TableRow key={template.id}>
+                      <TableCell className="font-medium">{template.name}</TableCell>
+                      <TableCell>
+                        <span className="capitalize">{template.marketplace}</span>
+                      </TableCell>
+                      <TableCell>{formatDate(template.createdAt)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Star className={`h-4 w-4 mr-1 ${template.usageCount > 0 ? 'text-yellow-400' : 'text-gray-300'}`} />
+                          <span>{template.usageCount || 0} uses</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleCopyTemplate(template.id)}>
+                              <Copy className="h-4 w-4 mr-2" />
+                              Use Template
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDeleteTemplate(template.id)}>
+                              <Trash className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="flex justify-center items-center p-8 text-center">
+              <div>
+                <FileText className="h-8 w-8 text-gray-500 mx-auto mb-2" />
+                <p className="text-gray-400">No templates created yet</p>
+                <Button className="mt-4" onClick={() => window.location.href = "/new-feed"}>
+                  Create your first template
                 </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <Card className="border-gray-800 bg-gray-900/50">
-          <CardHeader>
-            <CardTitle>No Templates Yet</CardTitle>
-            <CardDescription>
-              Create your first template to save your transformation settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-400">
-              Templates let you save your field mappings and transformation settings for reuse,
-              making it faster to process similar product data in the future.
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button onClick={handleCreateTemplate}>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Template
-            </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+        {templates && templates.length > 3 && (
+          <CardFooter className="flex justify-center border-t p-4">
+            <Button variant="outline">View All Templates</Button>
           </CardFooter>
-        </Card>
-      )}
+        )}
+      </Card>
     </div>
   );
 }

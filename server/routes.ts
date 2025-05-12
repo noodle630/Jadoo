@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { insertFeedSchema, insertTemplateSchema, feedStatusEnum, marketplaceEnum, feedSourceEnum, insertGithubRepositorySchema } from '@shared/schema';
 import { fromZodError } from "zod-validation-error";
 import { spawn } from 'child_process';
+import fileParser from './utils/fileParser';
 
 // Create a temporary directory for file uploads
 const uploadDir = path.resolve("temp_uploads");
@@ -171,62 +172,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Processing feed with name: ${name}, marketplace: ${marketplace}`);
       
-      // Count rows using the simplest, most reliable approach
+      // Count rows in a more reliable way using our fileParser utility
       let rowCount = 0;
       try {
-        // Very simple, direct row counting approach that won't overcomplicate things
         const filePath = req.file.path;
-        console.log(`Raw counting rows in file: ${filePath}`);
+        console.log(`Counting rows in file: ${filePath}`);
         
-        if (fs.existsSync(filePath)) {
-          // Read the file with proper encoding
-          const fileContent = fs.readFileSync(filePath, {encoding: 'utf8'});
+        // First attempt: Use our direct row counting method
+        const countResult = fileParser.countCsvRows(filePath);
+        console.log('CSV row count results:', countResult);
+        
+        if (countResult.isValid) {
+          rowCount = countResult.dataRows;
+          console.log(`Valid CSV detected with ${rowCount} data rows`);
           
-          // Simple line-break normalization first
-          const normalizedContent = fileContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+          // Double-check with PapaParse for verification
+          const parseResult = fileParser.parseCsvFile(filePath);
+          console.log(`PapaParse found ${parseResult.rowCount} rows with ${parseResult.fields.length} fields`);
           
-          // Split by new lines and get raw count
-          const allLines = normalizedContent.split('\n');
-          console.log(`Raw line count (including empty): ${allLines.length}`);
-          
-          // Count non-empty lines
-          const nonEmptyLines = allLines.filter(line => line.trim().length > 0);
-          console.log(`Non-empty lines: ${nonEmptyLines.length}`);
-          
-          // Assuming first line is header, rest are data rows
-          if (nonEmptyLines.length > 1) {
-            console.log(`Header: "${nonEmptyLines[0].substring(0, 100)}..."`);
-            rowCount = nonEmptyLines.length - 1; // Subtract header
-          } else {
-            rowCount = nonEmptyLines.length; // Just in case there's only one line
+          // If there's a significant discrepancy, log it but trust the direct count
+          if (Math.abs(parseResult.rowCount - countResult.dataRows) > 5) {
+            console.warn(`Row count discrepancy: Direct count = ${countResult.dataRows}, PapaParse = ${parseResult.rowCount}`);
           }
           
-          // Validate by logging some additional info
-          console.log(`First few rows of file content:`);
-          for (let i = 0; i < Math.min(5, nonEmptyLines.length); i++) {
-            console.log(`Row ${i}: ${nonEmptyLines[i].substring(0, 50)}...`);
-          }
-          
-          // Test count with a different library for validation
-          const stats = fs.statSync(filePath);
-          console.log(`File size: ${stats.size} bytes`);
-          
-          // Raw byte content with no encoding assumptions
-          const buffer = fs.readFileSync(filePath);
-          const rawLineCount = buffer.toString().split('\n').length;
-          console.log(`Raw byte-level line count: ${rawLineCount}`);
-          
-          // Log both counts for comparison
-          console.log(`FINAL ROW COUNT (excluding header): ${rowCount}`);
-          console.log(`Raw line count: ${rawLineCount}`);
+          // Show sample of the data for debugging
+          const sampleRows = fileParser.readCsvSample(filePath, 3);
+          console.log('Sample rows:', JSON.stringify(sampleRows, null, 2).substring(0, 500) + '...');
         } else {
-          console.error(`File not found: ${filePath}`);
-          rowCount = 0;
+          console.warn('CSV validation failed, falling back to raw line count');
+          rowCount = countResult.totalRows > 1 ? countResult.totalRows - 1 : countResult.totalRows;
         }
+        
+        console.log(`FINAL ROW COUNT: ${rowCount} data rows`);
       } catch (err) {
         console.error("Critical error counting rows:", err);
-        // Absolute last resort
-        rowCount = Math.ceil(req.file.size / 200); 
+        
+        // Use file size estimation as an absolute last resort
+        try {
+          rowCount = fileParser.estimateRowCount(req.file.path);
+        } catch (estimateErr) {
+          rowCount = Math.ceil(req.file.size / 200);
+        }
+        
         console.log(`FALLBACK row count based on file size: ${rowCount} rows`);
       }
 
