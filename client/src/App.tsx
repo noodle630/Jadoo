@@ -20,6 +20,7 @@ import NotFound from "@/pages/not-found";
 import FeedHistoryDebug from "@/pages/FeedHistoryDebug";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Transform from "@/pages/Transform";
 import { useAuth } from "@/hooks/useAuth";
 
 import AuthenticatedRoute from "@/components/AuthenticatedRoute";
@@ -51,6 +52,7 @@ function Router() {
                 <Route path="/templates" component={Templates} />
                 <Route path="/history" component={FeedHistory} />
                 <Route path="/feeds" component={FeedHistory} />
+                <Route path="/transform" component={Transform} />
                 <Route path="/settings" component={Settings} />
                 <Route path="/channels" component={Channels} />
                 <Route path="/connections" component={Channels} />
