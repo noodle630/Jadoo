@@ -145,14 +145,21 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
             """
             
             # Call OpenAI to transform the batch
-            response = client.chat.completions.create(
-                model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024
-                messages=[
-                    {"role": "system", "content": f"You are a {marketplace_format} product data specialist that transforms CSV data with perfect 1:1 row mapping."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.1
-            )
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-4o", # the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+                    messages=[
+                        {"role": "system", "content": f"You are a {marketplace_format} product data specialist that transforms CSV data with perfect 1:1 row mapping."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.1
+                )
+            except Exception as api_error:
+                print(f"OpenAI API error: {str(api_error)}", file=sys.stderr)
+                # Create empty batch for this failed API call to maintain row count
+                empty_batch = pd.DataFrame(columns=target_columns, index=range(len(batch_df)))
+                output_df = pd.concat([output_df, empty_batch], ignore_index=True)
+                continue
             
             transformed_text = response.choices[0].message.content if response.choices and len(response.choices) > 0 else ""
             
@@ -192,6 +199,7 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
                 # Ensure all required columns are present
                 for col in target_columns:
                     if col not in transformed_batch.columns:
+                        print(f"Missing column '{col}' in transformed data, adding empty column", file=sys.stderr)
                         transformed_batch[col] = ""
                 
                 # Verify row count matches input
@@ -210,8 +218,9 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
                 output_df = pd.concat([output_df, transformed_batch[target_columns]], ignore_index=True)
                 
             except Exception as e:
-                print(f"Error parsing transformed batch: {str(e)}")
-                print(f"Problematic CSV content: {csv_content}")
+                print(f"Error parsing transformed batch: {str(e)}", file=sys.stderr)
+                # Only log the beginning of the content to keep the logs cleaner
+                print(f"Problematic CSV content (first 200 chars): {csv_content[:200]}", file=sys.stderr)
                 # Create an empty batch with the right number of rows
                 empty_batch = pd.DataFrame(columns=target_columns, index=range(len(batch_df)))
                 output_df = pd.concat([output_df, empty_batch], ignore_index=True)

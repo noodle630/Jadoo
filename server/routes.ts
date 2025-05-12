@@ -777,7 +777,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         try {
-          const result = JSON.parse(outputData);
+          // Trim any whitespace or extra output before attempting to parse JSON
+          const cleanedOutput = outputData.trim();
+          console.log("Raw output to parse:", cleanedOutput);
+          
+          const result = JSON.parse(cleanedOutput);
           
           console.log("Transformation result:", JSON.stringify(result));
           
