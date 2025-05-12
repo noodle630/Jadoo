@@ -105,14 +105,40 @@ function setupDirectRoutes(app: express.Application) {
       const transformResult = directFileParser.transformWithExactMapping(
         inputFile,
         outputFilePath,
-        // Simple transformation function
-        (line, index, isHeader) => {
-          if (isHeader) {
-            // For header row, add marketplace-specific columns
-            return line + `,marketplace,source_id`;
-          } else {
-            // For data rows, add marketplace identifier
-            return line + `,${marketplace},${Date.now()}-${index}`;
+        // Get marketplace-specific transformation function
+        (line: string, index: number, isHeader: boolean) => {
+          const fields = isHeader ? [] : line.split(',');
+          
+          // Transform based on marketplace
+          switch(marketplace) {
+            case 'amazon':
+              if (isHeader) {
+                return 'sku,product-id,product-id-type,item-condition,price,quantity';
+              } else {
+                return `${fields[0]},${fields[0]},ASIN,New,${fields[3]},${fields[4]}`;
+              }
+            
+            case 'walmart':
+              if (isHeader) {
+                return 'sku,productName,price,inventory';
+              } else {
+                return `${fields[0]},${fields[1]},${fields[3]},${fields[4]}`;
+              }
+              
+            case 'reebelo':
+              if (isHeader) {
+                return 'id,title,description,price,stock';
+              } else {
+                return `${fields[0]},${fields[1]},${fields[2]},${fields[3]},${fields[4]}`;
+              }
+              
+            default:
+              // For any other marketplace, just add identifier columns
+              if (isHeader) {
+                return line + ',marketplace,source_id';
+              } else {
+                return line + `,${marketplace},${Date.now()}-${index}`;
+              }
           }
         }
       );
