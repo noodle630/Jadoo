@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLocation } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
+// Import from our new auth context
+import { useAuth } from "@/contexts/AuthContext";
 import AuthLayout from "@/components/AuthLayout";
 import { FcGoogle } from "react-icons/fc";
 import { Separator } from "@/components/ui/separator";
@@ -20,14 +21,21 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [_, setLocation] = useLocation();
-  const { login, googleLogin, isAuthenticated } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, googleLogin, isAuthenticated, loading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Derived loading state that combines context loading with form submission
+  const isLoading = loading || isSubmitting;
 
-  // Redirect if already logged in
-  if (isAuthenticated) {
-    setLocation("/dashboard");
-    return null;
-  }
+  // Check for redirect after mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("User is authenticated, redirecting to dashboard");
+      const redirectTo = localStorage.getItem('authRedirectTarget') || '/';
+      localStorage.removeItem('authRedirectTarget');
+      setLocation(redirectTo);
+    }
+  }, [isAuthenticated, setLocation]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,18 +46,20 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
-      await login.mutateAsync(values);
-      setLocation("/dashboard");
+      await login(values.email, values.password);
+      // Redirect will happen in the useEffect when isAuthenticated updates
+    } catch (error) {
+      console.error("Login error:", error);
+      // Error handling is done in the auth context
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   }
 
   const handleGoogleLogin = () => {
     console.log("Initiating Google login from button click");
-    setIsLoading(true);
     googleLogin();
   };
 

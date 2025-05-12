@@ -22,14 +22,43 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Transform from "@/pages/Transform";
 import SimpleTransform from "@/pages/SimpleTransform";
-import { useAuth } from "@/hooks/useAuth";
 
-import AuthenticatedRoute from "@/components/AuthenticatedRoute";
-import AuthRedirectHandler from "@/components/AuthRedirectHandler";
+// Import our new AuthContext and AuthProvider
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+
+// Simple component for protected routes
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [_, navigate] = useLocation();
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+          <p className="text-sm text-slate-500">Loading authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    // Save current location for redirect after login
+    localStorage.setItem('authRedirectTarget', window.location.pathname);
+    navigate('/login');
+    return null;
+  }
+
+  // Render children if authenticated
+  return <>{children}</>;
+}
+
+// Import useLocation to help with navigation
+import { useLocation } from "wouter";
 
 function Router() {
-  const { isAuthenticated } = useAuth();
-
   return (
     <Switch>
       {/* Public Routes */}
@@ -39,7 +68,7 @@ function Router() {
       {/* Protected Routes */}
       <Route path="/">
         {() => (
-          <AuthenticatedRoute>
+          <ProtectedRoute>
             <Layout>
               <Switch>
                 <Route path="/" component={Dashboard} />
@@ -61,7 +90,7 @@ function Router() {
                 <Route component={NotFound} />
               </Switch>
             </Layout>
-          </AuthenticatedRoute>
+          </ProtectedRoute>
         )}
       </Route>
     </Switch>
@@ -73,9 +102,10 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="s-theme">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Toaster />
-          <AuthRedirectHandler />
-          <Router />
+          <AuthProvider>
+            <Toaster />
+            <Router />
+          </AuthProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
