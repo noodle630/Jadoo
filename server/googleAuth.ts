@@ -1,10 +1,8 @@
-import * as client from "openid-client";
-import { Strategy, type VerifyFunction } from "openid-client/passport";
 import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import session from "express-session";
-import type { Express, RequestHandler } from "express";
-import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
+import type { Express, RequestHandler, Request } from "express";
 import { storage } from "./storage";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -15,16 +13,6 @@ const SESSION_SECRET = process.env.SESSION_SECRET || "development-secret";
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   console.warn("Google OAuth is not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.");
 }
-
-// Reusable OpenID Connect configuration loader with memoization
-const getOidcConfig = memoize(
-  async () => {
-    return await client.discovery(
-      new URL("https://accounts.google.com/.well-known/openid-configuration")
-    );
-  },
-  { maxAge: 3600 * 1000 } // Cache for 1 hour
-);
 
 // Configure session management
 export function getSession() {
@@ -50,27 +38,16 @@ export function getSession() {
   });
 }
 
-// Update user session with tokens and claims
-function updateUserSession(
-  user: any,
-  tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers
-) {
-  user.claims = tokens.claims();
-  user.access_token = tokens.access_token;
-  user.refresh_token = tokens.refresh_token;
-  user.expires_at = user.claims?.exp;
-}
-
 // Upsert user in database based on Google profile
-async function upsertGoogleUser(claims: any) {
+async function upsertGoogleUser(profile: any, accessToken: string) {
   try {
-    // Extract user data from claims
+    // Extract user data from Google profile
     const userData = {
-      googleId: claims.sub,
-      email: claims.email,
-      firstName: claims.given_name || claims.name?.split(' ')[0] || null,
-      lastName: claims.family_name || claims.name?.split(' ').slice(1).join(' ') || null,
-      profileImageUrl: claims.picture,
+      googleId: profile.id,
+      email: profile.emails?.[0]?.value || "",
+      firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || null,
+      lastName: profile.name?.familyName || null,
+      profileImageUrl: profile.photos?.[0]?.value || null,
       lastLogin: new Date(),
     };
 
@@ -86,15 +63,17 @@ async function upsertGoogleUser(claims: any) {
     }
 
     // Check if user exists by email (might have registered with email/password)
-    const existingUserByEmail = await storage.getUserByEmail(userData.email);
-    
-    if (existingUserByEmail) {
-      // Link Google ID to existing account
-      return await storage.updateUser(existingUserByEmail.id, {
-        ...userData,
-        googleId: userData.googleId,
-        lastLogin: new Date(),
-      });
+    if (userData.email) {
+      const existingUserByEmail = await storage.getUserByEmail(userData.email);
+      
+      if (existingUserByEmail) {
+        // Link Google ID to existing account
+        return await storage.updateUser(existingUserByEmail.id, {
+          ...userData,
+          googleId: userData.googleId,
+          lastLogin: new Date(),
+        });
+      }
     }
 
     // Create new user if not found
@@ -118,50 +97,47 @@ export async function setupGoogleAuth(app: Express) {
 
   // Only set up Google auth if credentials are available
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    const config = await getOidcConfig();
-
-    const verify: VerifyFunction = async (
-      tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
-      verified: passport.AuthenticateCallback
-    ) => {
-      try {
-        const user = {};
-        updateUserSession(user, tokens);
-        await upsertGoogleUser(tokens.claims());
-        verified(null, user);
-      } catch (error) {
-        console.error("Error during Google verification:", error);
-        verified(error as Error);
-      }
-    };
-
-    const strategy = new Strategy(
-      {
-        client: new client.Client({
-          issuer: config.issuer,
-          client_id: process.env.GOOGLE_CLIENT_ID!,
-          client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-          redirect_uris: [
-            `${process.env.APP_URL || "http://localhost:5000"}/api/auth/google/callback`,
-          ],
-          response_types: ["code"],
-        }),
-        params: {
-          scope: "openid email profile",
-        },
+    // Set up the Google strategy
+    passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: `${process.env.APP_URL || "http://localhost:5000"}/api/auth/google/callback`,
+        scope: ['profile', 'email']
       },
-      verify
-    );
+      async function(accessToken, refreshToken, profile, done) {
+        try {
+          const user = await upsertGoogleUser(profile, accessToken);
+          done(null, user);
+        } catch (error) {
+          done(error as Error);
+        }
+      }
+    ));
 
-    passport.use("google", strategy);
-    passport.serializeUser((user: Express.User, cb) => cb(null, user));
-    passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+    passport.serializeUser((user: any, done) => {
+      done(null, user.id);
+    });
+    
+    passport.deserializeUser(async (id: number, done) => {
+      try {
+        const user = await storage.getUser(id);
+        if (user) {
+          // Remove sensitive information
+          const { password, ...userWithoutPassword } = user;
+          done(null, userWithoutPassword);
+        } else {
+          done(new Error('User not found'));
+        }
+      } catch (error) {
+        done(error);
+      }
+    });
 
     // Google login route
     app.get(
       "/api/auth/google",
       passport.authenticate("google", {
-        scope: ["openid", "email", "profile"],
+        scope: ["profile", "email"]
       })
     );
 
@@ -184,13 +160,13 @@ export async function setupGoogleAuth(app: Express) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      const userId = req.user?.claims?.sub;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({ message: "Invalid user session" });
       }
 
       // Get full user profile from database
-      const user = await storage.getUserByGoogleId(userId);
+      const user = await storage.getUser(userId);
       if (!user) {
         req.logout(() => {});
         return res.status(401).json({ message: "User not found" });
@@ -325,7 +301,7 @@ export const isAuthenticated: RequestHandler = (req, res, next) => {
 };
 
 // Get current user from request helper
-export function getCurrentUser(req: any) {
+export function getCurrentUser(req: Request) {
   if (!req.isAuthenticated()) {
     return null;
   }

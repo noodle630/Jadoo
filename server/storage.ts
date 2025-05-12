@@ -353,6 +353,18 @@ export class MemStorage implements IStorage {
     return true;
   }
   
+  async storeGoogleToken(userId: number, token: string): Promise<boolean> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      return false;
+    }
+    
+    // Update the user object with the token
+    await this.updateUser(userId, { googleToken: token });
+    
+    return true;
+  }
+  
   // GitHub repository operations
   async linkRepoToFeed(feedId: number, repoInfo: any): Promise<boolean> {
     const feed = await this.getFeed(feedId);

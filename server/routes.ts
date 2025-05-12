@@ -2,6 +2,7 @@ import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupGithubAuth, requireAuth, validateGithubRepo } from "./githubAuth";
+import { setupGoogleAuth, isAuthenticated } from "./googleAuth";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -717,7 +718,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Use main route prefix
   app.use('/api', router);
   
-  // Setup GitHub authentication after router setup
+  // Setup authentication services
+  await setupGoogleAuth(app);
   setupGithubAuth(app);
 
   const httpServer = createServer(app);
