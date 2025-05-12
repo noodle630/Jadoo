@@ -171,20 +171,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Processing feed with name: ${name}, marketplace: ${marketplace}`);
       
-      // Count actual rows in the CSV file
+      // Count actual rows in the CSV file - improved method to handle various CSV formats
       let rowCount = 0;
       try {
         if (fs.existsSync(req.file.path)) {
           const fileContent = fs.readFileSync(req.file.path, 'utf8');
-          const lines = fileContent.split('\n').filter(line => line.trim().length > 0);
-          // Subtract 1 for header (if it exists)
-          rowCount = lines.length > 1 ? lines.length - 1 : lines.length;
-          console.log(`Actual row count from file: ${rowCount} rows`);
+          
+          // Handle different line break styles (CRLF, LF, etc.)
+          const normalizedContent = fileContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+          
+          // First check if it's properly formatted CSV with commas
+          const lines = normalizedContent.split('\n');
+          console.log(`Total lines detected in file: ${lines.length}`);
+          
+          // Filter out truly empty lines (not just whitespace)
+          const nonEmptyLines = lines.filter(line => line.trim().length > 0);
+          console.log(`Non-empty lines in file: ${nonEmptyLines.length}`);
+          
+          // If we have valid lines, count data rows (subtracting header)
+          if (nonEmptyLines.length > 0) {
+            // Subtract 1 for header row, but only if we have more than one line
+            rowCount = nonEmptyLines.length > 1 ? nonEmptyLines.length - 1 : nonEmptyLines.length;
+            console.log(`Data rows (excluding header): ${rowCount} rows`);
+            
+            // Validate the first few rows to ensure they have the same number of columns
+            // This helps detect malformed CSV files
+            const sampleSize = Math.min(5, nonEmptyLines.length);
+            const headerFields = nonEmptyLines[0].split(',').length;
+            console.log(`Header has ${headerFields} fields`);
+            
+            let isValidCsv = true;
+            for (let i = 1; i < sampleSize; i++) {
+              if (i < nonEmptyLines.length) {
+                const fields = nonEmptyLines[i].split(',').length;
+                if (Math.abs(fields - headerFields) > 1) { // Allow some flexibility
+                  console.log(`Warning: Row ${i} has ${fields} fields (header has ${headerFields})`);
+                  isValidCsv = false;
+                }
+              }
+            }
+            
+            if (!isValidCsv) {
+              console.log("CSV validation warning: Some rows have significantly different column counts");
+            }
+          }
+          
+          console.log(`Final calculated row count: ${rowCount} rows`);
         }
       } catch (err) {
         console.error("Error counting rows:", err);
-        // If we can't count rows, estimate based on file size
-        rowCount = Math.ceil(req.file.size / 200); // Rough estimate
+        // If we can't count rows, estimate based on file size, but with a better formula
+        // Average CSV row is roughly 100-300 bytes depending on content
+        rowCount = Math.max(1, Math.ceil(req.file.size / 250)); 
+        console.log(`Estimated row count based on file size: ${rowCount} rows`);
       }
 
       // Create a new feed record with accurate row count
@@ -375,19 +414,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
               itemCount = 0;
             }
             
-            // Use the actual row count from parsing the source file
+            // Use the actual row count from parsing the source file - improved method
             let sourceRowCount = 0;
             
             try {
-              if (sourceDetails && sourceDetails.originalPath) {
+              // First check if sourceDetails has the row count already calculated
+              if (sourceDetails && sourceDetails.rowCount) {
+                sourceRowCount = parseInt(sourceDetails.rowCount.toString(), 10);
+                console.log(`Using pre-calculated row count from sourceDetails: ${sourceRowCount}`);
+              }
+              // If not available or invalid, recalculate from the file
+              else if (sourceDetails && sourceDetails.originalPath && fs.existsSync(sourceDetails.originalPath)) {
                 // Read the source file to get an accurate row count
                 const sourceData = fs.readFileSync(sourceDetails.originalPath, 'utf8');
-                const lines = sourceData.split('\n').filter(line => line.trim().length > 0);
-                sourceRowCount = lines.length - 1; // Subtract header row
+                
+                // Normalize line endings for consistent counting
+                const normalizedContent = sourceData.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                
+                // Split and filter empty lines
+                const lines = normalizedContent.split('\n');
+                const nonEmptyLines = lines.filter(line => line.trim().length > 0);
+                
+                // If valid content, count data rows (excluding header)
+                if (nonEmptyLines.length > 0) {
+                  sourceRowCount = nonEmptyLines.length > 1 ? nonEmptyLines.length - 1 : nonEmptyLines.length;
+                }
+                
+                console.log(`Recalculated source row count from file: ${sourceRowCount} rows from ${nonEmptyLines.length} non-empty lines`);
+              }
+              else {
+                // If path is missing, try to use other information
+                if (feed && feed.itemCount) {
+                  sourceRowCount = feed.itemCount;
+                  console.log(`Using feed.itemCount as source row count: ${sourceRowCount}`);
+                }
+                else if (itemCount) {
+                  sourceRowCount = itemCount;
+                  console.log(`Using calculated itemCount as source row count: ${sourceRowCount}`);
+                }
               }
             } catch (error) {
               console.error('Error getting source row count:', error);
-              sourceRowCount = itemCount || 100; // Fallback to parsed count or default
+              
+              // Prioritize different fallback sources of truth for row count
+              if (sourceDetails && sourceDetails.rowCount) {
+                sourceRowCount = parseInt(sourceDetails.rowCount.toString(), 10) || 0;
+              }
+              else if (feed && feed.itemCount) {
+                sourceRowCount = feed.itemCount;
+              }
+              else {
+                sourceRowCount = itemCount || 0;
+              }
+              
+              console.log(`Using fallback source row count: ${sourceRowCount}`);
             }
             
             // Analysis of field quality
@@ -524,16 +604,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`Feed found: ${feed.name}, marketplace: ${feed.marketplace}`);
         
-        const sourceDetails = feed.sourceDetails as any;
-        if (!sourceDetails || !sourceDetails.outputPath) {
-          console.log('Output path not found in sourceDetails:', sourceDetails);
-          return res.status(404).json({ message: 'Output file not found' });
+        let outputFilePath = '';
+        
+        // Check all possible locations where the output file might be
+        if (feed.outputUrl) {
+          // If we have a direct outputUrl field, use that
+          outputFilePath = feed.outputUrl;
+          console.log(`Using feed.outputUrl: ${outputFilePath}`);
+        }
+        else {
+          // Otherwise try to get from sourceDetails
+          const sourceDetails = feed.sourceDetails as any;
+          
+          if (sourceDetails) {
+            // Try different possible property names for backward compatibility
+            if (sourceDetails.outputPath) {
+              outputFilePath = sourceDetails.outputPath;
+              console.log(`Using sourceDetails.outputPath: ${outputFilePath}`);
+            }
+            else if (sourceDetails.outputUrl) {
+              outputFilePath = sourceDetails.outputUrl;
+              console.log(`Using sourceDetails.outputUrl: ${outputFilePath}`);
+            }
+            else if (sourceDetails.output) {
+              outputFilePath = sourceDetails.output;
+              console.log(`Using sourceDetails.output: ${outputFilePath}`);
+            }
+            
+            // If we still don't have path, try to construct from original file if possible
+            if (!outputFilePath && sourceDetails.originalPath) {
+              const originalPath = sourceDetails.originalPath;
+              const baseDir = path.dirname(originalPath);
+              const originalName = path.basename(originalPath);
+              
+              // Try several possible naming conventions
+              const possibleOutputPaths = [
+                path.join(baseDir, `${feed.marketplace}_${originalName}`),
+                path.join(baseDir, `transformed_${originalName}`),
+                path.join(baseDir, `output_${originalName}`),
+                path.join(baseDir, `${feed.marketplace}_${Date.now()}_${originalName}`)
+              ];
+              
+              // Check each possibility
+              for (const possiblePath of possibleOutputPaths) {
+                if (fs.existsSync(possiblePath)) {
+                  outputFilePath = possiblePath;
+                  console.log(`Found output file via pattern matching: ${outputFilePath}`);
+                  break;
+                }
+              }
+            }
+          }
         }
         
-        const outputFilePath = sourceDetails.outputPath;
-        console.log(`Output file path: ${outputFilePath}`);
+        // Final verification that we have a valid path
+        if (!outputFilePath) {
+          console.log('Output path could not be determined from any source');
+          return res.status(404).json({ message: 'Output file information not found' });
+        }
         
-        // Check if file exists
+        // Check if the file actually exists
         if (!fs.existsSync(outputFilePath)) {
           console.log(`File does not exist: ${outputFilePath}`);
           return res.status(404).json({ message: 'Output file does not exist on the server' });
