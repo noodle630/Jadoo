@@ -274,15 +274,42 @@
                 // Hide loading status
                 document.getElementById('loadingStatus').classList.add('hidden');
                 
-                if (response.ok) {
-                    // For file downloads, we need to handle this differently
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.getElementById('downloadLink');
-                    a.href = url;
-                    a.download = `transformed_${formData.get('marketplace')}_${file.name}`;
-                    document.getElementById('successStatus').classList.remove('hidden');
-                    a.click(); // Auto-download
+                console.log('Response status:', response.status);
+                
+                if (response.status === 200) {
+                    try {
+                        // Get the content type to see if it's JSON (error) or a file
+                        const contentType = response.headers.get('content-type');
+                        console.log('Response content type:', contentType);
+                        
+                        if (contentType && contentType.includes('application/json')) {
+                            // This is an error response with JSON
+                            const errorData = await response.json();
+                            document.getElementById('loadingStatus').classList.add('hidden');
+                            document.getElementById('errorStatus').classList.remove('hidden');
+                            document.getElementById('errorDetails').textContent = errorData.error || 'The server returned an error.';
+                            return;
+                        }
+                        
+                        // For file downloads, handle the blob
+                        const blob = await response.blob();
+                        
+                        if (blob.size === 0) {
+                            throw new Error('Downloaded file is empty');
+                        }
+                        
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.getElementById('downloadLink');
+                        a.href = url;
+                        a.download = `transformed_${formData.get('marketplace')}_${file.name}`;
+                        document.getElementById('successStatus').classList.remove('hidden');
+                        a.click(); // Auto-download
+                    } catch (blobError) {
+                        console.error('Error processing response:', blobError);
+                        document.getElementById('loadingStatus').classList.add('hidden');
+                        document.getElementById('errorStatus').classList.remove('hidden');
+                        document.getElementById('errorDetails').textContent = `Error processing response: ${blobError.message}`;
+                    }
                 } else {
                     const errorData = await response.json();
                     document.getElementById('errorStatus').classList.remove('hidden');

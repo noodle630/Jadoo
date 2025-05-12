@@ -114,6 +114,13 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
             # Convert batch to CSV string
             batch_csv = batch_df.to_csv(index=False)
             
+            # Ensure we have actual data to transform, not just the header
+            if len(batch_df) == 0 or batch_csv.strip() == "" or batch_csv.strip() == ",".join(input_columns):
+                print("Warning: Empty batch or just headers, creating empty output")
+                empty_rows = pd.DataFrame(columns=target_columns, index=range(len(batch_df)))
+                output_df = pd.concat([output_df, empty_rows], ignore_index=True)
+                continue
+                
             # Create a prompt for OpenAI to transform the batch
             prompt = f"""
             Transform this CSV data to {marketplace_format} format.
@@ -146,24 +153,35 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
                 temperature=0.1
             )
             
-            transformed_text = response.choices[0].message.content
+            transformed_text = response.choices[0].message.content if response.choices and len(response.choices) > 0 else ""
+            
+            # If we don't get a valid response, create an empty batch
+            if not transformed_text or transformed_text.strip() == "":
+                print("Warning: Empty response from OpenAI, creating empty output")
+                empty_batch = pd.DataFrame(columns=target_columns, index=range(len(batch_df)))
+                output_df = pd.concat([output_df, empty_batch], ignore_index=True)
+                continue
             
             # Extract the CSV content
             csv_content = transformed_text
             if "```" in transformed_text:
-                # Extract content between code blocks if present
-                start_idx = transformed_text.find("```") + 3
-                # Find the next ``` after the first one
-                end_idx = transformed_text.find("```", start_idx)
-                if end_idx != -1:
-                    # Extract content between the markdown code blocks
-                    csv_content = transformed_text[start_idx:end_idx].strip()
-                    # Remove the language identifier if it exists
-                    if csv_content.startswith("csv\n"):
-                        csv_content = csv_content[4:]
-                else:
-                    # If no ending code block, assume everything after the first code block is CSV
-                    csv_content = transformed_text[start_idx:].strip()
+                try:
+                    # Extract content between code blocks if present
+                    start_idx = transformed_text.find("```") + 3
+                    # Find the next ``` after the first one
+                    end_idx = transformed_text.find("```", start_idx)
+                    if end_idx != -1:
+                        # Extract content between the markdown code blocks
+                        csv_content = transformed_text[start_idx:end_idx].strip()
+                        # Remove the language identifier if it exists
+                        if csv_content.startswith("csv\n"):
+                            csv_content = csv_content[4:]
+                    else:
+                        # If no ending code block, assume everything after the first code block is CSV
+                        csv_content = transformed_text[start_idx:].strip()
+                except Exception as e:
+                    print(f"Error extracting code block: {e}")
+                    csv_content = transformed_text  # Fallback to using the entire response
             
             # Parse the transformed batch
             try:

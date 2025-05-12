@@ -775,27 +775,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const result = JSON.parse(outputData);
           
+          console.log("Transformation result:", JSON.stringify(result));
+          
           if (result.error) {
+            console.error(`Transformation error: ${result.error}`);
             return res.status(500).json({ error: result.error });
           }
           
           if (result.output_file && fs.existsSync(result.output_file)) {
+            console.log(`Output file exists at ${result.output_file} with size ${fs.statSync(result.output_file).size} bytes`);
             // Send the file
-            return res.download(result.output_file, `transformed_${marketplace}_${path.basename(req.file?.originalname || 'output.csv')}`, (err) => {
+            const downloadFilename = `transformed_${marketplace}_${path.basename(req.file?.originalname || 'output.csv')}`;
+            console.log(`Sending file as ${downloadFilename}`);
+            
+            return res.download(result.output_file, downloadFilename, (err) => {
               if (err) {
                 console.error(`Error sending file: ${err}`);
+              } else {
+                console.log(`File download completed successfully: ${downloadFilename}`);
               }
+              
               // Clean up the files
               try {
                 if (req.file?.path) {
                   fs.unlinkSync(req.file.path);
+                  console.log(`Cleaned up input file ${req.file.path}`);
                 }
                 fs.unlinkSync(result.output_file);
+                console.log(`Cleaned up output file ${result.output_file}`);
               } catch (cleanupErr) {
                 console.error(`Error cleaning up files: ${cleanupErr}`);
               }
             });
           } else {
+            console.error(`Output file not found or does not exist: ${result.output_file}`);
             return res.status(500).json({ error: 'Output file not found' });
           }
         } catch (jsonError) {

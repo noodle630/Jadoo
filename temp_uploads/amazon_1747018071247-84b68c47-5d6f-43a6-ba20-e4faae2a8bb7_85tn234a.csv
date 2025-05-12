@@ -1,0 +1,6 @@
+sku,product-id,product-id-type,price,minimum-seller-allowed-price,maximum-seller-allowed-price,quantity,condition-type,condition-note,ASIN-hint,title,product-tax-code,merchant-shipping-group,restock-date,handling-time
+1ea CELLR180823P,101121u7d247,1,635.98,635.98,,0,used_good,Battery health at 90%,B0EXAMPLE1,Galaxy S24+ - Verizon - Onyx Black - Single Sim - 512GB Premium 90,A_GEN_NOTAX,Standard,,2
+1ea CELLR180823,101121u7d247,1,642.15,629.8,,0,used_very_good,Battery health at 80%,B0EXAMPLE2,Galaxy S24+ - Verizon - Onyx Black - Single Sim - 512GB Excellent 80,A_GEN_NOTAX,Standard,,2
+1ea CELLR180823BMP,101121u7d247,1,642.15,642.15,,0,used_very_good,Battery health at 100%,B0EXAMPLE3,Galaxy S24+ - Verizon - Onyx Black - Single Sim - 512GB Excellent 100,A_GEN_NOTAX,Standard,,2
+1ea CELLR179879,101121v4t4w6,1,603.15,591.55,,0,used_good,Battery health at 80%,B0EXAMPLE4,Galaxy S23 Ultra - AT&T - Cream - 8GB - Single Sim - 256GB Good 80,A_GEN_NOTAX,Standard,,2
+1ea CELLR179879-2,101121v4t4w6,1,603.15,591.55,,0,used_acceptable,Battery health at 80%,B0EXAMPLE5,Galaxy S23 Ultra - AT&T - Cream - 8GB - Single Sim - 256GB Acceptable 80,A_GEN_NOTAX,Standard,,2
