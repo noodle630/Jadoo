@@ -43,9 +43,17 @@ export default function AuthRedirectHandler() {
         const redirectTo = localStorage.getItem('authRedirectTarget') || '/';
         localStorage.removeItem('authRedirectTarget'); // Clean up
         
-        // Double invalidation approach to improve reliability
+        // More aggressive approach to ensure authentication state is refreshed
+        console.log('Forcing multiple invalidations to refresh auth state...');
+        
+        // First invalidation
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        
+        // Set a short timeout to allow the invalidation to trigger a fetch
         setTimeout(() => {
+          // Second invalidation
           queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+          queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
           
           // Wait a moment to ensure auth state is updated
           setTimeout(() => {
@@ -58,14 +66,14 @@ export default function AuthRedirectHandler() {
               console.log('User authenticated, redirecting to:', redirectTo);
               setLocation(redirectTo);
             } else {
-              console.log('Auth success, but user not loaded yet. Forcing refresh...');
+              console.log('Auth success, but user not loaded yet. Forcing full page reload...');
               
-              // If we still don't have the user, reload the entire page
+              // Use stronger approach - reload the entire page with the redirect target
               // This ensures a fresh state with the new session cookies
               window.location.href = redirectTo;
             }
-          }, 500);
-        }, 100);
+          }, 800); // Longer wait to ensure auth query completes
+        }, 200);
       } else if (authStatus === 'session_error') {
         toast({
           title: 'Session Error',

@@ -214,38 +214,30 @@ export async function setupGoogleAuth(app: Express) {
         console.log("Session ID:", req.sessionID);
         console.log("Session cookie:", req.session?.cookie);
         
-        // Regenerate the session to avoid session fixation
-        req.session.regenerate((regenerateErr) => {
-          if (regenerateErr) {
-            console.error("Error regenerating session:", regenerateErr);
+        // Instead of regenerating the session which can cause issues,
+        // directly save the current session to ensure data persistence
+        const userData = req.user;
+        
+        if (!userData) {
+          console.error("No user data found in request after authentication");
+          return res.redirect("/?auth=session_error");
+        }
+        
+        console.log("Authenticated user data:", userData);
+        
+        // Force session save to ensure user is stored before redirect
+        req.session.save(saveErr => {
+          if (saveErr) {
+            console.error("Error saving session:", saveErr);
             return res.redirect("/?auth=session_error");
           }
           
-          // Re-login the user to ensure the session has the updated user data
-          req.login(req.user, (loginErr) => {
-            if (loginErr) {
-              console.error("Error logging in user after session regeneration:", loginErr);
-              return res.redirect("/?auth=session_error");
-            }
-            
-            console.log("User re-logged in after session regeneration");
-            
-            // Force session save to ensure user is stored before redirect
-            req.session.save(saveErr => {
-              if (saveErr) {
-                console.error("Error saving session:", saveErr);
-                // Even with error, redirect to safe location
-                return res.redirect("/?auth=session_error");
-              }
-              
-              console.log("Session saved successfully");
-              console.log("Final session ID:", req.sessionID);
-              
-              // Redirect to dashboard after successful login
-              // Client-side JavaScript will use localStorage to restore the original navigation target
-              res.redirect("/?auth=success");
-            });
-          });
+          console.log("Session saved successfully");
+          console.log("Session ID:", req.sessionID);
+          
+          // Redirect to dashboard after successful login
+          // Client-side JavaScript will use localStorage to restore the original navigation target
+          res.redirect("/?auth=success");
         });
       }
     );

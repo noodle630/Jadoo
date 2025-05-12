@@ -6,15 +6,20 @@ import type { User } from "@shared/schema";
 export function useAuth() {
   const queryClient = useQueryClient();
   
-  // Query for the currently logged in user
+  // Query for the currently logged in user with more aggressive retry options
   const { 
     data: user, 
-    isLoading, 
-    error 
+    isLoading,
+    isFetching,
+    error,
+    refetch
   } = useQuery<User>({
     queryKey: ["/api/auth/user"],
-    retry: false,
+    retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    // Override global settings for this specific query
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   // Mutation for registering a new user
@@ -120,9 +125,10 @@ export function useAuth() {
 
   return {
     user,
-    isLoading,
+    isLoading: isLoading || isFetching,
     isAuthenticated: !!user,
     error,
+    refetchUser: refetch,
     register,
     login,
     logout,

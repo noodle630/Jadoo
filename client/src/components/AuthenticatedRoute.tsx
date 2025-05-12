@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { Redirect } from 'wouter';
+import { ReactNode, useEffect } from 'react';
+import { Redirect, useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
@@ -8,7 +8,14 @@ interface AuthenticatedRouteProps {
 }
 
 export default function AuthenticatedRoute({ children }: AuthenticatedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, refetchUser } = useAuth();
+  const [location] = useLocation();
+
+  // Attempt to refetch user data when this component mounts or location changes
+  useEffect(() => {
+    // Try to refresh auth status when navigating to a protected route
+    refetchUser();
+  }, [refetchUser, location]);
 
   // Show a loading spinner while checking authentication status
   if (isLoading) {
@@ -21,6 +28,8 @@ export default function AuthenticatedRoute({ children }: AuthenticatedRouteProps
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
+    // Save the current location to redirect back after login
+    localStorage.setItem('authRedirectTarget', location);
     return <Redirect to="/login" />;
   }
 
