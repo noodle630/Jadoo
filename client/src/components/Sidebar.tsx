@@ -8,6 +8,7 @@ import {
   Settings,
   SlidersHorizontal,
   Globe,
+  FileUp,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -126,6 +127,23 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   >
                     <FileSpreadsheet size={18} />
                     <span>Templates</span>
+                  </div>
+                </Link>
+              </li>
+              
+              {/* Transform */}
+              <li>
+                <Link href="/transform">
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                      isActive("/transform") 
+                        ? "bg-slate-800 text-white" 
+                        : "text-slate-400 hover:bg-slate-900 hover:text-white"
+                    }`}
+                    onClick={handleLinkClick}
+                  >
+                    <FileUp size={18} />
+                    <span>Quick Transform</span>
                   </div>
                 </Link>
               </li>

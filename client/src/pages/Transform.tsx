@@ -212,7 +212,7 @@ export default function Transform() {
                     <div className="flex flex-col items-center justify-center gap-2">
                       {file ? (
                         <>
-                          <FileUpload className="h-8 w-8 text-green-500 dark:text-green-400" />
+                          <FileText className="h-8 w-8 text-green-500 dark:text-green-400" />
                           <div>
                             <p className="font-medium">{file.name}</p>
                             <p className="text-xs text-muted-foreground">

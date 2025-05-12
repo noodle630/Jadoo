@@ -15,6 +15,13 @@ export default function AuthRedirectHandler() {
     // Get the current URL search parameters
     const searchParams = new URLSearchParams(window.location.search);
     const authStatus = searchParams.get('auth');
+
+    // If user is authenticated but on the login page, redirect to dashboard
+    if (isAuthenticated && (location === '/login' || location === '/register')) {
+      console.log('User is authenticated but on login/register page, redirecting to dashboard');
+      setLocation('/');
+      return;
+    }
     
     if (authStatus) {
       console.log('Auth status detected in URL:', authStatus);
@@ -28,7 +35,7 @@ export default function AuthRedirectHandler() {
         console.log('Authentication successful');
         
         // Get saved redirect target from localStorage or default to dashboard
-        const redirectTo = localStorage.getItem('authRedirectTarget') || '/dashboard';
+        const redirectTo = localStorage.getItem('authRedirectTarget') || '/';
         localStorage.removeItem('authRedirectTarget'); // Clean up
         
         // Wait a moment to ensure auth state is updated
@@ -47,7 +54,7 @@ export default function AuthRedirectHandler() {
             console.log('Auth success, but user not loaded yet. Forcing refresh...');
             window.location.href = '/';
           }
-        }, 500);
+        }, 100); // Reduce timeout to speed up the process
       } else if (authStatus === 'session_error') {
         toast({
           title: 'Session Error',
