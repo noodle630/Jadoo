@@ -27,9 +27,11 @@ export function useAuth() {
       confirmPassword: string;
       companyName?: string;
     }) => {
-      return apiRequest('/api/auth/register', {
+      return apiRequest('/api/auth/register', JSON.stringify(userData), {
         method: 'POST',
-        body: JSON.stringify(userData)
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
     },
     onSuccess: () => {
@@ -50,9 +52,11 @@ export function useAuth() {
   // Mutation for logging in
   const login = useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      return apiRequest('/api/auth/login', {
+      return apiRequest('/api/auth/login', JSON.stringify(credentials), {
         method: 'POST',
-        body: JSON.stringify(credentials)
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
     },
     onSuccess: () => {
@@ -75,7 +79,7 @@ export function useAuth() {
   // Mutation for logging out
   const logout = useMutation({
     mutationFn: async () => {
-      return apiRequest('/api/auth/logout', {
+      return apiRequest('/api/auth/logout', undefined, {
         method: 'GET'
       });
     },
