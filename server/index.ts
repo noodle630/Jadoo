@@ -4,6 +4,8 @@ import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./replitAuth";
 // Import our direct file handling routes for reliable CSV processing
 import { setupDirectRoutes } from "./direct-routes";
+// Import our simplified reliable routes
+import { createSimpleRoutes } from "./simple-routes";
 
 const app = express();
 app.use(express.json());
@@ -42,6 +44,9 @@ app.use((req, res, next) => {
 (async () => {
   // Set up Replit Auth
   await setupAuth(app);
+  
+  // Setup our simplified reliable routes
+  app.use('/api', createSimpleRoutes());
   
   // Setup our direct transformation routes
   setupDirectRoutes(app);

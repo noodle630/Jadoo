@@ -147,8 +147,8 @@ export default function CreateFeed() {
         formData.append("templateName", data.templateName);
       }
 
-      // Upload the file
-      const response = await fetch("/api/feeds/upload", {
+      // Use our reliable direct endpoint
+      const response = await fetch("/api/simple-upload", {
         method: "POST",
         body: formData,
       });

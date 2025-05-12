@@ -1,9 +1,11 @@
-import { Express, Request, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { fromZodError } from 'zod-validation-error';
 import { storage } from './storage';
+import { z } from 'zod';
 
 // Configure paths for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -31,10 +33,12 @@ const upload = multer({
   }
 });
 
-export function setupDirectRoutes(app: Express) {
-  // Direct transform endpoint
-  app.post('/api/transform-direct', upload.single('file'), async (req: Request, res: Response) => {
-    console.log("Direct transform request received");
+export function createSimpleRoutes() {
+  const router = Router();
+  
+  // Create a new feed with reliable row counting
+  router.post('/simple-upload', upload.single('file'), async (req: Request, res: Response) => {
+    console.log("File upload request received");
     
     try {
       if (!req.file) {
@@ -106,7 +110,7 @@ export function setupDirectRoutes(app: Express) {
         name,
         marketplace,
         rowCount: transformResult.inputRows || 0,
-        downloadUrl: `/api/direct-download/${feed.id}`
+        downloadUrl: `/api/simple-download/${feed.id}`
       });
     } catch (error) {
       console.error('Error creating feed:', error);
@@ -117,9 +121,10 @@ export function setupDirectRoutes(app: Express) {
     }
   });
   
-  // Direct download endpoint
-  app.get('/api/direct-download/:id', async (req: Request, res: Response) => {
+  // Simple, reliable download route
+  router.get('/simple-download/:id', async (req: Request, res: Response) => {
     try {
+      // Get feed ID
       const feedId = parseInt(req.params.id);
       if (isNaN(feedId)) {
         return res.status(400).json({ message: 'Invalid feed ID' });
@@ -131,9 +136,10 @@ export function setupDirectRoutes(app: Express) {
         return res.status(404).json({ message: 'Feed not found' });
       }
       
-      // Get file path
+      // Get file path from sourceDetails
       let filePath = '';
       
+      // Try all possible places where the path might be stored
       if (feed.outputUrl) {
         filePath = feed.outputUrl;
       } else if (feed.sourceDetails && typeof feed.sourceDetails === 'object') {
@@ -170,4 +176,6 @@ export function setupDirectRoutes(app: Express) {
       });
     }
   });
+  
+  return router;
 }
