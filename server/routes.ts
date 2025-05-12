@@ -54,9 +54,13 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   const router = express.Router();
   
-  // Public demo transformation endpoint
+  // Public demo transformation endpoints
   app.get('/transform', (req, res) => {
     res.sendFile(path.resolve('transform_demo.html'));
+  });
+  
+  app.get('/transform-direct', (req, res) => {
+    res.sendFile(path.resolve('transform_direct.html'));
   });
 
   // Get current user (demo implementation)
