@@ -836,6 +836,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Serve the transform_direct.html page
+  app.get('/transform-direct', (_req: Request, res: Response) => {
+    try {
+      const filePath = path.resolve('transform_direct.html');
+      
+      if (fs.existsSync(filePath)) {
+        console.log(`Serving transform_direct.html from ${filePath}`);
+        res.sendFile(filePath);
+      } else {
+        console.error(`File not found: ${filePath}`);
+        res.status(404).send('File not found');
+      }
+    } catch (error) {
+      console.error(`Error serving transform_direct.html: ${error}`);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
