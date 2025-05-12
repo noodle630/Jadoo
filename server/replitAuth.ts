@@ -178,6 +178,21 @@ export async function setupAuth(app: Express) {
     // Login route
     app.get("/api/auth/replit", (req, res, next) => {
       console.log("Starting Replit authentication process");
+      console.log(`Hostname: ${req.hostname}`);
+      // Use type assertion to access internal passport properties
+      const strategies = (passport as any)._strategies || {};
+      console.log(`Available strategies: ${Object.keys(strategies).join(', ')}`);
+      console.log(`Looking for strategy: replitauth:${req.hostname}`);
+      
+      // Check if the strategy exists before attempting to authenticate
+      if (!strategies[`replitauth:${req.hostname}`]) {
+        console.error(`Strategy not found: replitauth:${req.hostname}`);
+        return res.status(500).json({ 
+          error: "Authentication configuration error", 
+          message: "Replit authentication is not properly configured for this domain." 
+        });
+      }
+      
       passport.authenticate(`replitauth:${req.hostname}`, {
         prompt: "login consent",
         scope: ["openid", "email", "profile", "offline_access"],
@@ -187,6 +202,16 @@ export async function setupAuth(app: Express) {
     // Callback route
     app.get("/api/auth/replit/callback", (req, res, next) => {
       console.log("Processing Replit auth callback");
+      console.log(`Callback hostname: ${req.hostname}`);
+      console.log(`Callback query params:`, req.query);
+      
+      // Check if the strategy exists before attempting to authenticate
+      const callbackStrategies = (passport as any)._strategies || {};
+      if (!callbackStrategies[`replitauth:${req.hostname}`]) {
+        console.error(`Strategy not found for callback: replitauth:${req.hostname}`);
+        return res.redirect("/login?error=replit_auth_configuration_error");
+      }
+      
       passport.authenticate(`replitauth:${req.hostname}`, {
         successRedirect: "/?auth=success",
         failureRedirect: "/login?error=replit_auth_failed",
