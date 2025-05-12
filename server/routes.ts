@@ -53,6 +53,11 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const router = express.Router();
+  
+  // Public demo transformation endpoint
+  app.get('/transform', (req, res) => {
+    res.sendFile(path.resolve('transform_demo.html'));
+  });
 
   // Get current user (demo implementation)
   router.get('/user', async (_req: Request, res: Response) => {
@@ -738,9 +743,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Processing ${req.file.originalname} for ${marketplace} marketplace`);
       console.log(`File saved to ${req.file.path}`);
       
-      // Execute the Python smart_transform script
+      // Execute the Python direct_transform script
       const pythonProcess = spawn('python3', [
-        'smart_transform.py',
+        'direct_transform.py',
         req.file.path,
         marketplace,
         maxRows.toString()
@@ -776,13 +781,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           if (result.output_file && fs.existsSync(result.output_file)) {
             // Send the file
-            return res.download(result.output_file, `transformed_${marketplace}_${path.basename(req.file.originalname)}`, (err) => {
+            return res.download(result.output_file, `transformed_${marketplace}_${path.basename(req.file?.originalname || 'output.csv')}`, (err) => {
               if (err) {
                 console.error(`Error sending file: ${err}`);
               }
               // Clean up the files
               try {
-                fs.unlinkSync(req.file.path);
+                if (req.file?.path) {
+                  fs.unlinkSync(req.file.path);
+                }
                 fs.unlinkSync(result.output_file);
               } catch (cleanupErr) {
                 console.error(`Error cleaning up files: ${cleanupErr}`);
@@ -801,7 +808,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error(`Server error in transformation: ${error}`);
-      return res.status(500).json({ error: 'Server error', details: error.message });
+      return res.status(500).json({ 
+        error: 'Server error', 
+        details: error instanceof Error ? error.message : String(error) 
+      });
     }
   });
 
