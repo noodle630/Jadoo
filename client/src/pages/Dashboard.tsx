@@ -8,18 +8,39 @@ import FileUpload, { UploadStatus } from "@/components/FileUpload";
 import TransformView from "@/components/TransformView";
 
 // Components for each section
-const FeedUpload = () => {
+interface FeedUploadProps {
+  onUpdateState: (data: any) => void;
+  onNavigate: (tab: string) => void;
+}
+
+const FeedUpload = ({ onUpdateState, onNavigate }: FeedUploadProps) => {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState('');
   const [selectedMarketplace, setSelectedMarketplace] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  
+  // Update shared state and navigate to the transform tab
+  const goToTransform = () => {
+    // Update shared state with file and marketplace info
+    onUpdateState({
+      uploadedFile: uploadFile,
+      selectedMarketplace: selectedMarketplace,
+      feedName: uploadFile?.name || "Untitled Feed",
+      lastUploadTime: new Date()
+    });
+    
+    // Navigate to transform tab
+    onNavigate("transform");
+  };
   
   const handleFileAccepted = (file: File) => {
     setUploadFile(file);
     // Reset status when a new file is selected
     setUploadStatus('idle');
     setUploadError('');
+    setUploadSuccess(false);
   };
   
   const handleUpload = async () => {
@@ -50,10 +71,11 @@ const FeedUpload = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // In a real app, you would upload the file to your server
+      // In a real app, you would upload the file to your server and preserve 1:1 mapping
       // const formData = new FormData();
       // formData.append('file', uploadFile);
       // formData.append('marketplace', selectedMarketplace);
+      // formData.append('preserveMapping', 'true'); // Ensure 1:1 row mapping
       // const response = await fetch('/api/feeds/upload', {
       //   method: 'POST',
       //   body: formData,
@@ -64,6 +86,12 @@ const FeedUpload = () => {
       clearInterval(progressInterval);
       setUploadProgress(100);
       setUploadStatus('success');
+      setUploadSuccess(true);
+      
+      // Wait a short time to show the success state before redirecting
+      setTimeout(() => {
+        goToTransform();
+      }, 1000);
     } catch (error) {
       clearInterval(progressInterval);
       setUploadStatus('error');
@@ -110,14 +138,22 @@ const FeedUpload = () => {
                   </div>
                 </div>
                 
-                <Button 
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                  onClick={handleUpload}
-                  disabled={uploadStatus === 'uploading' || uploadStatus === 'success'}
-                >
-                  {uploadStatus === 'uploading' ? 'Uploading...' : 
-                   uploadStatus === 'success' ? 'Uploaded Successfully' : 'Start Transformation'}
-                </Button>
+                {uploadStatus === 'success' ? (
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    onClick={goToTransform}
+                  >
+                    Continue to Transform
+                  </Button>
+                ) : (
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    onClick={handleUpload}
+                    disabled={uploadStatus === 'uploading'}
+                  >
+                    {uploadStatus === 'uploading' ? 'Uploading...' : 'Start Transformation'}
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -410,7 +446,18 @@ const Account = () => {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("upload");
+  const [sharedState, setSharedState] = useState({
+    uploadedFile: null,
+    selectedMarketplace: null,
+    feedName: "",
+    lastUploadTime: null
+  });
   const { user } = useAuth();
+  
+  // This function allows child components to navigate between tabs
+  const navigateToTab = (tab: string) => {
+    setActiveTab(tab);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 text-white">
@@ -471,8 +518,17 @@ export default function Dashboard() {
           </Tabs>
         </div>
 
-        {activeTab === "upload" && <FeedUpload />}
-        {activeTab === "transform" && <Transformations />}
+        {activeTab === "upload" && (
+          <FeedUpload 
+            onUpdateState={(data) => setSharedState({ ...sharedState, ...data })} 
+            onNavigate={navigateToTab} 
+          />
+        )}
+        {activeTab === "transform" && (
+          <TransformView 
+            feedData={sharedState} 
+          />
+        )}
         {activeTab === "templates" && <Templates />}
         {activeTab === "history" && <TransformationHistory />}
         {activeTab === "account" && <Account />}

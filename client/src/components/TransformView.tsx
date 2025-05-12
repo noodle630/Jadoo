@@ -6,7 +6,16 @@ import { Progress } from "@/components/ui/progress";
 
 type TransformStatus = 'idle' | 'processing' | 'completed' | 'error';
 
-export default function TransformView() {
+interface TransformViewProps {
+  feedData?: {
+    uploadedFile: File | null;
+    selectedMarketplace: string | null;
+    feedName: string;
+    lastUploadTime: Date | null;
+  };
+}
+
+export default function TransformView({ feedData }: TransformViewProps) {
   const [selectedFeed, setSelectedFeed] = useState<string | null>(null);
   const [transformStatus, setTransformStatus] = useState<TransformStatus>('idle');
   const [transformProgress, setTransformProgress] = useState(0);
