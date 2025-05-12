@@ -77,6 +77,14 @@ async function upsertGoogleUser(profile: any, accessToken: string) {
         ...userData,
         lastLogin: new Date(),
       });
+      
+      // Add null check for TypeScript
+      if (!updatedUser) {
+        console.error(`Failed to update user with ID: ${existingUserByGoogleId.id}`);
+        // Fall back to returning the existing user if update fails
+        return existingUserByGoogleId;
+      }
+      
       console.log(`User updated: ${updatedUser.id}`);
       return updatedUser;
     }
@@ -93,6 +101,14 @@ async function upsertGoogleUser(profile: any, accessToken: string) {
           googleId: userData.googleId,
           lastLogin: new Date(),
         });
+        
+        // Add null check for TypeScript
+        if (!updatedUser) {
+          console.error(`Failed to update user with ID: ${existingUserByEmail.id}`);
+          // Fall back to returning the existing user if update fails
+          return existingUserByEmail;
+        }
+        
         console.log(`Linked Google ID to existing account: ${updatedUser.id}`);
         return updatedUser;
       }
@@ -133,6 +149,13 @@ export async function setupGoogleAuth(app: Express) {
         try {
           console.log(`Google login - Processing profile ID: ${profile.id}`);
           const user = await upsertGoogleUser(profile, accessToken);
+          
+          // Add null check to fix TypeScript error
+          if (!user) {
+            console.error("Google login - Failed to create/update user");
+            return done(new Error("Failed to create or update user"));
+          }
+          
           console.log(`Google login - User created/updated with ID: ${user.id}`);
           done(null, user);
         } catch (error) {
@@ -216,12 +239,9 @@ export async function setupGoogleAuth(app: Express) {
         
         // Instead of regenerating the session which can cause issues,
         // directly save the current session to ensure data persistence
-        const userData = req.user;
-        
-        if (!userData) {
-          console.error("No user data found in request after authentication");
-          return res.redirect("/?auth=session_error");
-        }
+        // Type assertion because passport.authenticate ensures req.user exists
+        // This fixes the TypeScript error
+        const userData = req.user as Express.User;
         
         console.log("Authenticated user data:", userData);
         
