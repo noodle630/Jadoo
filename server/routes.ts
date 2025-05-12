@@ -688,6 +688,151 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // DIRECT TRANSFORMATION ROUTE
+  // This is a brand new, simplified route that guarantees exact 1:1 row mapping
+  router.post('/transform-direct', upload.single('file'), async (req: Request, res: Response) => {
+    try {
+      // Import our exact parser that guarantees accurate row counts
+      const exactParser = require('./utils/exactParser');
+      
+      // Validate the request
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+      
+      const marketplace = (req.body.marketplace || 'amazon').toLowerCase();
+      const name = req.body.name || `Transformation ${new Date().toISOString()}`;
+      
+      console.log(`Starting direct transformation for marketplace: ${marketplace}`);
+      console.log(`Input file: ${req.file.path}, size: ${req.file.size} bytes`);
+      
+      // Count rows in the input file
+      const sourceRowsInfo = exactParser.countExactRows(req.file.path);
+      console.log('Source file rows:', sourceRowsInfo);
+      
+      // Generate output path
+      const outputFileName = `${marketplace}_${Date.now()}_${path.basename(req.file.originalname)}`;
+      const outputFilePath = path.join(uploadDir, outputFileName);
+      
+      // Perform the transformation with guaranteed 1:1 row mapping
+      const transformationResult = exactParser.transformWithExactRowMapping(
+        req.file.path, 
+        outputFilePath,
+        // Simple line by line transformation
+        (line, index, isHeader) => {
+          // Header transformation - just append marketplace identifier
+          if (isHeader) {
+            return line + `,marketplace_${marketplace}`;
+          }
+          
+          // Data row transformation - append marketplace name as extra column
+          return line + `,${marketplace}`;
+        }
+      );
+      
+      console.log('Transformation result:', transformationResult);
+      
+      if (!transformationResult.success) {
+        return res.status(500).json({ 
+          message: 'Transformation failed',
+          error: transformationResult.error
+        });
+      }
+      
+      // Create a feed record
+      const newFeed = await storage.createFeed({
+        userId: req.user ? (req.user as any).id || 1 : 1, // Use authenticated user or fallback to demo user
+        name,
+        marketplace,
+        status: 'completed',
+        source: 'upload',
+        sourceDetails: {
+          originalPath: req.file.path,
+          outputPath: outputFilePath,
+          originalRows: sourceRowsInfo.dataRows,
+          originalName: req.file.originalname,
+          size: req.file.size
+        },
+        itemCount: sourceRowsInfo.dataRows,
+        processedAt: new Date(),
+        aiChanges: {
+          transformed: true,
+          rowCount: sourceRowsInfo.dataRows,
+          marketplace
+        },
+        outputUrl: outputFilePath
+      });
+      
+      console.log(`Direct transformation complete. Feed ID: ${newFeed.id}`);
+      
+      // Return success with feed information and download URL
+      return res.status(200).json({
+        message: 'Transformation successful',
+        feed: newFeed,
+        downloadUrl: `/api/direct-download/${newFeed.id}`,
+        sourceRows: sourceRowsInfo.dataRows,
+        outputRows: transformationResult.outputRows,
+        feedId: newFeed.id
+      });
+    } catch (error) {
+      console.error('Error in direct transformation:', error);
+      return res.status(500).json({ 
+        message: 'Server error during transformation',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+  
+  // Direct download route - much simpler and more reliable
+  router.get('/direct-download/:id', async (req: Request, res: Response) => {
+    try {
+      const feedId = parseInt(req.params.id);
+      if (isNaN(feedId)) {
+        return res.status(400).json({ message: 'Invalid feed ID' });
+      }
+      
+      // Get the feed record
+      const feed = await storage.getFeed(feedId);
+      if (!feed) {
+        console.log(`Feed not found: ${feedId}`);
+        return res.status(404).json({ message: 'Feed not found' });
+      }
+      
+      // Get the output file path
+      let outputFilePath = '';
+      
+      // Extract from sourceDetails which is most reliable
+      const sourceDetails = feed.sourceDetails as any;
+      if (sourceDetails && sourceDetails.outputPath) {
+        outputFilePath = sourceDetails.outputPath;
+      } else if (feed.outputUrl) {
+        // Fallback to outputUrl if available
+        outputFilePath = feed.outputUrl;
+      }
+      
+      console.log(`Using output file path: ${outputFilePath}`);
+      
+      // Verify the file exists
+      if (!outputFilePath || !fs.existsSync(outputFilePath)) {
+        console.log(`Output file does not exist: ${outputFilePath}`);
+        return res.status(404).json({ message: 'Output file not found' });
+      }
+      
+      // Generate a user-friendly filename
+      const fileName = `${feed.marketplace}_${feed.name.replace(/\s+/g, '_')}.csv`;
+      
+      // Set headers for file download
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+      res.setHeader('Content-Type', 'text/csv');
+      
+      // Stream the file directly to the response
+      fs.createReadStream(outputFilePath).pipe(res);
+    } catch (error) {
+      console.error('Error in direct download:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
+
   // Get all templates for the current user
   router.get('/templates', async (_req: Request, res: Response) => {
     try {
