@@ -47,7 +47,8 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
     """
     start_time = time.time()
     try:
-        print(f"Reading input file: {input_file_path}")
+        # Use stderr for logging, keep stdout clean for JSON output only
+        print(f"Reading input file: {input_file_path}", file=sys.stderr)
         
         # Read the CSV file with robust error handling
         df = None
@@ -72,11 +73,11 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
         input_row_count = len(df)
         input_columns = list(df.columns)
         
-        print(f"Input file has {input_row_count} rows and {len(input_columns)} columns")
+        print(f"Input file has {input_row_count} rows and {len(input_columns)} columns", file=sys.stderr)
         
         # Enforce row limit
         if input_row_count > max_rows:
-            print(f"Limiting to {max_rows} rows (original: {input_row_count})")
+            print(f"Limiting to {max_rows} rows (original: {input_row_count})", file=sys.stderr)
             df = df.head(max_rows)
             input_row_count = len(df)
         
@@ -99,7 +100,7 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
             # Default generic columns for any other format
             target_columns = ["sku", "title", "description", "price", "stock", "brand", "category", "image_url"]
             
-        print(f"Using target columns for {marketplace_format}: {', '.join(target_columns)}")
+        print(f"Using target columns for {marketplace_format}: {', '.join(target_columns)}", file=sys.stderr)
         
         # Create an empty dataframe with the target columns
         output_df = pd.DataFrame(columns=target_columns)
@@ -109,7 +110,7 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
         batches = [df.iloc[i:i+batch_size] for i in range(0, len(df), batch_size)]
         
         for batch_idx, batch_df in enumerate(batches):
-            print(f"Processing batch {batch_idx+1}/{len(batches)}...")
+            print(f"Processing batch {batch_idx+1}/{len(batches)}...", file=sys.stderr)
             
             # Convert batch to CSV string
             batch_csv = batch_df.to_csv(index=False)
@@ -157,7 +158,7 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
             
             # If we don't get a valid response, create an empty batch
             if not transformed_text or transformed_text.strip() == "":
-                print("Warning: Empty response from OpenAI, creating empty output")
+                print("Warning: Empty response from OpenAI, creating empty output", file=sys.stderr)
                 empty_batch = pd.DataFrame(columns=target_columns, index=range(len(batch_df)))
                 output_df = pd.concat([output_df, empty_batch], ignore_index=True)
                 continue
@@ -180,7 +181,7 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
                         # If no ending code block, assume everything after the first code block is CSV
                         csv_content = transformed_text[start_idx:].strip()
                 except Exception as e:
-                    print(f"Error extracting code block: {e}")
+                    print(f"Error extracting code block: {e}", file=sys.stderr)
                     csv_content = transformed_text  # Fallback to using the entire response
             
             # Parse the transformed batch
@@ -195,7 +196,7 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
                 
                 # Verify row count matches input
                 if len(transformed_batch) != len(batch_df):
-                    print(f"Warning: Transformed batch has {len(transformed_batch)} rows but input had {len(batch_df)} rows")
+                    print(f"Warning: Transformed batch has {len(transformed_batch)} rows but input had {len(batch_df)} rows", file=sys.stderr)
                     # Adjust rows to match input (pad or truncate)
                     if len(transformed_batch) < len(batch_df):
                         # Pad with empty rows
