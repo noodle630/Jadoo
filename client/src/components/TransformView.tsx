@@ -16,7 +16,10 @@ interface TransformViewProps {
 }
 
 export default function TransformView({ feedData }: TransformViewProps) {
-  const [selectedFeed, setSelectedFeed] = useState<string | null>(null);
+  const [selectedFeed, setSelectedFeed] = useState<string | null>(
+    // If we have feedData from a previous upload, auto-select it
+    feedData?.uploadedFile ? 'uploaded' : null
+  );
   const [transformStatus, setTransformStatus] = useState<TransformStatus>('idle');
   const [transformProgress, setTransformProgress] = useState(0);
   const [transformResult, setTransformResult] = useState<{
@@ -26,8 +29,17 @@ export default function TransformView({ feedData }: TransformViewProps) {
     downloadUrl: string;
   } | null>(null);
   
-  // Mock data for available feeds
+  // We'll use feedData if available, otherwise use mock data
   const availableFeeds = [
+    ...(feedData?.uploadedFile ? [
+      { 
+        id: 'uploaded', 
+        name: feedData.feedName || 'Uploaded Feed', 
+        rows: Math.floor(Math.random() * 200) + 100, // In a real app, we'd get this from the file
+        lastUpdated: feedData.lastUploadTime ? 'Just now' : '1 minute ago',
+        marketplace: feedData.selectedMarketplace
+      }
+    ] : []),
     { id: '1', name: 'Electronics Inventory', rows: 245, lastUpdated: '2 hours ago' },
     { id: '2', name: 'Clothing Products', rows: 187, lastUpdated: '1 day ago' },
     { id: '3', name: 'Home Goods', rows: 319, lastUpdated: '3 days ago' },
@@ -57,11 +69,14 @@ export default function TransformView({ feedData }: TransformViewProps) {
       setTransformProgress(100);
       setTransformStatus('completed');
       
-      // Mock result data
+      // Get the selected feed's details
+      const feed = availableFeeds.find(f => f.id === selectedFeed);
+      
+      // Generate result data 
       setTransformResult({
-        inputRows: 245,
-        outputRows: 245, // 1:1 mapping maintained
-        marketplace: 'Amazon',
+        inputRows: feed?.rows || 245,
+        outputRows: feed?.rows || 245, // 1:1 mapping maintained - this is key for our platform
+        marketplace: feed?.marketplace || feedData?.selectedMarketplace || 'Amazon',
         downloadUrl: '#',
       });
       
@@ -200,7 +215,8 @@ export default function TransformView({ feedData }: TransformViewProps) {
                         <div
                           key={marketplace}
                           className={`border rounded-lg p-3 cursor-pointer transition-colors ${
-                            marketplace === "Amazon" 
+                            (marketplace === feedData?.selectedMarketplace || 
+                             (feedData?.selectedMarketplace === null && marketplace === "Amazon"))
                               ? "border-blue-500 bg-blue-900/20" 
                               : "border-gray-700 hover:border-blue-400 bg-gray-800/50"
                           }`}
@@ -247,25 +263,42 @@ export default function TransformView({ feedData }: TransformViewProps) {
               <div className="bg-gray-800 p-6 rounded-lg text-center">
                 <FileText className="h-12 w-12 text-gray-500 mx-auto mb-4" />
                 <p className="text-sm text-gray-400 mb-4">
-                  Select a feed to transform
+                  {feedData?.uploadedFile ? "Select your feed to transform" : "Select a feed to transform"}
                 </p>
                 <div className="space-y-3">
                   {availableFeeds.map(feed => (
                     <div 
                       key={feed.id}
-                      className="p-3 border border-gray-700 rounded-lg flex justify-between items-center cursor-pointer hover:border-blue-500 transition-colors text-left"
+                      className={`p-3 border rounded-lg flex justify-between items-center cursor-pointer transition-colors text-left
+                        ${feed.id === 'uploaded' 
+                          ? 'border-blue-500 bg-blue-900/20' 
+                          : 'border-gray-700 hover:border-blue-500'}`}
                       onClick={() => setSelectedFeed(feed.id)}
                     >
                       <div className="flex items-center">
-                        <div className="text-gray-200 mr-3">
+                        <div className={`mr-3 ${feed.id === 'uploaded' ? 'text-blue-400' : 'text-gray-200'}`}>
                           <FileText className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium">{feed.name}</p>
-                          <p className="text-xs text-gray-400">{feed.rows} rows · {feed.lastUpdated}</p>
+                          <p className="text-sm font-medium">
+                            {feed.id === 'uploaded' ? (
+                              <span className="flex items-center">
+                                {feed.name}
+                                {feedData?.lastUploadTime && <span className="ml-2 text-xs px-1.5 py-0.5 bg-blue-900/50 text-blue-300 rounded">New</span>}
+                              </span>
+                            ) : feed.name}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {feed.rows} rows · {feed.lastUpdated}
+                            {feed.marketplace && ` · ${feed.marketplace}`}
+                          </p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant={feed.id === 'uploaded' ? "default" : "ghost"} 
+                        size="sm"
+                        className={feed.id === 'uploaded' ? "bg-blue-600 hover:bg-blue-700" : ""}
+                      >
                         Select
                       </Button>
                     </div>
