@@ -11,11 +11,8 @@ import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 import Layout from "@/components/Layout";
 
-// Import for new pages
+// Import only the Create Feed page
 import CreateFeed from "@/pages/CreateFeed";
-import Templates from "@/pages/Templates";
-import History from "@/pages/History";
-import Settings from "@/pages/Settings";
 
 // Import our AuthContext and AuthProvider
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -36,10 +33,7 @@ function Router() {
             <Layout>
               <Switch>
                 <Route path="/" component={Dashboard} />
-                <Route path="/new-feed" component={CreateFeed} />
-                <Route path="/templates" component={Templates} />
-                <Route path="/history" component={History} />
-                <Route path="/settings" component={Settings} />
+                <Route path="/create-feed" component={CreateFeed} />
                 <Route component={NotFound} />
               </Switch>
             </Layout>
