@@ -12,6 +12,7 @@ import { insertFeedSchema, insertTemplateSchema, feedStatusEnum, marketplaceEnum
 import { fromZodError } from "zod-validation-error";
 import { spawn } from 'child_process';
 import fileParser from './utils/fileParser';
+import { setupDirectRoutes } from './routes-direct';
 
 // Create a temporary directory for file uploads
 const uploadDir = path.resolve("temp_uploads");
@@ -1127,23 +1128,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Serve the transform_direct.html page
-  app.get('/transform-direct', (_req: Request, res: Response) => {
-    try {
-      const filePath = path.resolve('transform_direct.html');
-      
-      if (fs.existsSync(filePath)) {
-        console.log(`Serving transform_direct.html from ${filePath}`);
-        res.sendFile(filePath);
-      } else {
-        console.error(`File not found: ${filePath}`);
-        res.status(404).send('File not found');
-      }
-    } catch (error) {
-      console.error(`Error serving transform_direct.html: ${error}`);
-      res.status(500).send('Internal Server Error');
-    }
-  });
+  // Setup direct transformation routes - this replaces the old static HTML approach
+  // with a more reliable direct implementation
+  setupDirectRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;
