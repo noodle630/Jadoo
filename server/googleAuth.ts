@@ -42,7 +42,7 @@ export function getSession() {
     saveUninitialized: true, // Changed to true to create session for all users
     cookie: {
       httpOnly: true,
-      secure: false, // Definitely false for development
+      secure: process.env.NODE_ENV === 'production', // Only secure in production
       maxAge: sessionTtl,
       sameSite: 'lax'
     },
