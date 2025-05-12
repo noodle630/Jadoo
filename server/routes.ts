@@ -171,59 +171,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Processing feed with name: ${name}, marketplace: ${marketplace}`);
       
-      // Count actual rows in the CSV file - improved method to handle various CSV formats
+      // Count rows using the simplest, most reliable approach
       let rowCount = 0;
       try {
-        if (fs.existsSync(req.file.path)) {
-          const fileContent = fs.readFileSync(req.file.path, 'utf8');
+        // Very simple, direct row counting approach that won't overcomplicate things
+        const filePath = req.file.path;
+        console.log(`Raw counting rows in file: ${filePath}`);
+        
+        if (fs.existsSync(filePath)) {
+          // Read the file with proper encoding
+          const fileContent = fs.readFileSync(filePath, {encoding: 'utf8'});
           
-          // Handle different line break styles (CRLF, LF, etc.)
+          // Simple line-break normalization first
           const normalizedContent = fileContent.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
           
-          // First check if it's properly formatted CSV with commas
-          const lines = normalizedContent.split('\n');
-          console.log(`Total lines detected in file: ${lines.length}`);
+          // Split by new lines and get raw count
+          const allLines = normalizedContent.split('\n');
+          console.log(`Raw line count (including empty): ${allLines.length}`);
           
-          // Filter out truly empty lines (not just whitespace)
-          const nonEmptyLines = lines.filter(line => line.trim().length > 0);
-          console.log(`Non-empty lines in file: ${nonEmptyLines.length}`);
+          // Count non-empty lines
+          const nonEmptyLines = allLines.filter(line => line.trim().length > 0);
+          console.log(`Non-empty lines: ${nonEmptyLines.length}`);
           
-          // If we have valid lines, count data rows (subtracting header)
-          if (nonEmptyLines.length > 0) {
-            // Subtract 1 for header row, but only if we have more than one line
-            rowCount = nonEmptyLines.length > 1 ? nonEmptyLines.length - 1 : nonEmptyLines.length;
-            console.log(`Data rows (excluding header): ${rowCount} rows`);
-            
-            // Validate the first few rows to ensure they have the same number of columns
-            // This helps detect malformed CSV files
-            const sampleSize = Math.min(5, nonEmptyLines.length);
-            const headerFields = nonEmptyLines[0].split(',').length;
-            console.log(`Header has ${headerFields} fields`);
-            
-            let isValidCsv = true;
-            for (let i = 1; i < sampleSize; i++) {
-              if (i < nonEmptyLines.length) {
-                const fields = nonEmptyLines[i].split(',').length;
-                if (Math.abs(fields - headerFields) > 1) { // Allow some flexibility
-                  console.log(`Warning: Row ${i} has ${fields} fields (header has ${headerFields})`);
-                  isValidCsv = false;
-                }
-              }
-            }
-            
-            if (!isValidCsv) {
-              console.log("CSV validation warning: Some rows have significantly different column counts");
-            }
+          // Assuming first line is header, rest are data rows
+          if (nonEmptyLines.length > 1) {
+            console.log(`Header: "${nonEmptyLines[0].substring(0, 100)}..."`);
+            rowCount = nonEmptyLines.length - 1; // Subtract header
+          } else {
+            rowCount = nonEmptyLines.length; // Just in case there's only one line
           }
           
-          console.log(`Final calculated row count: ${rowCount} rows`);
+          // Validate by logging some additional info
+          console.log(`First few rows of file content:`);
+          for (let i = 0; i < Math.min(5, nonEmptyLines.length); i++) {
+            console.log(`Row ${i}: ${nonEmptyLines[i].substring(0, 50)}...`);
+          }
+          
+          // Test count with a different library for validation
+          const stats = fs.statSync(filePath);
+          console.log(`File size: ${stats.size} bytes`);
+          
+          // Raw byte content with no encoding assumptions
+          const buffer = fs.readFileSync(filePath);
+          const rawLineCount = buffer.toString().split('\n').length;
+          console.log(`Raw byte-level line count: ${rawLineCount}`);
+          
+          // Log both counts for comparison
+          console.log(`FINAL ROW COUNT (excluding header): ${rowCount}`);
+          console.log(`Raw line count: ${rawLineCount}`);
+        } else {
+          console.error(`File not found: ${filePath}`);
+          rowCount = 0;
         }
       } catch (err) {
-        console.error("Error counting rows:", err);
-        // If we can't count rows, estimate based on file size, but with a better formula
-        // Average CSV row is roughly 100-300 bytes depending on content
-        rowCount = Math.max(1, Math.ceil(req.file.size / 250)); 
-        console.log(`Estimated row count based on file size: ${rowCount} rows`);
+        console.error("Critical error counting rows:", err);
+        // Absolute last resort
+        rowCount = Math.ceil(req.file.size / 200); 
+        console.log(`FALLBACK row count based on file size: ${rowCount} rows`);
       }
 
       // Create a new feed record with accurate row count

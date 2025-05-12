@@ -9,6 +9,13 @@ import { ThemeProvider } from "@/lib/theme-provider";
 import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
+import Layout from "@/components/Layout";
+
+// Import for new pages
+import CreateFeed from "@/pages/CreateFeed";
+import Templates from "@/pages/Templates";
+import History from "@/pages/History";
+import Settings from "@/pages/Settings";
 
 // Import our AuthContext and AuthProvider
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -26,10 +33,16 @@ function Router() {
       <Route path="/">
         {() => (
           <ProtectedRoute>
-            <Switch>
-              <Route path="/" component={Dashboard} />
-              <Route component={NotFound} />
-            </Switch>
+            <Layout>
+              <Switch>
+                <Route path="/" component={Dashboard} />
+                <Route path="/new-feed" component={CreateFeed} />
+                <Route path="/templates" component={Templates} />
+                <Route path="/history" component={History} />
+                <Route path="/settings" component={Settings} />
+                <Route component={NotFound} />
+              </Switch>
+            </Layout>
           </ProtectedRoute>
         )}
       </Route>
