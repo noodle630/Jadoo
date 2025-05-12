@@ -47,9 +47,9 @@ interface TransformationsStore {
 import type { Request, Response } from 'express';
 
 // Create direct transformation router
-function setupDirectRoutes(app: any) {
+function setupDirectRoutes(app: express.Application) {
   // Serve the direct transformation page
-  app.get('/transform-direct', (req: any, res: any) => {
+  app.get('/transform-direct', (req: Request, res: Response) => {
     const filePath = path.join(process.cwd(), 'transform_direct.html');
     if (fs.existsSync(filePath)) {
       console.log(`Serving transform_direct.html from ${filePath}`);

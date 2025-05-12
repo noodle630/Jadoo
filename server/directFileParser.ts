@@ -53,11 +53,11 @@ function countExactRows(filePath: string): RowCountResult {
       dataRows,
       columns: headerRow.split(',').map(col => col.trim())
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error counting rows:', error);
     return {
       success: false,
-      error: error.message
+      error: error.message || 'Unknown error counting rows'
     };
   }
 }
@@ -138,14 +138,14 @@ function transformWithExactMapping(
       outputFile: outputPath,
       inputRows: rowInfo.dataRows,
       outputRows: outputRowInfo.dataRows,
-      headerInputColumns: rowInfo.columns.length,
-      headerOutputColumns: outputRowInfo.columns.length
+      headerInputColumns: rowInfo.columns?.length || 0,
+      headerOutputColumns: outputRowInfo.columns?.length || 0
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error transforming file:', error);
     return {
       success: false,
-      error: error.message
+      error: error.message || 'Unknown error during file transformation'
     };
   }
 }
