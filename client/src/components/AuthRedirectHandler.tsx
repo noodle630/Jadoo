@@ -33,14 +33,19 @@ export default function AuthRedirectHandler() {
         
         // Wait a moment to ensure auth state is updated
         setTimeout(() => {
+          // Check if user is authenticated
           if (isAuthenticated && user) {
             toast({
               title: 'Login successful!',
               description: `Welcome${user.firstName ? ', ' + user.firstName : ''}!`,
             });
+            console.log('User authenticated, redirecting to:', redirectTo);
             setLocation(redirectTo);
           } else {
-            setLocation('/dashboard');
+            // If we get to this point after an auth=success but don't have the user
+            // object yet, we'll force a page reload to ensure the auth state is fresh
+            console.log('Auth success, but user not loaded yet. Forcing refresh...');
+            window.location.href = '/';
           }
         }, 500);
       } else if (authStatus === 'session_error') {
