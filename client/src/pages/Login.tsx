@@ -22,8 +22,8 @@ export default function Login() {
   }
 
   const handleLogin = () => {
-    // Redirect to the login endpoint provided by our backend
-    window.location.href = "/api/login";
+    // Redirect to the Replit auth login endpoint provided by our backend
+    window.location.href = "/api/auth/replit";
   };
 
   return (
