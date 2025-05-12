@@ -23,6 +23,7 @@ import Register from "@/pages/Register";
 import { useAuth } from "@/hooks/useAuth";
 
 import AuthenticatedRoute from "@/components/AuthenticatedRoute";
+import AuthRedirectHandler from "@/components/AuthRedirectHandler";
 
 function Router() {
   const { isAuthenticated } = useAuth();
@@ -69,6 +70,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
+          <AuthRedirectHandler />
           <Router />
         </TooltipProvider>
       </QueryClientProvider>

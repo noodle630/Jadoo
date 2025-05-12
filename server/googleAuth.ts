@@ -164,25 +164,39 @@ export async function setupGoogleAuth(app: Express) {
     ));
 
     passport.serializeUser((user: any, done) => {
+      console.log(`Serializing user to session: ID=${user.id}, Email=${user.email}`);
       done(null, user.id);
     });
     
     passport.deserializeUser(async (id: number, done) => {
       try {
         console.log(`Deserializing user ID: ${id}`);
+        
+        // Check if ID is valid
+        if (!id) {
+          console.error("Invalid user ID during deserialization");
+          return done(new Error('Invalid user ID'), null);
+        }
+        
         const user = await storage.getUser(id);
         if (user) {
           // Remove sensitive information
-          const { password, ...userWithoutPassword } = user;
+          const { password, googleToken, githubToken, ...userWithoutSensitiveData } = user;
           console.log(`User successfully deserialized: ${user.email}`);
-          done(null, userWithoutPassword);
+          
+          // Return the user data without sensitive information
+          done(null, {
+            ...userWithoutSensitiveData,
+            // Add additional fields that might be needed
+            lastDeserialized: new Date()
+          });
         } else {
           console.error(`User not found with ID: ${id}`);
-          done(new Error('User not found'));
+          done(new Error('User not found'), null);
         }
       } catch (error) {
         console.error(`Error deserializing user: ${error}`);
-        done(error);
+        done(error, null);
       }
     });
 
@@ -197,27 +211,30 @@ export async function setupGoogleAuth(app: Express) {
     // Google callback route
     app.get(
       "/api/auth/google/callback",
-      passport.authenticate("google", { failureRedirect: "/login" }),
+      passport.authenticate("google", { failureRedirect: "/login?error=google_auth_failed" }),
       (req, res) => {
         console.log("Google callback successful");
         // Log the user object to aid debugging
         console.log("User in session:", req.user);
         
-        // Force session save to ensure user is stored
+        // Force session save to ensure user is stored before redirect
         if (req.session) {
           req.session.save(err => {
             if (err) {
               console.error("Error saving session:", err);
-            } else {
-              console.log("Session saved successfully");
-            }
+              // Even with error, redirect to safe location
+              return res.redirect("/?auth=session_error");
+            } 
             
-            // Even in case of error, try to redirect to dashboard
-            res.redirect("/dashboard");
+            console.log("Session saved successfully");
+            
+            // Redirect to dashboard after successful login
+            // Client-side JavaScript will use localStorage to restore the original navigation target
+            res.redirect("/?auth=success");
           });
         } else {
           console.error("No session found in request");
-          res.redirect("/dashboard");
+          res.redirect("/?auth=no_session");
         }
       }
     );
@@ -238,7 +255,7 @@ export async function setupGoogleAuth(app: Express) {
 
       const userId = req.user?.id;
       if (!userId) {
-        console.error("User ID missing from authenticated session");
+        console.error("User ID missing from authenticated session:", req.user);
         return res.status(401).json({ message: "Invalid user session" });
       }
 
@@ -258,7 +275,16 @@ export async function setupGoogleAuth(app: Express) {
       const { password, googleToken, githubToken, ...safeUser } = user;
       
       console.log(`Successfully returning user profile for ${user.email}`);
-      res.json(safeUser);
+      
+      // Log the actual response for debugging
+      const responseData = {
+        ...safeUser,
+        isAuthenticated: true,
+        lastAccessedAt: new Date()
+      };
+      
+      console.log("Sending user data:", JSON.stringify(responseData));
+      res.json(responseData);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
