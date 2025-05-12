@@ -3,8 +3,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, FileText, Download, Clock, History, User, Settings, LogOut, Plus } from "lucide-react";
+import { Upload, FileText, Download, Clock, History, User, Settings, LogOut, Plus, CheckCircle2 } from "lucide-react";
 import FileUpload, { UploadStatus } from "@/components/FileUpload";
+import TransformView from "@/components/TransformView";
 
 // Components for each section
 const FeedUpload = () => {
