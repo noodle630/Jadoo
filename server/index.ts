@@ -2,6 +2,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./replitAuth";
+// Import our direct file handling routes for reliable CSV processing
+import { setupDirectRoutes } from "./direct-routes";
 
 const app = express();
 app.use(express.json());
@@ -40,6 +42,9 @@ app.use((req, res, next) => {
 (async () => {
   // Set up Replit Auth
   await setupAuth(app);
+  
+  // Setup our direct transformation routes
+  setupDirectRoutes(app);
   
   // Register other API routes
   const server = await registerRoutes(app);

@@ -9,6 +9,8 @@ import {
   SlidersHorizontal,
   Globe,
   FileUp,
+  FileCog,
+  Sigma,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -146,6 +148,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <span>Quick Transform</span>
                   </div>
                 </Link>
+              </li>
+              
+              {/* Direct Transform - The reliable one-to-one mapping feature */}
+              <li>
+                <a href="/transform-direct" target="_self">
+                  <div 
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700`}
+                    onClick={handleLinkClick}
+                  >
+                    <Sigma size={18} />
+                    <span>1:1 Transform</span>
+                  </div>
+                </a>
               </li>
             </ul>
             
