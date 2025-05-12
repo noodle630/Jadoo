@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -6,16 +6,20 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-950 p-4">
+    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-gradient-to-b from-gray-900 to-gray-950">
+      <div className="w-full max-w-md mb-8">
+        <h1 className="text-4xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+          Project S
+        </h1>
+        <p className="text-center text-gray-400 mt-2">
+          AI-powered inventory data transformation
+        </p>
+      </div>
       <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent mb-2">
-            Project S
-          </h1>
-          <p className="text-gray-400">Transform your product data for any marketplace</p>
-        </div>
-        
         {children}
+      </div>
+      <div className="mt-12 text-gray-500 text-sm text-center">
+        <p>© 2025 Project S. All rights reserved.</p>
       </div>
     </div>
   );

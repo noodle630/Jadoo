@@ -27,14 +27,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryKey: ['/api/auth/user'],
     retry: false,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    onSettled: (receivedData, error) => {
-      if (error) {
-        setUser(null);
-      } else if (receivedData) {
-        setUser(receivedData);
-      }
-    }
   });
+  
+  // Update user state when data changes
+  useEffect(() => {
+    if (data) {
+      setUser(data);
+    }
+  }, [data]);
 
   useEffect(() => {
     // Refresh auth state when component mounts
