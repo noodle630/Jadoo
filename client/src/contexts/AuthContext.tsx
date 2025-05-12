@@ -1,73 +1,72 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { createContext, useContext, ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-type User = {
-  id: number;
-  email: string;
+// Define the User interface based on what the API returns
+interface User {
+  id: string;
+  email: string | null;
   firstName: string | null;
   lastName: string | null;
   profileImageUrl: string | null;
-  role: string;
-};
+}
 
+// Define the context shape
 interface AuthContextType {
-  user: User | null;
+  user: User | null | undefined;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: () => void;
+  error: Error | null;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create the context with default values
+const AuthContext = createContext<AuthContextType>({
+  user: undefined,
+  isAuthenticated: false,
+  isLoading: true,
+  error: null,
+  logout: () => {},
+});
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  
-  const { data, isLoading, refetch } = useQuery<User>({
+export const useAuth = () => useContext(AuthContext);
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  // Fetch the current user from the API
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['/api/auth/user'],
     retry: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    // The backend API should return the current authenticated user or a 401 status
   });
-  
-  // Update user state when data changes
-  useEffect(() => {
-    if (data) {
-      setUser(data);
-    }
-  }, [data]);
 
-  useEffect(() => {
-    // Refresh auth state when component mounts
-    refetch();
-  }, [refetch]);
-
-  const login = () => {
-    window.location.href = "/api/login";
-  };
-
+  // Handle logout
   const logout = () => {
-    window.location.href = "/api/logout";
+    // Redirect to the logout endpoint
+    window.location.href = '/api/logout';
   };
 
-  const authContextValue: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    logout
-  };
+  // Determine if the user is authenticated
+  // User is authenticated if the user data exists and there's no error
+  const isAuthenticated = !!user && !error;
 
   return (
-    <AuthContext.Provider value={authContextValue}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        isLoading,
+        error: error as Error | null,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-}
+};

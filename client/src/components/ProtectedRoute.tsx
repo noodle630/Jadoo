@@ -1,29 +1,32 @@
-import React from 'react';
-import { Redirect, useLocation } from 'wouter';
-import { useAuth } from '../contexts/AuthContext';
+import { ReactNode } from "react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/contexts/AuthContext";
+import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const [_, navigate] = useLocation();
   const { isAuthenticated, isLoading } = useAuth();
-  const [, setLocation] = useLocation();
 
-  // If still loading auth state, show a loading indicator
+  // While checking authentication status, show a loading indicator
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-950">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+        <p className="mt-4 text-gray-400">Verifying authentication...</p>
       </div>
     );
   }
 
   // If not authenticated, redirect to login
   if (!isAuthenticated) {
-    return <Redirect to="/login" />;
+    navigate("/login");
+    return null;
   }
 
-  // If authenticated, render the protected content
+  // If authenticated, render the children
   return <>{children}</>;
 }
