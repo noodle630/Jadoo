@@ -203,6 +203,11 @@ export async function setupGoogleAuth(app: Express) {
     // Google login route
     app.get(
       "/api/auth/google",
+      (req, res, next) => {
+        console.log("Starting Google authentication process");
+        console.log("Session before Google auth:", req.session);
+        next();
+      },
       passport.authenticate("google", {
         scope: ["profile", "email"]
       })
