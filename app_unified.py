@@ -105,16 +105,21 @@ def transform_csv_with_openai(file_path, marketplace_key, format_param='csv', ma
         The transformed CSV content and metadata
     """
     try:
-        # Read the CSV
-        df = pd.read_csv(file_path)
+        # Read the CSV with proper encoding detection
+        try:
+            df = pd.read_csv(file_path, encoding='utf-8')
+        except UnicodeDecodeError:
+            # Try another common encoding if UTF-8 fails
+            df = pd.read_csv(file_path, encoding='latin1')
+            
         original_row_count = len(df)
         
-        # Apply row limit for cost optimization
-        if len(df) > max_rows:
-            print(f"⚠️ Limiting processing to {max_rows} rows (from {original_row_count}) for cost optimization")
-            df = df.head(max_rows)
+        # Check if file exceeds row limit and return an error
+        if original_row_count > max_rows:
+            error_message = f"File contains {original_row_count} rows which exceeds the maximum limit of {max_rows} rows. Please reduce the file size and try again."
+            return {"error": error_message}, 400
             
-        row_count = len(df)
+        row_count = original_row_count
         column_count = len(df.columns)
         columns = list(df.columns)
         
@@ -133,7 +138,7 @@ def transform_csv_with_openai(file_path, marketplace_key, format_param='csv', ma
         elif marketplace_key == "tiktok":
             required_fields = REQUIRED_TIKTOK_FIELDS
         
-        # Limit the data sample to prevent exceeding token limits
+        # Get a sample for the prompt but we'll process the entire dataset
         sample_rows = min(5, row_count)
         data_sample = df.head(sample_rows).to_csv(index=False)
         
@@ -142,6 +147,8 @@ def transform_csv_with_openai(file_path, marketplace_key, format_param='csv', ma
         CSV file has {row_count} rows and {column_count} columns.
         Source columns: {', '.join(columns)}
         Target {marketplace['name']} columns: {', '.join(marketplace_columns)}
+        
+        Important: You will be shown a sample of {sample_rows} rows for analysis, but your transformation instructions should apply to ALL rows in the dataset.
         """
         
         if required_fields:
@@ -184,10 +191,27 @@ def transform_csv_with_openai(file_path, marketplace_key, format_param='csv', ma
         cleaned_content = message_content.strip()
         if cleaned_content.startswith("```csv"):
             cleaned_content = cleaned_content[6:]
+        elif cleaned_content.startswith("```"):
+            cleaned_content = cleaned_content.split("\n", 1)[1]
         if cleaned_content.endswith("```"):
             cleaned_content = cleaned_content[:-3]
             
         transformed_csv = cleaned_content.strip()
+        
+        # Process the returned CSV string to ensure it's valid and contains the right number of rows
+        try:
+            result_df = pd.read_csv(io.StringIO(transformed_csv))
+            transformed_row_count = len(result_df)
+            
+            # Log the results for debugging
+            print(f"Original rows: {row_count}, Transformed rows: {transformed_row_count}")
+            
+            # Verify that we have an appropriate number of rows (should be close to original)
+            if transformed_row_count < 0.9 * row_count:
+                print(f"⚠️ Warning: Significant row loss after transformation. Original: {row_count}, Transformed: {transformed_row_count}")
+        except Exception as e:
+            print(f"Error parsing transformed CSV: {str(e)}")
+            # Continue anyway since we'll return the raw CSV
         
         # Get the filename without the path
         filename = os.path.basename(file_path)
@@ -195,7 +219,7 @@ def transform_csv_with_openai(file_path, marketplace_key, format_param='csv', ma
         # Save the transformed CSV to a file
         output_filename = f"{marketplace_key}_{filename}"
         output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], output_filename)
-        with open(output_filepath, 'w') as f:
+        with open(output_filepath, 'w', encoding='utf-8') as f:
             f.write(transformed_csv)
             
         # Return result based on format
@@ -236,14 +260,15 @@ def create_amazon_prompt(data_info, data_sample, sample_rows):
     {data_sample}
     
     INSTRUCTIONS:
-    1. Transform the source data to match the Amazon Inventory Loader template format for Electronics category
+    1. Transform ALL rows in the source data (not just the sample) to match the Amazon Inventory Loader template format for Electronics category
     2. Map the source fields to Amazon fields, using your best judgment when direct mappings aren't available
     3. For missing required fields, generate appropriate values based on existing data
     4. Clean data by fixing formatting and standardizing values
     5. Ensure all required Amazon fields are included
     6. Format the output as a valid CSV with all the columns from the Amazon template
     7. The first row must contain the column headers
-    8. Do not include any markdown formatting or explanations, only return the CSV content
+    8. Every source row should have a corresponding output row - preserve all rows from the original data
+    9. Do not include any markdown formatting or explanations, only return the CSV content
     
     IMPORTANT GUIDELINES:
     - For 'external_product_id', use UPC if available or generate a 12-digit number
@@ -313,14 +338,15 @@ def create_walmart_prompt(data_info, data_sample, sample_rows):
     {data_sample}
     
     INSTRUCTIONS:
-    1. Transform the source data to match the Walmart marketplace format for mobile phones
+    1. Transform ALL rows in the source data (not just the sample) to match the Walmart marketplace format for mobile phones
     2. Map the source fields to Walmart fields, using your best judgment when direct mappings aren't available
     3. For missing required fields, generate appropriate values based on existing data
     4. Clean data by fixing formatting and standardizing values
     5. Ensure all required Walmart fields are included
     6. Format the output as a valid CSV with all the columns from the Walmart template
     7. The first row must contain the column headers
-    8. Do not include any markdown formatting or explanations, only return the CSV content
+    8. Every source row should have a corresponding output row - preserve all rows from the original data
+    9. Do not include any markdown formatting or explanations, only return the CSV content
     
     IMPORTANT GUIDELINES:
     - For 'sku', use the original SKU if available
