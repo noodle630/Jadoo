@@ -8,10 +8,13 @@ import {
 export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
   getUserByGithubId(githubId: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createUser(user: Partial<User>): Promise<User>;
   updateUser(id: number, updateData: Partial<User>): Promise<User | undefined>;
+  storeGoogleToken(userId: number, token: string): Promise<boolean>;
   storeGithubToken(userId: number, token: string): Promise<boolean>;
   
   // Feed operations
@@ -59,8 +62,10 @@ export class MemStorage implements IStorage {
       username: "demo",
       password: "password123",
       email: "demo@example.com",
-      company: "Demo Company",
-      role: "E-commerce Manager"
+      companyName: "Demo Company",
+      firstName: "Demo",
+      lastName: "User",
+      role: "user"
     });
     
     // Add some sample templates
@@ -181,14 +186,44 @@ export class MemStorage implements IStorage {
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.username.toLowerCase() === username.toLowerCase(),
+      (user) => user.username?.toLowerCase() === username.toLowerCase(),
+    );
+  }
+  
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email.toLowerCase() === email.toLowerCase(),
+    );
+  }
+  
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.googleId === googleId
     );
   }
 
-  async createUser(user: InsertUser): Promise<User> {
+  async createUser(user: Partial<User>): Promise<User> {
     const id = this.userId++;
     const now = new Date();
-    const newUser: User = { ...user, id, createdAt: now };
+    const newUser: User = { 
+      ...user, 
+      id, 
+      createdAt: now,
+      firstName: user.firstName || null,
+      lastName: user.lastName || null,
+      username: user.username || null,
+      password: user.password || null,
+      email: user.email || "",
+      companyName: user.companyName || null,
+      role: user.role || "user",
+      googleId: user.googleId || null,
+      googleToken: user.googleToken || null,
+      githubId: user.githubId || null,
+      githubToken: user.githubToken || null,
+      profileImageUrl: user.profileImageUrl || null,
+      lastLogin: user.lastLogin || now,
+      isActive: user.isActive !== undefined ? user.isActive : true
+    };
     this.users.set(id, newUser);
     return newUser;
   }

@@ -111,14 +111,15 @@ def transform_to_walmart_format(csv_file_path, output_file=None, max_rows=1000):
         {data_sample}
         
         INSTRUCTIONS:
-        1. Transform the source data to match the Walmart marketplace format
+        1. Transform ALL rows in the source data (not just the sample) to match the Walmart marketplace format
         2. Map the source fields to Walmart fields, using your best judgment when direct mappings aren't available
         3. For missing required fields, generate appropriate values based on existing data
         4. Clean data by fixing formatting and standardizing values
         5. Ensure all required Walmart fields are included
         6. Format the output as a valid CSV with all the columns from the Walmart template
         7. The first row must contain the column headers
-        8. Do not include any markdown formatting or explanations, only return the CSV content
+        8. Every source row should have a corresponding output row - preserve all rows from the original data
+        9. Do not include any markdown formatting or explanations, only return the CSV content
         
         IMPORTANT GUIDELINES:
         - For 'sku', use the original SKU if available

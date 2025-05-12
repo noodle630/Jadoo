@@ -6,15 +6,25 @@ import { relations } from "drizzle-orm";
 // User schema
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-  email: text("email").notNull(),
-  company: text("company"),
-  role: text("role"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  username: text("username").unique(),
+  password: text("password"),
+  email: text("email").notNull().unique(),
+  companyName: text("company_name"),
+  role: text("role").default("user"),
   createdAt: timestamp("created_at").defaultNow(),
+  
+  // OAuth providers
+  googleId: text("google_id").unique(),
+  googleToken: text("google_token"),
   githubId: text("github_id").unique(),
   githubToken: text("github_token"),
+  
+  // Profile data
   profileImageUrl: text("profile_image_url"),
+  lastLogin: timestamp("last_login"),
+  isActive: boolean("is_active").default(true),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -23,9 +33,48 @@ export const usersRelations = relations(users, ({ many }) => ({
   templates: many(templates),
 }));
 
+// User form schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+  lastLogin: true,
+  isActive: true,
+  googleId: true,
+  googleToken: true,
+  githubId: true,
+  githubToken: true
+});
+
+// Google OAuth user schema
+export const insertGoogleUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  lastLogin: true,
+  password: true,
+  isActive: true,
+  githubId: true,
+  githubToken: true
+}).extend({
+  googleId: z.string().min(1, "Google ID is required")
+});
+
+// Registration schema with validation
+export const userRegistrationSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+  companyName: z.string().optional()
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"]
+});
+
+// Login schema
+export const userLoginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required")
 });
 
 // Product schema - represents a product in the vendor's inventory
@@ -172,6 +221,9 @@ export const insertTemplateSchema = createInsertSchema(templates).omit({
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertGoogleUser = z.infer<typeof insertGoogleUserSchema>;
+export type UserRegistration = z.infer<typeof userRegistrationSchema>;
+export type UserLogin = z.infer<typeof userLoginSchema>;
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
