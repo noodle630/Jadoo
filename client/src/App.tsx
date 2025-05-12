@@ -18,6 +18,9 @@ import ProductsImport from "@/pages/ProductsImport";
 import Channels from "@/pages/Channels";
 import NotFound from "@/pages/not-found";
 import FeedHistoryDebug from "@/pages/FeedHistoryDebug";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
   return (
