@@ -235,7 +235,7 @@ def direct_transform(input_file_path, marketplace_format, max_rows=1000):
         }
         
     except Exception as e:
-        print(f"Error in direct_transform: {str(e)}")
+        print(f"Error in direct_transform: {str(e)}", file=sys.stderr)
         return {"error": str(e)}
 
 # Command-line interface
