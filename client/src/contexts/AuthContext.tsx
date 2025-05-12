@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: user as User | null | undefined,
         isAuthenticated,
         isLoading,
         error: error as Error | null,

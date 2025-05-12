@@ -3,10 +3,73 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Upload, FileText, Download, Clock, HistoryIcon, User, Settings, LogOut, Plus } from "lucide-react";
+import { Upload, FileText, Download, Clock, History, User, Settings, LogOut, Plus } from "lucide-react";
+import FileUpload, { UploadStatus } from "@/components/FileUpload";
 
 // Components for each section
 const FeedUpload = () => {
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState('');
+  const [selectedMarketplace, setSelectedMarketplace] = useState<string | null>(null);
+  
+  const handleFileAccepted = (file: File) => {
+    setUploadFile(file);
+    // Reset status when a new file is selected
+    setUploadStatus('idle');
+    setUploadError('');
+  };
+  
+  const handleUpload = async () => {
+    if (!uploadFile) {
+      setUploadError('Please select a file to upload');
+      return;
+    }
+    
+    if (!selectedMarketplace) {
+      setUploadError('Please select a marketplace');
+      return;
+    }
+    
+    setUploadStatus('uploading');
+    
+    // Simulate upload progress
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 95) {
+          clearInterval(progressInterval);
+          return prev;
+        }
+        return prev + 5;
+      });
+    }, 200);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // In a real app, you would upload the file to your server
+      // const formData = new FormData();
+      // formData.append('file', uploadFile);
+      // formData.append('marketplace', selectedMarketplace);
+      // const response = await fetch('/api/feeds/upload', {
+      //   method: 'POST',
+      //   body: formData,
+      // });
+      
+      // if (!response.ok) throw new Error('Upload failed');
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      setUploadStatus('success');
+    } catch (error) {
+      clearInterval(progressInterval);
+      setUploadStatus('error');
+      setUploadError(error instanceof Error ? error.message : 'Upload failed');
+    }
+  };
+  
   return (
     <div className="grid gap-4">
       <Card className="border-gray-800 bg-gray-900/50">
@@ -17,14 +80,45 @@ const FeedUpload = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-700 rounded-lg p-12 cursor-pointer hover:border-blue-500 transition-colors">
-            <Upload className="h-12 w-12 text-gray-500 mb-4" />
-            <p className="text-sm text-gray-400 mb-2">Drag & drop your CSV file here</p>
-            <p className="text-xs text-gray-500 mb-4">or</p>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              Browse Files
-            </Button>
-            <p className="text-xs text-gray-500 mt-4">CSV, Excel up to 10MB</p>
+          <div className="space-y-6">
+            <FileUpload
+              onFileAccepted={handleFileAccepted}
+              status={uploadStatus}
+              progress={uploadProgress}
+              error={uploadError}
+            />
+            
+            {uploadFile && uploadStatus !== 'error' && (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Select Marketplace</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {["Amazon", "Walmart", "Catch", "Meta", "TikTok", "Reebelo"].map((marketplace) => (
+                      <div
+                        key={marketplace}
+                        className={`border rounded-lg p-3 cursor-pointer transition-colors ${
+                          selectedMarketplace === marketplace 
+                            ? 'border-blue-500 bg-blue-900/20' 
+                            : 'border-gray-700 hover:border-blue-400 bg-gray-800/50'
+                        }`}
+                        onClick={() => setSelectedMarketplace(marketplace)}
+                      >
+                        <p className="text-sm font-medium">{marketplace}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  onClick={handleUpload}
+                  disabled={uploadStatus === 'uploading' || uploadStatus === 'success'}
+                >
+                  {uploadStatus === 'uploading' ? 'Uploading...' : 
+                   uploadStatus === 'success' ? 'Uploaded Successfully' : 'Start Transformation'}
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -279,7 +373,7 @@ const Account = () => {
               <h4 className="text-sm font-medium mb-2">Account Details</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="text-gray-400">Role</div>
-                <div>{user?.role || "User"}</div>
+                <div>User</div>
                 <div className="text-gray-400">Member Since</div>
                 <div>May 2025</div>
               </div>
@@ -330,7 +424,7 @@ export default function Dashboard() {
                 { id: "upload", label: "Upload", icon: <Upload className="h-4 w-4" /> },
                 { id: "transform", label: "Transform", icon: <FileText className="h-4 w-4" /> },
                 { id: "templates", label: "Templates", icon: <Clock className="h-4 w-4" /> },
-                { id: "history", label: "History", icon: <HistoryIcon className="h-4 w-4" /> },
+                { id: "history", label: "History", icon: <History className="h-4 w-4" /> },
               ].map((item) => (
                 <Button
                   key={item.id}
