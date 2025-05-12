@@ -1,0 +1,8 @@
+item_sku,external_product_id,external_product_id_type,item_name,brand_name,manufacturer,feed_product_type,update_delete,standard_price,quantity,product_tax_code,product_site_launch_date,restock_date,fulfillment_latency,item_condition,main_image_url
+AT-WH-001,,,Wireless Headphones BlackV2,AudioTech,AudioTech,consumer_electronics,Update,89.99,45,,,,,New,https://example.com/placeholder-image.jpg
+VM-TV-055,,,ULTRA HD 4K SMART TV 55-INCH,ViewMax,ViewMax,consumer_electronics,Update,499.99,12,,,,,New,https://example.com/placeholder-image.jpg
+OF-DSLR-01,,,Professional DSLR Camera w/ Lens,OptiFocus,OptiFocus,consumer_electronics,Update,699.0,8,,,,,New,https://example.com/placeholder-image.jpg
+SW-PBS-01,,,portable bluetooth speaker waterproof,soundwave,soundwave,consumer_electronics,Update,49.95,60,,,,,New,https://example.com/placeholder-image.jpg
+GP-KB-001,,,gaming Mechanical keyBoard RGB,gamepro,gamepro,consumer_electronics,Update,,25,,,,,New,https://example.com/placeholder-image.jpg
+WCP-15W,,,wireless CHARGING Pad 15W,,,consumer_electronics,Update,29.99,85,,,,,New,https://example.com/placeholder-image.jpg
+SC-NCE-01,,,Noise CANCELLING Earbuds true wireless,soundcore,soundcore,consumer_electronics,Update,79.99,42,,,,,New,https://example.com/placeholder-image.jpg

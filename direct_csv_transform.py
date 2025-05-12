@@ -53,13 +53,27 @@ def direct_transform_csv(
         Dictionary with transformation results and output file path
     """
     try:
-        # Read and validate the CSV file
+        # Read and validate the CSV file with more robust error handling
         df = None
         try:
+            # Try with default settings first
             df = pd.read_csv(input_file_path, encoding='utf-8')
         except UnicodeDecodeError:
             # Try another common encoding if UTF-8 fails
-            df = pd.read_csv(input_file_path, encoding='latin1')
+            try:
+                df = pd.read_csv(input_file_path, encoding='latin1')
+            except Exception as e:
+                print(f"Error with latin1 encoding: {str(e)}")
+                return {"error": f"Failed to parse CSV with UTF-8 or latin1 encoding: {str(e)}"}
+        except Exception as e:
+            # Try with more flexible parsing for problematic CSVs
+            try:
+                print(f"Standard parsing failed: {str(e)}. Trying with error_bad_lines=False...")
+                df = pd.read_csv(input_file_path, encoding='utf-8', on_bad_lines='skip')
+                print(f"Successfully parsed CSV with flexible parsing.")
+            except Exception as inner_e:
+                print(f"All parsing attempts failed: {str(inner_e)}")
+                return {"error": f"Failed to parse CSV file: {str(inner_e)}"}
         
         # Get basic file info
         input_row_count = len(df)
@@ -163,7 +177,11 @@ def direct_transform_csv(
         )
         
         # Extract the batch transformation result
-        batch_result = batch_response.choices[0].message.content.strip()
+        batch_result = batch_response.choices[0].message.content
+        if batch_result is None:
+            batch_result = ""
+        else:
+            batch_result = batch_result.strip()
         
         # Clean up the response if needed
         if batch_result.startswith("```csv"):
@@ -240,7 +258,11 @@ def direct_transform_csv(
                 )
                 
                 # Extract and clean the batch result
-                batch_result = batch_response.choices[0].message.content.strip()
+                batch_result = batch_response.choices[0].message.content
+                if batch_result is None:
+                    batch_result = ""
+                else:
+                    batch_result = batch_result.strip()
                 
                 # Clean up response formatting
                 if batch_result.startswith("```csv"):

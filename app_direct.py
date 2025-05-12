@@ -141,9 +141,12 @@ def transform_csv():
         max_rows = int(request.form.get('max_rows', 1000))
         
         # Save the file temporarily
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+        if file.filename:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+        else:
+            return jsonify({"error": "Invalid filename"}), 400
         
         # Process the file based on the marketplace
         if marketplace == 'amazon':
