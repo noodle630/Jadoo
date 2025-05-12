@@ -20,6 +20,28 @@ export function useAuth() {
     // Override global settings for this specific query
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    refetchInterval: false,
+    // Handle auth errors gracefully
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/auth/user');
+        
+        // If we get a 401, simply return null instead of throwing
+        if (response.status === 401) {
+          console.log('User not authenticated');
+          return null;
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Auth query failed: ${response.status}`);
+        }
+        
+        return await response.json();
+      } catch (err) {
+        console.error('Error fetching auth status:', err);
+        throw err;
+      }
+    }
   });
 
   // Mutation for registering a new user
