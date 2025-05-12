@@ -59,15 +59,24 @@ export function useAuth() {
         }
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Login successful, response:", data);
+      
       // Refetch the user after successful login
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
       toast({
         title: "Login successful!",
         description: "Welcome back!",
       });
+      
+      // Redirect to dashboard after successful login
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
     },
     onError: (error: any) => {
+      console.error("Login error:", error);
       toast({
         title: "Login failed",
         description: error.message || "Invalid email or password",

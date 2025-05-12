@@ -9,10 +9,18 @@ import { z } from "zod";
 
 const SESSION_SECRET = process.env.SESSION_SECRET || "development-secret";
 
+// Get the app URL from environment or use a default
+const APP_URL = process.env.APP_URL || `https://${process.env.REPLIT_DOMAINS?.split(',')[0] || 'localhost:5000'}`;
+
 // Validate Google client credentials are set
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   console.warn("Google OAuth is not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables.");
 }
+
+// Log important configuration details for debugging
+console.log(`App URL: ${APP_URL}`);
+console.log(`Node Environment: ${process.env.NODE_ENV}`);
+console.log(`Replit Domain: ${process.env.REPLIT_DOMAINS}`);
 
 // Configure session management
 export function getSession() {
@@ -32,8 +40,10 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
+      // Only use secure cookies in production to allow local development
       secure: process.env.NODE_ENV === "production",
       maxAge: sessionTtl,
+      sameSite: 'lax' // Help with cross-site cookie issues
     },
   });
 }
@@ -97,18 +107,21 @@ export async function setupGoogleAuth(app: Express) {
 
   // Only set up Google auth if credentials are available
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    // Set up the Google strategy
+    // Set up the Google strategy with proper callback URL
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${process.env.APP_URL || "http://localhost:5000"}/api/auth/google/callback`,
+        callbackURL: `${APP_URL}/api/auth/google/callback`,
         scope: ['profile', 'email']
       },
       async function(accessToken, refreshToken, profile, done) {
         try {
+          console.log(`Google login - Processing profile ID: ${profile.id}`);
           const user = await upsertGoogleUser(profile, accessToken);
+          console.log(`Google login - User created/updated with ID: ${user.id}`);
           done(null, user);
         } catch (error) {
+          console.error("Google login - Error in callback:", error);
           done(error as Error);
         }
       }
@@ -120,15 +133,19 @@ export async function setupGoogleAuth(app: Express) {
     
     passport.deserializeUser(async (id: number, done) => {
       try {
+        console.log(`Deserializing user ID: ${id}`);
         const user = await storage.getUser(id);
         if (user) {
           // Remove sensitive information
           const { password, ...userWithoutPassword } = user;
+          console.log(`User successfully deserialized: ${user.email}`);
           done(null, userWithoutPassword);
         } else {
+          console.error(`User not found with ID: ${id}`);
           done(new Error('User not found'));
         }
       } catch (error) {
+        console.error(`Error deserializing user: ${error}`);
         done(error);
       }
     });
@@ -144,10 +161,13 @@ export async function setupGoogleAuth(app: Express) {
     // Google callback route
     app.get(
       "/api/auth/google/callback",
-      passport.authenticate("google", {
-        successRedirect: "/dashboard",
-        failureRedirect: "/login",
-      })
+      passport.authenticate("google", { failureRedirect: "/login" }),
+      (req, res) => {
+        console.log("Google callback successful, redirecting to dashboard");
+        // Log the user object to aid debugging
+        console.log("User in session:", req.user);
+        res.redirect("/");
+      }
     );
 
     console.log("Google authentication routes configured");
@@ -156,25 +176,36 @@ export async function setupGoogleAuth(app: Express) {
   // User info route - returns current user data
   app.get("/api/auth/user", async (req: any, res) => {
     try {
+      console.log("GET /api/auth/user - Auth status:", req.isAuthenticated());
+      console.log("GET /api/auth/user - Session:", req.session);
+      console.log("GET /api/auth/user - User in request:", req.user);
+      
       if (!req.isAuthenticated()) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
       const userId = req.user?.id;
       if (!userId) {
+        console.error("User ID missing from authenticated session");
         return res.status(401).json({ message: "Invalid user session" });
       }
+
+      console.log(`Getting full profile for user ID: ${userId}`);
 
       // Get full user profile from database
       const user = await storage.getUser(userId);
       if (!user) {
-        req.logout(() => {});
+        console.error(`User with ID ${userId} not found in database`);
+        req.logout(() => {
+          console.log("Logging out user with invalid ID");
+        });
         return res.status(401).json({ message: "User not found" });
       }
 
       // Don't send sensitive information to client
       const { password, googleToken, githubToken, ...safeUser } = user;
       
+      console.log(`Successfully returning user profile for ${user.email}`);
       res.json(safeUser);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -234,6 +265,7 @@ export async function setupGoogleAuth(app: Express) {
   // Email/password login route
   app.post("/api/auth/login", async (req, res) => {
     try {
+      console.log("Processing login request");
       // Validate login data
       const loginSchema = z.object({
         email: z.string().email("Invalid email address"),
@@ -241,24 +273,34 @@ export async function setupGoogleAuth(app: Express) {
       });
 
       const validatedData = loginSchema.parse(req.body);
+      console.log(`Login attempt for email: ${validatedData.email}`);
       
       // Find user by email
       const user = await storage.getUserByEmail(validatedData.email);
       if (!user || !user.password) {
+        console.log(`User not found or has no password: ${validatedData.email}`);
         return res.status(401).json({ message: "Invalid email or password" });
       }
+
+      console.log(`User found, verifying password for: ${user.email} (ID: ${user.id})`);
 
       // Verify password
       const passwordMatch = await bcrypt.compare(validatedData.password, user.password);
       if (!passwordMatch) {
+        console.log("Password verification failed");
         return res.status(401).json({ message: "Invalid email or password" });
       }
+
+      console.log("Password verified successfully");
 
       // Log user in by creating a session
       req.login(user, async (err) => {
         if (err) {
+          console.error("Error during login session creation:", err);
           return res.status(500).json({ message: "Failed to login" });
         }
+
+        console.log(`User logged in successfully: ${user.email} (ID: ${user.id})`);
 
         // Update last login time
         await storage.updateUser(user.id, { lastLogin: new Date() });
@@ -266,6 +308,7 @@ export async function setupGoogleAuth(app: Express) {
         // Remove sensitive data from response
         const { password, googleToken, githubToken, ...userWithoutSensitiveData } = user;
         
+        console.log("Returning successful login response");
         return res.json({ 
           user: userWithoutSensitiveData,
           message: "Login successful" 
@@ -273,6 +316,7 @@ export async function setupGoogleAuth(app: Express) {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Validation error:", error.errors);
         return res.status(400).json({ 
           message: "Validation error", 
           errors: error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
