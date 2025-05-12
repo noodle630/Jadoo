@@ -17,22 +17,23 @@ export default function AuthenticatedRoute({ children }: AuthenticatedRouteProps
     refetchUser();
   }, [refetchUser, location]);
 
-  // Show a loading spinner while checking authentication status
+  // Use conditional rendering instead of early returns
+  let content;
+  
   if (isLoading) {
-    return (
+    content = (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
       </div>
     );
-  }
-
-  // Redirect to login if not authenticated
-  if (!isAuthenticated) {
+  } else if (!isAuthenticated) {
     // Save the current location to redirect back after login
     localStorage.setItem('authRedirectTarget', location);
-    return <Redirect to="/login" />;
+    content = <Redirect to="/login" />;
+  } else {
+    // Render children if authenticated
+    content = <>{children}</>;
   }
 
-  // Render children if authenticated
-  return <>{children}</>;
+  return content;
 }

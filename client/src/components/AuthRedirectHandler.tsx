@@ -18,14 +18,18 @@ export default function AuthRedirectHandler() {
     const searchParams = new URLSearchParams(window.location.search);
     const authStatus = searchParams.get('auth');
 
+    // Use local variable instead of early return
+    let shouldContinue = true;
+
     // If user is authenticated but on the login page, redirect to dashboard
     if (isAuthenticated && (location === '/login' || location === '/register')) {
       console.log('User is authenticated but on login/register page, redirecting to dashboard');
       setLocation('/');
-      return;
+      shouldContinue = false;
     }
     
-    if (authStatus) {
+    // Only continue if we haven't already redirected
+    if (shouldContinue && authStatus) {
       console.log('Auth status detected in URL:', authStatus);
       
       // Remove the auth parameter from URL to avoid keeping it in history
