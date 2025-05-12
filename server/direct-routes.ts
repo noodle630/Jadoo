@@ -39,6 +39,17 @@ interface Transformation {
   outputRows?: number;
 }
 
+// Define utilities for debugging row count
+interface RowCountDebugResult {
+  filePath: string;
+  fileName: string;
+  totalLines: number;
+  nonEmptyLines: number;
+  headerRow: string;
+  dataRows: number;
+  columns: string[];
+}
+
 interface TransformationsStore {
   [id: string]: Transformation;
 }
@@ -144,6 +155,51 @@ function setupDirectRoutes(app: express.Application) {
       return res.status(500).json({ 
         message: 'Server error during transformation', 
         error: error.message 
+      });
+    }
+  });
+  
+  // Row count debugging endpoint
+  app.get('/api/direct-countrows', upload.single('file'), (req: Request, res: Response) => {
+    try {
+      // Check if file path is provided
+      const filePath = req.query.filePath as string;
+      
+      if (!filePath) {
+        return res.status(400).json({ message: 'No file path provided' });
+      }
+      
+      // Check if the file exists
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: 'File not found' });
+      }
+      
+      // Get row count info
+      const rowInfo = directFileParser.countExactRows(filePath);
+      
+      if (!rowInfo.success) {
+        return res.status(500).json({ 
+          message: 'Failed to analyze file', 
+          error: rowInfo.error 
+        });
+      }
+      
+      // Return detailed information
+      return res.status(200).json({
+        filePath,
+        fileName: path.basename(filePath),
+        totalLines: rowInfo.totalLines,
+        nonEmptyLines: rowInfo.nonEmptyLines,
+        headerRow: rowInfo.headerRow,
+        dataRows: rowInfo.dataRows,
+        columns: rowInfo.columns
+      });
+      
+    } catch (error: any) {
+      console.error('Error in row count:', error);
+      return res.status(500).json({ 
+        message: 'Server error during row counting', 
+        error: error.message || 'Unknown error'
       });
     }
   });
