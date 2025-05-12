@@ -8,8 +8,9 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
+// Ensure we have required environment variables
 if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
+  console.warn("Environment variable REPLIT_DOMAINS not provided. Replit Auth will not work correctly.");
 }
 
 const getOidcConfig = memoize(
@@ -24,24 +25,45 @@ const getOidcConfig = memoize(
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
-  return session({
-    secret: process.env.SESSION_SECRET || "development-secret",
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: sessionTtl,
-    },
-  });
+  
+  // For development, use in-memory store
+  // For production, use PostgreSQL store
+  if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+    const pgStore = connectPg(session);
+    const sessionStore = new pgStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+      ttl: sessionTtl,
+      tableName: "sessions",
+    });
+    
+    return session({
+      secret: process.env.SESSION_SECRET || "development-session-secret",
+      store: sessionStore,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        maxAge: sessionTtl,
+        sameSite: 'lax'
+      },
+    });
+  } else {
+    console.log("Using in-memory session store for development");
+    
+    return session({
+      secret: process.env.SESSION_SECRET || "development-session-secret",
+      resave: true,
+      saveUninitialized: true,
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: sessionTtl,
+        sameSite: 'lax'
+      },
+    });
+  }
 }
 
 function updateUserSession(
@@ -57,13 +79,31 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  return await storage.upsertUser({
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-  });
+  // Find existing user by Replit ID (sub claim)
+  const existingUser = await storage.getUserByReplitId(claims['sub']);
+  
+  if (existingUser) {
+    // Update existing user
+    return await storage.updateUser(existingUser.id, {
+      email: claims['email'] || existingUser.email,
+      firstName: claims['first_name'] || existingUser.firstName,
+      lastName: claims['last_name'] || existingUser.lastName,
+      profileImageUrl: claims['profile_image_url'] || existingUser.profileImageUrl,
+      lastLogin: new Date()
+    });
+  } else {
+    // Create new user
+    return await storage.createUser({
+      replitId: claims['sub'],
+      email: claims['email'] || `user-${claims['sub']}@replit.com`,
+      firstName: claims['first_name'],
+      lastName: claims['last_name'],
+      profileImageUrl: claims['profile_image_url'],
+      username: claims['email'] ? claims['email'].split('@')[0] : `replit-${claims['sub']}`,
+      lastLogin: new Date(),
+      isActive: true
+    });
+  }
 }
 
 export async function setupAuth(app: Express) {
@@ -72,95 +112,121 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const config = await getOidcConfig();
-
-  const verify: VerifyFunction = async (
-    tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
-    verified: passport.AuthenticateCallback
-  ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
-    verified(null, user);
-  };
-
-  for (const domain of process.env
-    .REPLIT_DOMAINS!.split(",")) {
-    const strategy = new Strategy(
-      {
-        name: `replitauth:${domain}`,
-        config,
-        scope: "openid email profile offline_access",
-        callbackURL: `https://${domain}/api/callback`,
-      },
-      verify,
-    );
-    passport.use(strategy);
-  }
-
-  passport.serializeUser((user: Express.User, cb) => cb(null, user));
-  passport.deserializeUser((user: Express.User, cb) => cb(null, user));
-
-  app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"],
-    })(req, res, next);
-  });
-
-  app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
-    })(req, res, next);
-  });
-
-  app.get("/api/logout", (req, res) => {
-    req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
-          client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-        }).href
-      );
-    });
-  });
-  
-  app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
-}
-
-export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  const user = req.user as any;
-
-  if (!req.isAuthenticated() || !user?.expires_at) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  const now = Math.floor(Date.now() / 1000);
-  if (now <= user.expires_at) {
-    return next();
-  }
-
-  const refreshToken = user.refresh_token;
-  if (!refreshToken) {
-    return res.redirect("/api/login");
+  // Only proceed if we have the required environment variables
+  if (!process.env.REPLIT_DOMAINS || !process.env.REPL_ID) {
+    console.warn("Replit Auth not fully configured. Missing required environment variables.");
+    return;
   }
 
   try {
     const config = await getOidcConfig();
-    const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
-    updateUserSession(user, tokenResponse);
-    return next();
+
+    const verify: VerifyFunction = async (
+      tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
+      verified: passport.AuthenticateCallback
+    ) => {
+      try {
+        const user = {};
+        updateUserSession(user, tokens);
+        const dbUser = await upsertUser(tokens.claims());
+        
+        // Combine session user with database user
+        const combinedUser = {
+          ...user,
+          id: dbUser.id,
+          email: dbUser.email,
+          firstName: dbUser.firstName,
+          lastName: dbUser.lastName,
+          profileImageUrl: dbUser.profileImageUrl
+        };
+        
+        verified(null, combinedUser);
+      } catch (error) {
+        console.error("Error in Replit Auth verify function:", error);
+        verified(error as Error);
+      }
+    };
+
+    // Set up a strategy for each domain
+    for (const domain of process.env.REPLIT_DOMAINS.split(",")) {
+      const strategy = new Strategy(
+        {
+          name: `replitauth:${domain}`,
+          config,
+          scope: "openid email profile offline_access",
+          callbackURL: `https://${domain}/api/auth/replit/callback`,
+        },
+        verify,
+      );
+      passport.use(strategy);
+    }
+
+    passport.serializeUser((user: Express.User, cb) => {
+      console.log("Serializing user:", user);
+      cb(null, user);
+    });
+    
+    passport.deserializeUser((user: Express.User, cb) => {
+      console.log("Deserializing user:", user);
+      cb(null, user);
+    });
+
+    // Login route
+    app.get("/api/auth/replit", (req, res, next) => {
+      console.log("Starting Replit authentication process");
+      passport.authenticate(`replitauth:${req.hostname}`, {
+        prompt: "login consent",
+        scope: ["openid", "email", "profile", "offline_access"],
+      })(req, res, next);
+    });
+
+    // Callback route
+    app.get("/api/auth/replit/callback", (req, res, next) => {
+      console.log("Processing Replit auth callback");
+      passport.authenticate(`replitauth:${req.hostname}`, {
+        successRedirect: "/?auth=success",
+        failureRedirect: "/login?error=replit_auth_failed",
+      })(req, res, next);
+    });
+
+    console.log("Replit Auth configured successfully");
   } catch (error) {
-    return res.redirect("/api/login");
+    console.error("Error setting up Replit Auth:", error);
   }
+}
+
+// Middleware to check if user is authenticated
+export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  const user = req.user as any;
+
+  if (!req.isAuthenticated() || !user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  // Check if token is expired
+  if (user.expires_at) {
+    const now = Math.floor(Date.now() / 1000);
+    
+    // If token is still valid, proceed
+    if (now <= user.expires_at) {
+      return next();
+    }
+
+    // If token expired and we have a refresh token, try to refresh
+    const refreshToken = user.refresh_token;
+    if (refreshToken) {
+      try {
+        const config = await getOidcConfig();
+        const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
+        updateUserSession(user, tokenResponse);
+        return next();
+      } catch (error) {
+        console.error("Error refreshing token:", error);
+        return res.status(401).json({ message: "Session expired" });
+      }
+    }
+  }
+
+  // If we made it here, the user is authenticated
+  next();
 };

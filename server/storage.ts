@@ -12,6 +12,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
   getUserByGithubId(githubId: string): Promise<User | undefined>;
+  getUserByReplitId(replitId: string): Promise<User | undefined>;
   createUser(user: Partial<User>): Promise<User>;
   updateUser(id: number, updateData: Partial<User>): Promise<User | undefined>;
   storeGoogleToken(userId: number, token: string): Promise<boolean>;
@@ -321,6 +322,15 @@ export class MemStorage implements IStorage {
   async getUserByGithubId(githubId: string): Promise<User | undefined> {
     for (const user of this.users.values()) {
       if (user.githubId === githubId) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+  
+  async getUserByReplitId(replitId: string): Promise<User | undefined> {
+    for (const user of this.users.values()) {
+      if (user.replitId === replitId) {
         return user;
       }
     }

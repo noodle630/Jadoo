@@ -3,6 +3,16 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: text("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  }
+);
+
 // User schema
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -20,6 +30,7 @@ export const users = pgTable("users", {
   googleToken: text("google_token"),
   githubId: text("github_id").unique(),
   githubToken: text("github_token"),
+  replitId: text("replit_id").unique(), // Replit user ID for OpenID Connect
   
   // Profile data
   profileImageUrl: text("profile_image_url"),
