@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * Component that handles authentication redirects
@@ -10,6 +11,7 @@ import { toast } from '@/hooks/use-toast';
 export default function AuthRedirectHandler() {
   const [location, setLocation] = useLocation();
   const { isAuthenticated, user } = useAuth();
+  const queryClient = useQueryClient();
   
   useEffect(() => {
     // Get the current URL search parameters
@@ -34,42 +36,53 @@ export default function AuthRedirectHandler() {
       if (authStatus === 'success') {
         console.log('Authentication successful');
         
+        // Force refresh user data
+        queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+        
         // Get saved redirect target from localStorage or default to dashboard
         const redirectTo = localStorage.getItem('authRedirectTarget') || '/';
         localStorage.removeItem('authRedirectTarget'); // Clean up
         
-        // Wait a moment to ensure auth state is updated
+        // Double invalidation approach to improve reliability
         setTimeout(() => {
-          // Check if user is authenticated
-          if (isAuthenticated && user) {
-            toast({
-              title: 'Login successful!',
-              description: `Welcome${user.firstName ? ', ' + user.firstName : ''}!`,
-            });
-            console.log('User authenticated, redirecting to:', redirectTo);
-            setLocation(redirectTo);
-          } else {
-            // If we get to this point after an auth=success but don't have the user
-            // object yet, we'll force a page reload to ensure the auth state is fresh
-            console.log('Auth success, but user not loaded yet. Forcing refresh...');
-            window.location.href = '/';
-          }
-        }, 100); // Reduce timeout to speed up the process
+          queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+          
+          // Wait a moment to ensure auth state is updated
+          setTimeout(() => {
+            // Check if user is authenticated
+            if (isAuthenticated && user) {
+              toast({
+                title: 'Login successful!',
+                description: `Welcome${user.firstName ? ', ' + user.firstName : ''}!`,
+              });
+              console.log('User authenticated, redirecting to:', redirectTo);
+              setLocation(redirectTo);
+            } else {
+              console.log('Auth success, but user not loaded yet. Forcing refresh...');
+              
+              // If we still don't have the user, reload the entire page
+              // This ensures a fresh state with the new session cookies
+              window.location.href = redirectTo;
+            }
+          }, 500);
+        }, 100);
       } else if (authStatus === 'session_error') {
         toast({
           title: 'Session Error',
           description: 'There was a problem with your session. Please try logging in again.',
           variant: 'destructive',
         });
+        setLocation('/login');
       } else if (authStatus === 'no_session') {
         toast({
           title: 'Login Error',
           description: 'Session could not be created. Please try again.',
           variant: 'destructive',
         });
+        setLocation('/login');
       }
     }
-  }, [location, isAuthenticated, user, setLocation]);
+  }, [location, isAuthenticated, user, setLocation, queryClient]);
   
   return null; // This is a utility component with no UI
 }

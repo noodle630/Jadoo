@@ -177,20 +177,11 @@ export async function setupGoogleAuth(app: Express) {
             lastDeserialized: new Date()
           });
         } else {
-          console.log(`User not found with ID: ${id} - creating temporary user`);
+          console.error(`User not found with ID: ${id} - Cannot deserialize user`);
           
-          // For development only - create a temporary user object
-          // This allows us to continue developing while fixing auth
-          const tempUser = {
-            id: id,
-            email: 'temp@example.com',
-            firstName: 'Temporary',
-            lastName: 'User',
-            role: 'user',
-            isTemporary: true
-          };
-          
-          done(null, tempUser);
+          // Rather than creating a fake temporary user which causes logic issues,
+          // Return an authentication failure
+          done(new Error(`User not found with ID: ${id}`), null);
         }
       } catch (error) {
         console.error(`Error deserializing user: ${error}`);
@@ -217,28 +208,45 @@ export async function setupGoogleAuth(app: Express) {
       passport.authenticate("google", { failureRedirect: "/login?error=google_auth_failed" }),
       (req, res) => {
         console.log("Google callback successful");
+        
         // Log the user object to aid debugging
         console.log("User in session:", req.user);
+        console.log("Session ID:", req.sessionID);
+        console.log("Session cookie:", req.session?.cookie);
         
-        // Force session save to ensure user is stored before redirect
-        if (req.session) {
-          req.session.save(err => {
-            if (err) {
-              console.error("Error saving session:", err);
-              // Even with error, redirect to safe location
+        // Regenerate the session to avoid session fixation
+        req.session.regenerate((regenerateErr) => {
+          if (regenerateErr) {
+            console.error("Error regenerating session:", regenerateErr);
+            return res.redirect("/?auth=session_error");
+          }
+          
+          // Re-login the user to ensure the session has the updated user data
+          req.login(req.user, (loginErr) => {
+            if (loginErr) {
+              console.error("Error logging in user after session regeneration:", loginErr);
               return res.redirect("/?auth=session_error");
-            } 
+            }
             
-            console.log("Session saved successfully");
+            console.log("User re-logged in after session regeneration");
             
-            // Redirect to dashboard after successful login
-            // Client-side JavaScript will use localStorage to restore the original navigation target
-            res.redirect("/?auth=success");
+            // Force session save to ensure user is stored before redirect
+            req.session.save(saveErr => {
+              if (saveErr) {
+                console.error("Error saving session:", saveErr);
+                // Even with error, redirect to safe location
+                return res.redirect("/?auth=session_error");
+              }
+              
+              console.log("Session saved successfully");
+              console.log("Final session ID:", req.sessionID);
+              
+              // Redirect to dashboard after successful login
+              // Client-side JavaScript will use localStorage to restore the original navigation target
+              res.redirect("/?auth=success");
+            });
           });
-        } else {
-          console.error("No session found in request");
-          res.redirect("/?auth=no_session");
-        }
+        });
       }
     );
 
