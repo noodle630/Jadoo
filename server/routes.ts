@@ -721,6 +721,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication services
   await setupGoogleAuth(app);
   setupGithubAuth(app);
+  
+  // Add a direct file transformation endpoint that doesn't require authentication
+  app.post('/api/transform/csv', upload.single('file'), (req: Request, res: Response) => {
+    console.log("CSV transformation request received");
+    
+    try {
+      if (!req.file) {
+        console.log("No file detected in transform request");
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+      
+      const marketplace = req.body.marketplace || 'amazon';
+      const maxRows = parseInt(req.body.maxRows || '1000', 10);
+      
+      console.log(`Processing ${req.file.originalname} for ${marketplace} marketplace`);
+      console.log(`File saved to ${req.file.path}`);
+      
+      // Execute the Python smart_transform script
+      const pythonProcess = spawn('python3', [
+        'smart_transform.py',
+        req.file.path,
+        marketplace,
+        maxRows.toString()
+      ]);
+      
+      let outputData = '';
+      let errorData = '';
+      
+      pythonProcess.stdout.on('data', (data) => {
+        outputData += data.toString();
+      });
+      
+      pythonProcess.stderr.on('data', (data) => {
+        errorData += data.toString();
+        console.error(`Python error: ${data}`);
+      });
+      
+      pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+          console.error(`Python process exited with code ${code}`);
+          return res.status(500).json({ 
+            error: 'Transformation failed', 
+            details: errorData 
+          });
+        }
+        
+        try {
+          const result = JSON.parse(outputData);
+          
+          if (result.error) {
+            return res.status(500).json({ error: result.error });
+          }
+          
+          if (result.output_file && fs.existsSync(result.output_file)) {
+            // Send the file
+            return res.download(result.output_file, `transformed_${marketplace}_${path.basename(req.file.originalname)}`, (err) => {
+              if (err) {
+                console.error(`Error sending file: ${err}`);
+              }
+              // Clean up the files
+              try {
+                fs.unlinkSync(req.file.path);
+                fs.unlinkSync(result.output_file);
+              } catch (cleanupErr) {
+                console.error(`Error cleaning up files: ${cleanupErr}`);
+              }
+            });
+          } else {
+            return res.status(500).json({ error: 'Output file not found' });
+          }
+        } catch (jsonError) {
+          console.error(`Error parsing Python output: ${jsonError}`);
+          return res.status(500).json({ 
+            error: 'Failed to parse transformation result',
+            details: outputData
+          });
+        }
+      });
+    } catch (error) {
+      console.error(`Server error in transformation: ${error}`);
+      return res.status(500).json({ error: 'Server error', details: error.message });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

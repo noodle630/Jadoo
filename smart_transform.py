@@ -34,7 +34,7 @@ def generate_random_string(length=8):
     """Generate a random string for unique filenames"""
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
-def smart_transform(input_file_path, marketplace_format, target_columns, output_file=None, max_rows=1000):
+def smart_transform(input_file_path, marketplace_format, output_file=None, max_rows=1000):
     """
     Transform a CSV file to a marketplace format with guaranteed 1:1 row mapping,
     enhanced by OpenAI's intelligence
@@ -42,7 +42,6 @@ def smart_transform(input_file_path, marketplace_format, target_columns, output_
     Args:
         input_file_path: Path to the CSV file to transform
         marketplace_format: Name of the target format (e.g., 'amazon', 'walmart')
-        target_columns: List of column names for the target format
         output_file: Optional path to save the transformed file
         max_rows: Maximum rows to process (default: 1000)
     
