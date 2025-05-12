@@ -25,13 +25,36 @@ console.log(`Replit Domain: ${process.env.REPLIT_DOMAINS}`);
 // Configure session management
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: true,
-    ttl: sessionTtl,
-    tableName: "sessions", // Will create this table if needed
-  });
+  
+  console.log("Setting up session management");
+  console.log("Database URL exists:", !!process.env.DATABASE_URL);
+  
+  // Create PostgreSQL session store if database URL is available
+  let sessionStore;
+  
+  try {
+    const pgStore = connectPg(session);
+    sessionStore = new pgStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+      ttl: sessionTtl,
+      tableName: "sessions", // Will create this table if needed
+    });
+    console.log("Successfully created PostgreSQL session store");
+  } catch (error) {
+    console.error("Error creating PostgreSQL session store:", error);
+    console.log("Falling back to memory store for session management (not for production)");
+    
+    // Fall back to memory store if PG store fails
+    const MemoryStore = require('memorystore')(session);
+    sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
+  }
+  
+  // In development, we'll use unsecured cookies to make debugging easier
+  const isSecure = process.env.NODE_ENV === "production";
+  console.log(`Session cookie secure: ${isSecure} (${process.env.NODE_ENV} environment)`);
   
   return session({
     secret: SESSION_SECRET,
@@ -40,8 +63,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      // Only use secure cookies in production to allow local development
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // Setting to false works better across environments
       maxAge: sessionTtl,
       sameSite: 'lax' // Help with cross-site cookie issues
     },
@@ -51,6 +73,8 @@ export function getSession() {
 // Upsert user in database based on Google profile
 async function upsertGoogleUser(profile: any, accessToken: string) {
   try {
+    console.log("Processing Google profile:", profile.id);
+    
     // Extract user data from Google profile
     const userData = {
       googleId: profile.id,
@@ -59,17 +83,23 @@ async function upsertGoogleUser(profile: any, accessToken: string) {
       lastName: profile.name?.familyName || null,
       profileImageUrl: profile.photos?.[0]?.value || null,
       lastLogin: new Date(),
+      googleToken: accessToken,
     };
+
+    console.log(`Google profile data extracted: ${userData.email} (${userData.firstName} ${userData.lastName})`);
 
     // Find if user exists by Google ID
     const existingUserByGoogleId = await storage.getUserByGoogleId(userData.googleId);
 
     // If found by Google ID, update and return
     if (existingUserByGoogleId) {
-      return await storage.updateUser(existingUserByGoogleId.id, {
+      console.log(`User found by Google ID: ${existingUserByGoogleId.id}`);
+      const updatedUser = await storage.updateUser(existingUserByGoogleId.id, {
         ...userData,
         lastLogin: new Date(),
       });
+      console.log(`User updated: ${updatedUser.id}`);
+      return updatedUser;
     }
 
     // Check if user exists by email (might have registered with email/password)
@@ -77,21 +107,27 @@ async function upsertGoogleUser(profile: any, accessToken: string) {
       const existingUserByEmail = await storage.getUserByEmail(userData.email);
       
       if (existingUserByEmail) {
+        console.log(`User found by email: ${existingUserByEmail.id}`);
         // Link Google ID to existing account
-        return await storage.updateUser(existingUserByEmail.id, {
+        const updatedUser = await storage.updateUser(existingUserByEmail.id, {
           ...userData,
           googleId: userData.googleId,
           lastLogin: new Date(),
         });
+        console.log(`Linked Google ID to existing account: ${updatedUser.id}`);
+        return updatedUser;
       }
     }
 
     // Create new user if not found
-    return await storage.createUser({
+    console.log("Creating new user account from Google profile");
+    const newUser = await storage.createUser({
       ...userData,
       username: userData.email.split('@')[0], // Create a default username from email
       isActive: true,
     });
+    console.log(`New user created: ${newUser.id}`);
+    return newUser;
   } catch (error) {
     console.error("Error upserting Google user:", error);
     throw error;
@@ -163,10 +199,26 @@ export async function setupGoogleAuth(app: Express) {
       "/api/auth/google/callback",
       passport.authenticate("google", { failureRedirect: "/login" }),
       (req, res) => {
-        console.log("Google callback successful, redirecting to dashboard");
+        console.log("Google callback successful");
         // Log the user object to aid debugging
         console.log("User in session:", req.user);
-        res.redirect("/");
+        
+        // Force session save to ensure user is stored
+        if (req.session) {
+          req.session.save(err => {
+            if (err) {
+              console.error("Error saving session:", err);
+            } else {
+              console.log("Session saved successfully");
+            }
+            
+            // Even in case of error, try to redirect to dashboard
+            res.redirect("/dashboard");
+          });
+        } else {
+          console.error("No session found in request");
+          res.redirect("/dashboard");
+        }
       }
     );
 

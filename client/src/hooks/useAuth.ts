@@ -109,7 +109,11 @@ export function useAuth() {
 
   // Helper function to initiate Google login
   const googleLogin = () => {
-    window.location.href = "/api/auth/google";
+    console.log("Initiating Google login");
+    const baseUrl = window.location.origin;
+    const redirectUrl = `${baseUrl}/api/auth/google`;
+    console.log("Redirecting to:", redirectUrl);
+    window.location.href = redirectUrl;
   };
 
   return {

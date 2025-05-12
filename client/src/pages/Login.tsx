@@ -48,6 +48,7 @@ export default function LoginPage() {
   }
 
   const handleGoogleLogin = () => {
+    console.log("Initiating Google login from button click");
     setIsLoading(true);
     googleLogin();
   };
