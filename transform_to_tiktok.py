@@ -93,14 +93,15 @@ def transform_to_tiktok_format(csv_file_path, output_file=None, marketplace="tik
         {data_sample}
         
         INSTRUCTIONS:
-        1. Transform the source data to match the TikTok catalog format
+        1. Transform ALL rows in the source data (not just the sample) to match the TikTok catalog format
         2. Map the source fields to TikTok fields, using your best judgment when direct mappings aren't available
         3. For missing required fields, generate appropriate values based on existing data
         4. Clean data by fixing formatting and standardizing values
         5. Ensure all required TikTok fields are included
-        6. Format the output as a valid CSV with all the columns from the TikTok template
-        7. The first row must contain the column headers
-        8. Do not include any markdown formatting or explanations, only return the CSV content
+        6. Every source row should have a corresponding output row - preserve all rows from the original data
+        7. Format the output as a valid CSV with all the columns from the TikTok template
+        8. The first row must contain the column headers
+        9. Do not include any markdown formatting or explanations, only return the CSV content
         
         IMPORTANT GUIDELINES:
         - For 'sku_id', use a unique ID for the item
