@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FeedHistory from "@/components/FeedHistory";
-import { PlusCircle, BarChart3, Zap, TrendingUp, FileSpreadsheet } from "lucide-react";
+import { PlusCircle, BarChart3, Zap, TrendingUp, FileSpreadsheet, FileUp, ArrowUpRight } from "lucide-react";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -27,12 +27,20 @@ export default function Dashboard() {
             Manage and monitor your marketplace feeds
           </p>
         </div>
-        <Link href="/feed/new">
-          <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
-            <PlusCircle className="h-4 w-4 mr-2" />
-            Create Feed
-          </Button>
-        </Link>
+        <div className="flex space-x-2">
+          <Link href="/simple-transform">
+            <Button variant="outline" className="border-slate-300 dark:border-slate-700">
+              <FileUp className="h-4 w-4 mr-2" />
+              Direct Transform
+            </Button>
+          </Link>
+          <Link href="/feed/new">
+            <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Create Feed
+            </Button>
+          </Link>
+        </div>
       </div>
       
       {/* Stats Cards */}
@@ -115,14 +123,19 @@ export default function Dashboard() {
               <div className="rounded-lg bg-slate-50 dark:bg-slate-900/50 p-6 text-center">
                 <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">Welcome to S</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-4">
-                  Your marketplace data transformation platform. Start by creating a new product feed 
-                  or check your recent activity below.
+                  Your marketplace data transformation platform with guaranteed 1:1 row mapping. Create a new product feed 
+                  or use Direct Transform for immediate results.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Link href="/feed/new">
                     <Button variant="default">Create Feed</Button>
                   </Link>
-                  <Button variant="outline">View Tutorials</Button>
+                  <Link href="/simple-transform">
+                    <Button variant="outline" className="flex items-center gap-1">
+                      <ArrowUpRight className="h-4 w-4" />
+                      Direct Transform
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </TabsContent>
