@@ -1,961 +1,104 @@
 import os
 import io
-import pandas as pd
-from flask import Flask, request, render_template, jsonify, make_response, send_file, redirect, url_for
+from flask import Flask, request, jsonify, send_file, make_response, render_template
 from werkzeug.utils import secure_filename
-from openai import OpenAI
 from dotenv import load_dotenv
-
-# Import database utilities
-from db_utils import get_recent_transformations, record_transformation
-
-# Import smart transformation functions
-try:
-    from smart_transform import transform_to_amazon_format as smart_amazon_transform
-    from smart_transform import transform_to_walmart_format as smart_walmart_transform
-    SMART_TRANSFORM_AVAILABLE = True
-except ImportError:
-    print("Smart transformation module not available. Some features will be disabled.")
-    SMART_TRANSFORM_AVAILABLE = False
+from db_utils import record_transformation, get_transformation_by_id, get_recent_transformations
+from smart_transform import transform_to_amazon_format
+from templates_config import MARKETPLACES
 
 # Load environment variables
 load_dotenv()
 
-# Get OpenAI API key
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OPENAI_API_KEY environment variable not set")
+# Debug key print
+print("DEBUG API KEY:", os.getenv("OPENAI_API_KEY"))
 
-# Initialize OpenAI client
-client = OpenAI(api_key=api_key)
+# Flask app setup
+app = Flask(__name__)
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "temp_uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Import marketplace column definitions
-from transform_to_amazon import AMAZON_COLUMNS
-from transform_to_reebelo import REEBELO_COLUMNS, REEBELO_COLUMNS_CURRENT, REEBELO_COLUMNS_NEW
-from transform_to_walmart import WALMART_COLUMNS, REQUIRED_WALMART_FIELDS
-from transform_to_catch import CATCH_COLUMNS, REQUIRED_FIELDS as REQUIRED_CATCH_FIELDS
-from transform_to_meta import META_COLUMNS, REQUIRED_META_FIELDS
-from transform_to_tiktok import TIKTOK_COLUMNS, TIKTOK_REQUIRED_COLUMNS as REQUIRED_TIKTOK_FIELDS
-
-# Marketplace configurations
-MARKETPLACES = {
-    "amazon": {
-        "name": "Amazon Inventory Loader",
-        "columns": AMAZON_COLUMNS,
-        "endpoint": "/transform-to-amazon",
-        "color": "#ff9900",
-        "hover_color": "#e88a00"
-    },
-    "reebelo": {
-        "name": "Reebelo Marketplace",
-        "columns": REEBELO_COLUMNS,
-        "endpoint": "/transform-to-reebelo",
-        "color": "#4052b5",
-        "hover_color": "#2e3b82"
-    },
-    "reebelo-legacy": {
-        "name": "Reebelo Legacy Format",
-        "columns": REEBELO_COLUMNS_CURRENT,
-        "endpoint": "/transform-to-reebelo-legacy",
-        "color": "#4052b5",
-        "hover_color": "#2e3b82"
-    },
-    "walmart": {
-        "name": "Walmart Marketplace",
-        "columns": WALMART_COLUMNS,
-        "endpoint": "/transform-to-walmart",
-        "color": "#0071ce",
-        "hover_color": "#004c91"
-    },
-    "catch": {
-        "name": "Catch Marketplace",
-        "columns": CATCH_COLUMNS,
-        "endpoint": "/transform-to-catch",
-        "color": "#00aaa7",
-        "hover_color": "#008e8c"
-    },
-    "meta": {
-        "name": "Meta (Facebook) Product Catalog",
-        "columns": META_COLUMNS,
-        "endpoint": "/transform-to-meta",
-        "color": "#1877f2",
-        "hover_color": "#0e5fcb"
-    },
-    "tiktok": {
-        "name": "TikTok Shopping Catalog",
-        "columns": TIKTOK_COLUMNS,
-        "endpoint": "/transform-to-tiktok",
-        "color": "#000000",
-        "hover_color": "#333333"
-    }
-}
-
-# Create Flask app
-app = Flask(__name__, static_folder='static', static_url_path='/static')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limit upload size to 16MB
-
-# Create a temporary directory for uploads if it doesn't exist
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'temp_uploads')
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-def transform_csv_with_openai(file_path, marketplace_key, format_param='csv', max_rows=1000):
-    """
-    Transform a CSV file to the specified marketplace format using OpenAI
-    
-    Args:
-        file_path: Path to the CSV file
-        marketplace_key: Key to identify the marketplace (amazon, reebelo, walmart, catch)
-        format_param: Response format (csv or json)
-        max_rows: Maximum rows to process for cost efficiency (default: 1000)
-        
-    Returns:
-        The transformed CSV content and metadata
-    """
-    try:
-        # Read the CSV with proper encoding detection
-        try:
-            df = pd.read_csv(file_path, encoding='utf-8')
-        except UnicodeDecodeError:
-            # Try another common encoding if UTF-8 fails
-            df = pd.read_csv(file_path, encoding='latin1')
-            
-        original_row_count = len(df)
-        
-        # Check if file exceeds row limit and return an error
-        if original_row_count > max_rows:
-            error_message = f"File contains {original_row_count} rows which exceeds the maximum limit of {max_rows} rows. Please reduce the file size and try again."
-            return {"error": error_message}, 400
-            
-        row_count = original_row_count
-        column_count = len(df.columns)
-        columns = list(df.columns)
-        
-        # Get marketplace config
-        marketplace = MARKETPLACES[marketplace_key]
-        marketplace_columns = marketplace["columns"]
-        
-        # Get required fields if defined
-        required_fields = []
-        if marketplace_key == "walmart":
-            required_fields = REQUIRED_WALMART_FIELDS
-        elif marketplace_key == "catch":
-            required_fields = REQUIRED_CATCH_FIELDS
-        elif marketplace_key == "meta":
-            required_fields = REQUIRED_META_FIELDS
-        elif marketplace_key == "tiktok":
-            required_fields = REQUIRED_TIKTOK_FIELDS
-        
-        # Get a sample for the prompt but we'll process the entire dataset
-        sample_rows = min(5, row_count)
-        data_sample = df.head(sample_rows).to_csv(index=False)
-        
-        # Prepare info about the data structure
-        data_info = f"""
-        CSV file has {row_count} rows and {column_count} columns.
-        Source columns: {', '.join(columns)}
-        Target {marketplace['name']} columns: {', '.join(marketplace_columns)}
-        
-        Important: You will be shown a sample of {sample_rows} rows for analysis, but your transformation instructions should apply to ALL rows in the dataset.
-        """
-        
-        if required_fields:
-            data_info += f"Required fields: {', '.join(required_fields)}\n"
-        
-        # Create prompt based on marketplace
-        if marketplace_key == "amazon":
-            prompt = create_amazon_prompt(data_info, data_sample, sample_rows)
-        elif marketplace_key in ["reebelo", "reebelo-legacy"]:
-            prompt = create_reebelo_prompt(data_info, data_sample, sample_rows, marketplace_key == "reebelo-legacy")
-        elif marketplace_key == "walmart":
-            prompt = create_walmart_prompt(data_info, data_sample, sample_rows)
-        elif marketplace_key == "catch":
-            prompt = create_catch_prompt(data_info, data_sample, sample_rows)
-        elif marketplace_key == "meta":
-            prompt = create_meta_prompt(data_info, data_sample, sample_rows)
-        elif marketplace_key == "tiktok":
-            prompt = create_tiktok_prompt(data_info, data_sample, sample_rows)
-        else:
-            raise ValueError(f"Unsupported marketplace: {marketplace_key}")
-            
-        # Call OpenAI API
-        system_message = f"You are a data transformation expert that converts product data to {marketplace['name']} format."
-        
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # Using GPT-3.5-turbo for cost optimization as explicitly requested by user
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3,  # Lower temperature for more consistent outputs
-        )
-        
-        # Extract the transformed CSV content
-        message_content = response.choices[0].message.content
-        if message_content is None:
-            return {"error": "Received empty response from OpenAI API"}, 500
-            
-        # Remove markdown code block indicators if present
-        cleaned_content = message_content.strip()
-        if cleaned_content.startswith("```csv"):
-            cleaned_content = cleaned_content[6:]
-        elif cleaned_content.startswith("```"):
-            cleaned_content = cleaned_content.split("\n", 1)[1]
-        if cleaned_content.endswith("```"):
-            cleaned_content = cleaned_content[:-3]
-            
-        transformed_csv = cleaned_content.strip()
-        
-        # Process the returned CSV string to ensure it's valid and contains the right number of rows
-        try:
-            result_df = pd.read_csv(io.StringIO(transformed_csv))
-            transformed_row_count = len(result_df)
-            
-            # Log the results for debugging
-            print(f"Original rows: {row_count}, Transformed rows: {transformed_row_count}")
-            
-            # Verify that we have an appropriate number of rows (should be close to original)
-            if transformed_row_count < 0.9 * row_count:
-                print(f"⚠️ Warning: Significant row loss after transformation. Original: {row_count}, Transformed: {transformed_row_count}")
-        except Exception as e:
-            print(f"Error parsing transformed CSV: {str(e)}")
-            # Continue anyway since we'll return the raw CSV
-        
-        # Get the filename without the path
-        filename = os.path.basename(file_path)
-        
-        # Save the transformed CSV to a file
-        output_filename = f"{marketplace_key}_{filename}"
-        output_filepath = os.path.join(app.config['UPLOAD_FOLDER'], output_filename)
-        with open(output_filepath, 'w', encoding='utf-8') as f:
-            f.write(transformed_csv)
-            
-        # Return result based on format
-        if format_param == 'json':
-            # Parse the CSV and return as JSON
-            result_df = pd.read_csv(io.StringIO(transformed_csv))
-            json_data = result_df.to_json(orient='records')
-            return {
-                "success": True,
-                "message": f"CSV transformed successfully to {marketplace['name']} format",
-                "data": json_data,
-                "row_count": row_count,
-                "transformed_row_count": len(result_df),
-                "output_filename": output_filename,
-                "output_filepath": output_filepath
-            }
-        else:
-            # Return the CSV data directly
-            return {
-                "success": True,
-                "message": f"CSV transformed successfully to {marketplace['name']} format",
-                "data": transformed_csv,
-                "output_filename": output_filename,
-                "output_filepath": output_filepath
-            }
-            
-    except Exception as e:
-        return {"error": f"Error transforming CSV: {str(e)}"}, 500
-
-def create_amazon_prompt(data_info, data_sample, sample_rows):
-    return f"""
-    As an AI data transformation expert, convert the following CSV data to Amazon Inventory Loader format.
-    
-    Data information:
-    {data_info}
-    
-    Sample data (first {sample_rows} rows):
-    {data_sample}
-    
-    INSTRUCTIONS:
-    1. Transform ALL rows in the source data (not just the sample) to match the Amazon Inventory Loader template format for Electronics category
-    2. Map the source fields to Amazon fields, using your best judgment when direct mappings aren't available
-    3. For missing required fields, generate appropriate values based on existing data
-    4. Clean data by fixing formatting and standardizing values
-    5. Ensure all required Amazon fields are included
-    6. Format the output as a valid CSV with all the columns from the Amazon template
-    7. The first row must contain the column headers
-    8. Every source row should have a corresponding output row - preserve all rows from the original data
-    9. Do not include any markdown formatting or explanations, only return the CSV content
-    
-    IMPORTANT GUIDELINES:
-    - For 'external_product_id', use UPC if available or generate a 12-digit number
-    - For 'external_product_id_type', use 'UPC' as default
-    - For 'update_delete', use 'Update' as default
-    - For 'feed_product_type', use 'Consumer Electronics' for electronic items
-    - For 'item_condition', use 'New' as default
-    - Missing prices should be realistic market prices for similar items
-    - Generate reasonable bullet points (bullet_point1-5) from the product description
-    - Generate a comprehensive product_description if missing
-    - For images, use placeholder URLs like https://example.com/images/[sku].jpg if none provided
-    
-    REQUIRED FIELDS (these MUST be in the output):
-    item_sku, external_product_id, external_product_id_type, item_name, brand_name, 
-    manufacturer, feed_product_type, update_delete, standard_price, quantity, 
-    item_condition, item_type, model
-    
-    RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
-    """
-
-def create_reebelo_prompt(data_info, data_sample, sample_rows, legacy=False):
-    template_type = "current (legacy)" if legacy else "new"
-    return f"""
-    As an AI data transformation expert, convert the following CSV data to Reebelo marketplace format ({template_type} format).
-    
-    Data information:
-    {data_info}
-    
-    Sample data (first {sample_rows} rows):
-    {data_sample}
-    
-    INSTRUCTIONS:
-    1. Transform ALL rows in the source data (not just the sample) to match the Reebelo marketplace format
-    2. Map the source fields to Reebelo fields, using your best judgment when direct mappings aren't available
-    3. For missing required fields, generate appropriate values based on existing data
-    4. Clean data by fixing formatting and standardizing values
-    5. Ensure all required Reebelo fields are included
-    6. Format the output as a valid CSV with all the columns from the Reebelo template
-    7. The first row must contain the column headers
-    8. Every source row should have a corresponding output row - preserve all rows from the original data
-    9. Do not include any markdown formatting or explanations, only return the CSV content
-    
-    IMPORTANT GUIDELINES:
-    {'- For the legacy format: "Reebelo RID", "Product Name", "Your SKU", etc.' if legacy else '- For the new format: "Category", "Reebelo ID", "Your SKU", etc.'}
-    - For 'sku', use the original SKU if available or generate a unique identifier
-    - For 'storage', assume default values if missing (e.g., '128GB' for phones/tablets)
-    - For 'condition', use 'New', 'Refurbished', or 'Used' based on available information
-    - For 'network', use 'Unlocked' as default if missing
-    - For 'warranty_info', if missing use '1 Year Manufacturer Warranty'
-    - For 'product_type', determine based on category (e.g., 'Smartphone', 'Tablet', 'Laptop', etc.)
-    - If 'image_urls' is missing, use placeholder URLs like https://example.com/images/[sku].jpg
-    - For missing prices, generate realistic market prices for similar items
-    
-    REQUIRED FIELDS (these MUST be in the output):
-    {'Reebelo RID, Product Name, Your SKU, SKU Condition, SKU Battery Health, Price, Min Price, Quantity' if legacy else 'Category, Reebelo ID, Your SKU, Product Title, Brand, Price, Min Price, Quantity'}
-    
-    RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
-    """
-
-def create_walmart_prompt(data_info, data_sample, sample_rows):
-    return f"""
-    As an AI data transformation expert, convert the following CSV data to Walmart marketplace format.
-    
-    Data information:
-    {data_info}
-    
-    Sample data (first {sample_rows} rows):
-    {data_sample}
-    
-    INSTRUCTIONS:
-    1. Transform ALL rows in the source data (not just the sample) to match the Walmart marketplace format for mobile phones
-    2. Map the source fields to Walmart fields, using your best judgment when direct mappings aren't available
-    3. For missing required fields, generate appropriate values based on existing data
-    4. Clean data by fixing formatting and standardizing values
-    5. Ensure all required Walmart fields are included
-    6. Format the output as a valid CSV with all the columns from the Walmart template
-    7. The first row must contain the column headers
-    8. Every source row should have a corresponding output row - preserve all rows from the original data
-    9. Do not include any markdown formatting or explanations, only return the CSV content
-    
-    IMPORTANT GUIDELINES:
-    - For 'sku', use the original SKU if available
-    - For 'specProductType', use 'Cell Phones'
-    - For 'productIdType', use 'UPC' as default
-    - For 'productName', ensure it meets character limits
-    - For 'shortDescription', provide a concise product description
-    - For 'price', format as a decimal with no currency symbol
-    - For 'ShippingWeight', provide weight in pounds
-    - For 'mainImageUrl', use a valid image URL
-    - For 'cellPhoneType', use values like 'Smartphone', 'Feature Phone', etc.
-    - For 'color', specify the device color
-    - For 'condition', use 'New', 'Refurbished', or 'Used' as appropriate
-    
-    REQUIRED FIELDS (these MUST be in the output):
-    sku, specProductType, productIdType, productId, productName, brand, price, 
-    ShippingWeight, shortDescription, mainImageUrl
-    
-    RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
-    """
-
-def create_catch_prompt(data_info, data_sample, sample_rows):
-    return f"""
-    As an AI data transformation expert, convert the following CSV data to the Catch Marketplace format (also known as Mirkal format).
-    
-    Data information:
-    {data_info}
-    
-    Sample data (first {sample_rows} rows):
-    {data_sample}
-    
-    INSTRUCTIONS:
-    1. Transform ALL rows in the source data (not just the sample) to match the Catch Marketplace format
-    2. Map the source fields to Catch fields, using your best judgment when direct mappings aren't available
-    3. For missing required fields, generate appropriate values based on existing data
-    4. Clean data by fixing formatting and standardizing values
-    5. Ensure all required Catch fields are included
-    6. Format the output as a valid CSV with all the columns from the Catch template
-    7. The first row must contain the column headers
-    8. Every source row should have a corresponding output row - preserve all rows from the original data
-    9. Do not include any markdown formatting or explanations, only return the CSV content
-    
-    IMPORTANT GUIDELINES:
-    - For 'category', use "Electronics & Appliances/Phones/Mobile Phones" for mobile phone products
-    - For 'internal-sku', use the original SKU if available or generate a unique identifier
-    - For 'title', ensure it meets Catch's character limit (max 155 characters)
-    - For 'condition', use one of the allowed values: "New", "Refurbished Grade A", "Refurbished Grade B", "Pre-loved"
-    - For 'colour', use one of the standard colors from the Catch system
-    - For 'keywords', use pipe-separated (|) values, not exceeding 100 characters total
-    - For 'image-1', a main product image URL is required
-    - For 'contains-button-cell-batteries', use "Yes" or "No"
-    - For 'uid', this should be populated with the GTIN or MPN value if available
-    
-    REQUIRED FIELDS (these MUST be in the output):
-    category, internal-sku, title, product-description, brand, image-1, 
-    contains-button-cell-batteries, uid
-    
-    RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
-    """
-    
-def create_meta_prompt(data_info, data_sample, sample_rows):
-    return f"""
-    As an AI data transformation expert, convert the following CSV data to Meta (Facebook) product catalog format.
-    
-    Data information:
-    {data_info}
-    
-    Sample data (first {sample_rows} rows):
-    {data_sample}
-    
-    INSTRUCTIONS:
-    1. Transform ALL rows in the source data (not just the sample) to match the Meta product catalog format
-    2. Map the source fields to Meta fields, using your best judgment when direct mappings aren't available
-    3. For missing required fields, generate appropriate values based on existing data
-    4. Clean data by fixing formatting and standardizing values
-    5. Ensure all required Meta fields are included
-    6. Format the output as a valid CSV with all the columns from the Meta template
-    7. The first row must contain the column headers
-    8. Every source row should have a corresponding output row - preserve all rows from the original data
-    9. Do not include any markdown formatting or explanations, only return the CSV content
-    
-    IMPORTANT GUIDELINES:
-    - For 'id', use a unique identifier for each product
-    - For 'title', ensure it is descriptive and accurate
-    - For 'description', provide a detailed product description
-    - For 'availability', use values like 'in stock', 'out of stock', etc.
-    - For 'condition', use values like 'new', 'used', 'refurbished'
-    - For 'price', include both the amount and currency code (e.g., '9.99 USD')
-    - For 'link', provide a URL to the product page
-    - For 'image_link', provide a URL to the product image
-    - For 'brand', specify the product brand
-    - For 'google_product_category', use values from Google's product taxonomy
-    - For app-related fields (ios_url, android_url, etc.), leave them blank if not applicable
-    
-    REQUIRED FIELDS (these MUST be in the output):
-    id, title, description, availability, condition, price, link, image_link, brand
-    
-    RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
-    """
-    
-def create_tiktok_prompt(data_info, data_sample, sample_rows):
-    return f"""
-    As an AI data transformation expert, convert the following CSV data to TikTok catalog format for Video Shopping Ads.
-    
-    Data information:
-    {data_info}
-    
-    Sample data (first {sample_rows} rows):
-    {data_sample}
-    
-    INSTRUCTIONS:
-    1. Transform ALL rows in the source data (not just the sample) to match the TikTok catalog format
-    2. Map the source fields to TikTok fields, using your best judgment when direct mappings aren't available
-    3. For missing required fields, generate appropriate values based on existing data
-    4. Clean data by fixing formatting and standardizing values
-    5. Ensure all required TikTok fields are included
-    6. Format the output as a valid CSV with all the columns from the TikTok template
-    7. The first row must contain the column headers
-    8. Every source row should have a corresponding output row - preserve all rows from the original data
-    9. Do not include any markdown formatting or explanations, only return the CSV content
-    
-    IMPORTANT GUIDELINES:
-    - For 'sku_id', use a unique ID for the item
-    - For 'title', ensure it is descriptive without promotional text
-    - For 'description', provide a short description of the item
-    - For 'availability', use values from: "in stock", "available for order", "preorder", "out of stock", "discontinued"
-    - For 'condition', use values from: "new", "refurbished", "used"
-    - For 'price', include the price with currency (e.g., "9.99 USD")
-    - For 'link', provide the URL of the product landing page
-    - For 'image_link', provide a URL for the product image
-    - For 'brand', provide the product brand name
-    - For 'google_product_category', use a preset value from Google's product taxonomy
-    - For video or image URLs, ensure they meet TikTok's format requirements
-    
-    REQUIRED FIELDS (these MUST be in the output):
-    sku_id, title, description, availability, condition, price, link, image_link, brand
-    
-    RETURN ONLY THE TRANSFORMED CSV DATA WITHOUT ANY ADDITIONAL TEXT OR FORMATTING.
-    """
-
-@app.route('/')
+@app.route("/")
 def index():
-    """Landing page showing options for different marketplaces"""
-    import datetime
-    current_year = datetime.datetime.now().year
-    return render_template('marketplace_selector.html', marketplaces=MARKETPLACES, current_year=current_year)
+    return render_template("marketplace_selector.html", marketplaces=MARKETPLACES, current_year=2025)
 
-@app.route('/smart-transform')
-def smart_transform_page():
-    """Smart transformation page with guaranteed 1:1 row mapping"""
-    import datetime
-    current_year = datetime.datetime.now().year
-    return render_template('smart_transform.html', marketplaces=MARKETPLACES, current_year=current_year)
+@app.route("/feeds/<int:feed_id>")
+def view_feed(feed_id):
+    feed = get_transformation_by_id(feed_id)
+    if not feed:
+        return jsonify({"error": "Feed not found"}), 404
+    return render_template("feed_results.html", feed=feed)
 
-@app.route('/api/smart-transform', methods=['POST'])
-def api_smart_transform():
-    """API endpoint for smart transformation with guaranteed 1:1 row mapping"""
-    if not SMART_TRANSFORM_AVAILABLE:
-        return jsonify({"error": "Smart transformation module is not available"}), 500
-        
+@app.route("/api/simple-upload", methods=["POST"])
+def simple_upload():
     try:
-        # Check if file was uploaded
-        if 'csv_file' not in request.files:
+        if 'file' not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
-        
-        file = request.files['csv_file']
+
+        file = request.files['file']
         if file.filename == '':
             return jsonify({"error": "No file selected"}), 400
-            
-        # Get parameters
-        marketplace = request.form.get('marketplace', 'amazon').lower()
-        max_rows = int(request.form.get('max_rows', 1000))
-        
-        # Save the file temporarily
-        if file.filename:
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-        else:
-            return jsonify({"error": "Invalid filename"}), 400
-            
-        # Process the file based on the marketplace
-        result = None
-        
-        if marketplace == 'amazon':
-            result = smart_amazon_transform(filepath, max_rows=max_rows)
-        elif marketplace == 'walmart':
-            result = smart_walmart_transform(filepath, max_rows=max_rows)
-        else:
-            return jsonify({"error": f"Smart transformation for '{marketplace}' is not implemented yet"}), 400
-            
-        # Check for error
+
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        # Default to Amazon for now
+        result = transform_to_amazon_format(filepath, max_rows=50)
         if "error" in result:
             return jsonify({"error": result["error"]}), 400
-            
-        # Record the transformation in the database
+
         output_file = result["output_file"]
-        source_filename = os.path.basename(filepath)
-        output_filename = os.path.basename(output_file)
-        
-        # Record this transformation in history
-        record_transformation(
-            marketplace_name=marketplace,
-            source_filename=source_filename,
-            output_filename=output_filename,
-            source_row_count=result.get("input_rows", 0),
-            output_row_count=result.get("output_rows", 0),
-            transformation_time=result.get("processing_time", 0),
-            user_id=None  # Add user ID when authentication is implemented
+        feed_id = record_transformation(
+            marketplace_name="amazon",
+            source_filename=filename,
+            output_filename=os.path.basename(output_file),
+            source_row_count=result.get("input_rows",0),
+            output_row_count=result.get("output_rows",0),
+            transformation_time=result.get("processing_time",0)
         )
-        
-        # Return the transformed file
-        return send_file(
-            output_file,
-            mimetype='text/csv',
-            as_attachment=True,
-            download_name=output_filename
-        )
-        
+
+        return jsonify({"id": feed_id})
+
     except Exception as e:
         return jsonify({"error": f"Server error: {str(e)}"}), 500
-    
-@app.route('/history')
-def history():
-    """View transformation history"""
-    import datetime
-    current_year = datetime.datetime.now().year
-    transformations = get_recent_transformations(limit=50)
-    return render_template('history.html', history=transformations, current_year=current_year)
-    
-@app.route('/download/<filename>')
-def download_file(filename):
-    """Download a transformed file"""
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if os.path.exists(filepath):
-        return send_file(
-            filepath,
-            mimetype='text/csv',
-            as_attachment=True,
-            download_name=filename
-        )
-    else:
-        return jsonify({"error": "File not found"}), 404
-        
-@app.route('/templates')
-def templates():
-    """View transformation templates"""
-    import datetime
-    current_year = datetime.datetime.now().year
-    from db_utils import get_templates
-    templates_data = get_templates()
-    return render_template('templates.html', templates=templates_data, current_year=current_year)
+
+@app.route("/api/feeds/<int:feed_id>/download")
+def download_transformed_feed(feed_id):
+    feed = get_transformation_by_id(feed_id)
+    if not feed:
+        return jsonify({"error": "Feed not found"}), 404
+
+    output_file = os.path.join(app.config["UPLOAD_FOLDER"], feed["output_filename"])
+    if not os.path.exists(output_file):
+        return jsonify({"error": "Output file not found"}), 404
+
+    return send_file(
+        output_file,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name=feed["output_filename"]
+    )
 
 @app.route('/marketplace/<marketplace_key>')
 def marketplace_form(marketplace_key):
-    """Display the upload form for a specific marketplace"""
     if marketplace_key not in MARKETPLACES:
-        return redirect(url_for('index'))
-    
-    marketplace = MARKETPLACES[marketplace_key]
-    
-    # Get required columns for this marketplace
-    required_columns = []
-    if marketplace_key == "walmart":
-        required_columns = REQUIRED_WALMART_FIELDS
-    elif marketplace_key == "catch":
-        required_columns = REQUIRED_CATCH_FIELDS
-    elif marketplace_key == "meta":
-        required_columns = REQUIRED_META_FIELDS
-    elif marketplace_key == "tiktok":
-        required_columns = REQUIRED_TIKTOK_FIELDS
-    
-    return render_template('marketplace_form.html', 
-                          marketplace=marketplace, 
-                          marketplace_key=marketplace_key,
-                          required_columns=required_columns)
+        return jsonify({"error": "Invalid marketplace"}), 400
 
-@app.route('/transform', methods=['POST'])
-def transform_csv():
-    """Handle the CSV transformation for any marketplace"""
-    try:
-        # Check for the marketplace key
-        marketplace_key = request.form.get('marketplace')
-        if not marketplace_key or marketplace_key not in MARKETPLACES:
-            return jsonify({"error": "Invalid marketplace selected"}), 400
-            
-        # Check for the file
-        if 'file' not in request.files:
-            return jsonify({"error": "No file part"}), 400
-            
-        file = request.files['file']
-        
-        # Check if file is selected
-        if file.filename is None or file.filename == '':
-            return jsonify({"error": "No selected file"}), 400
-            
-        # Check if file is a CSV
-        if not file.filename.lower().endswith('.csv'):
-            return jsonify({"error": "File must be a CSV"}), 400
-            
-        # Save the file temporarily
-        filename = secure_filename(str(file.filename))
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-        
-        # Get the requested response format
-        format_param = request.args.get('format', 'csv')
-        
-        # Transform the CSV
-        result = transform_csv_with_openai(filepath, marketplace_key, format_param)
-        
-        # Check for error
-        if isinstance(result, tuple) and len(result) > 1 and isinstance(result[0], dict) and "error" in result[0]:
-            return jsonify(result[0]), result[1]
-            
-        # Return based on format
-        if format_param == 'json':
-            return jsonify(result)
-        else:
-            # Create a file-like object from the CSV data
-            if isinstance(result, dict) and "data" in result:
-                csv_data = result["data"]
-                output_filename = result.get("output_filename", "transformed.csv")
-            else:
-                csv_data = result
-                output_filename = f"transformed_{marketplace_key}.csv"
-                
-            # Ensure csv_data is a string for encoding
-            if not isinstance(csv_data, str):
-                if isinstance(csv_data, bytes):
-                    # Already bytes, no need to encode
-                    csv_bytes = csv_data
-                else:
-                    # Convert to string then encode
-                    csv_data = str(csv_data)
-                    csv_bytes = csv_data.encode('utf-8')
-            else:
-                # String, just encode
-                csv_bytes = csv_data.encode('utf-8')
-                
-            return send_file(
-                io.BytesIO(csv_bytes),
-                mimetype='text/csv',
-                as_attachment=True,
-                download_name=output_filename
-            )
-            
-    except Exception as e:
-        return jsonify({"error": f"Server error: {str(e)}"}), 500
+    marketplace = MARKETPLACES[marketplace_key]
+    template_name = f"{marketplace_key}_form.html"
+    return render_template(template_name, marketplace=marketplace, marketplace_key=marketplace_key)
+
+
 
 @app.errorhandler(404)
 def not_found(error):
-    """Return a custom 404 error."""
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 @app.errorhandler(500)
 def server_error(error):
-    """Return a custom 500 error."""
     return make_response(jsonify({'error': 'Server error'}), 500)
 
-if __name__ == '__main__':
-    # Create templates directory if it doesn't exist
-    if not os.path.exists('templates'):
-        os.makedirs('templates')
-    
-    # Create landing page template
-    with open('templates/marketplace_selector.html', 'w') as f:
-        f.write("""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Product Feed Transformation Tool</title>
-            <style>
-                body { 
-                    font-family: Arial, sans-serif; 
-                    max-width: 1000px; 
-                    margin: 0 auto; 
-                    padding: 20px;
-                    background-color: #f7f9fc;
-                }
-                h1 { 
-                    color: #2d3748; 
-                    text-align: center;
-                    margin-bottom: 40px;
-                }
-                .container {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 20px;
-                    justify-content: center;
-                }
-                .marketplace-card {
-                    background-color: #fff;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    width: 300px;
-                    padding: 25px;
-                    text-align: center;
-                    transition: transform 0.3s, box-shadow 0.3s;
-                }
-                .marketplace-card:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-                }
-                .marketplace-logo {
-                    height: 80px;
-                    margin-bottom: 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .marketplace-title {
-                    font-size: 22px;
-                    font-weight: bold;
-                    margin-bottom: 15px;
-                    color: #2d3748;
-                }
-                .marketplace-description {
-                    color: #4a5568;
-                    margin-bottom: 25px;
-                    line-height: 1.5;
-                }
-                .marketplace-button {
-                    display: inline-block;
-                    padding: 12px 30px;
-                    border-radius: 6px;
-                    text-decoration: none;
-                    color: white;
-                    font-weight: bold;
-                    transition: background-color 0.3s;
-                }
-                footer {
-                    margin-top: 50px;
-                    text-align: center;
-                    color: #a0aec0;
-                    font-size: 14px;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>Product Feed Transformation Tool</h1>
-            
-            <div class="container">
-                {% for key, marketplace in marketplaces.items() %}
-                <div class="marketplace-card">
-                    <div class="marketplace-logo">
-                        <!-- We can add logos later if needed -->
-                        <h2 style="color: {{ marketplace.color }};">{{ marketplace.name }}</h2>
-                    </div>
-                    <div class="marketplace-title">{{ marketplace.name }}</div>
-                    <div class="marketplace-description">
-                        Transform your product data to the {{ marketplace.name }} format with AI-powered field mapping and data standardization.
-                    </div>
-                    <a href="/marketplace/{{ key }}" class="marketplace-button" style="background-color: {{ marketplace.color }};">
-                        Transform Data
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-            
-            <footer>
-                <p>© 2024 Product Feed Transformation Tool | Powered by GPT-4o</p>
-            </footer>
-        </body>
-        </html>
-        """)
-        
-    # Create marketplace transformation template
-    with open('templates/marketplace_transform.html', 'w') as f:
-        f.write("""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>{{ marketplace.name }} Transformation</title>
-            <style>
-                body { 
-                    font-family: Arial, sans-serif; 
-                    max-width: 800px; 
-                    margin: 0 auto; 
-                    padding: 20px;
-                    background-color: #f7f9fc;
-                }
-                h1 { color: {{ marketplace.color }}; }
-                .breadcrumb {
-                    margin-bottom: 20px;
-                    color: #718096;
-                }
-                .breadcrumb a {
-                    color: #4299e1;
-                    text-decoration: none;
-                }
-                .breadcrumb a:hover {
-                    text-decoration: underline;
-                }
-                form { 
-                    margin-top: 20px; 
-                    padding: 25px; 
-                    border: 1px solid #e2e8f0; 
-                    border-radius: 8px;
-                    background-color: white;
-                }
-                label { 
-                    display: block; 
-                    margin-bottom: 8px; 
-                    font-weight: bold;
-                    color: #4a5568;
-                }
-                input[type="file"] { 
-                    margin-bottom: 20px;
-                    width: 100%;
-                    padding: 10px;
-                    border: 1px dashed #cbd5e0;
-                    border-radius: 5px;
-                    background-color: #f7fafc;
-                }
-                button { 
-                    background-color: {{ marketplace.color }}; 
-                    border: none; 
-                    color: white; 
-                    padding: 12px 25px; 
-                    cursor: pointer; 
-                    font-weight: bold; 
-                    border-radius: 6px;
-                    transition: background-color 0.3s;
-                }
-                button:hover { 
-                    background-color: {{ marketplace.hover_color }}; 
-                }
-                .info { 
-                    background-color: #f8f8f8; 
-                    padding: 20px; 
-                    margin: 20px 0; 
-                    border-radius: 8px;
-                    border-left: 4px solid {{ marketplace.color }};
-                }
-                .info h3 { 
-                    margin-top: 0;
-                    color: #2d3748;
-                }
-                .description { 
-                    color: #4a5568;
-                    line-height: 1.6;
-                }
-                .back-link {
-                    display: inline-block;
-                    margin-top: 20px;
-                    color: #4299e1;
-                    text-decoration: none;
-                }
-                .back-link:hover {
-                    text-decoration: underline;
-                }
-                footer {
-                    margin-top: 50px;
-                    text-align: center;
-                    color: #a0aec0;
-                    font-size: 14px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="breadcrumb">
-                <a href="/">Home</a> &gt; {{ marketplace.name }}
-            </div>
-            <h1>{{ marketplace.name }} Transformation Tool</h1>
-            <div class="description">
-                <p>Convert your product data to {{ marketplace.name }} format. Upload a CSV file with your product information, and our AI will transform it into the required format.</p>
-            </div>
-            
-            <div class="info">
-                <h3>How It Works</h3>
-                <p>1. Upload your product CSV file</p>
-                <p>2. Our AI analyzes your data structure</p>
-                <p>3. We transform and map your fields to {{ marketplace.name }}'s required format</p>
-                <p>4. Download the marketplace-ready inventory file</p>
-            </div>
-            
-            <form action="/transform" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="marketplace" value="{{ marketplace_key }}">
-                <label for="file">Select your product CSV file:</label>
-                <input type="file" name="file" id="file" accept=".csv" required>
-                <button type="submit">Transform to {{ marketplace.name }} Format</button>
-            </form>
-            
-            <div class="info">
-                <h3>Sample CSV Structure</h3>
-                <p>Your CSV file should contain product data with columns like:</p>
-                <p><code>id, title, description, price, inventory, category, brand, sku, etc.</code></p>
-                <p>Don't worry if your columns don't match exactly - our AI will map them appropriately!</p>
-            </div>
-            
-            <a href="/" class="back-link">← Back to Marketplace Selection</a>
-            
-            <footer>
-                <p>© 2024 Product Feed Transformation Tool | Powered by GPT-4o</p>
-            </footer>
-        </body>
-        </html>
-        """)
-    
-    # Run the Flask app
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)), debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, debug=True)

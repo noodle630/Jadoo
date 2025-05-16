@@ -31,7 +31,7 @@
                 <p>4. Download the Amazon-ready inventory file</p>
             </div>
             
-            <form action="/transform-to-amazon" method="post" enctype="multipart/form-data">
+            <form action="/api/simple-upload" method="post" enctype="multipart/form-data">
                 <label for="file">Select your product CSV file:</label>
                 <input type="file" name="file" id="file" accept=".csv" required>
                 <button type="submit">Transform to Amazon Format</button>
