@@ -3,6 +3,22 @@ import time
 import psycopg2
 from dotenv import load_dotenv
 import pandas as pd
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models.feed import Base
+
+from dotenv import load_dotenv
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Create tables if they don’t exist
+Base.metadata.create_all(bind=engine)
+
+
 
 # Load env vars for DB config
 load_dotenv()

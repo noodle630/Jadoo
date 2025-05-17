@@ -417,73 +417,36 @@ export default function NewFeedV2() {
                                     onChange={(e) => {
                                       const file = e.target.files?.[0];
                                       if (file) {
+                                        onChange(file);
                                         // Show visual confirmation that file was selected
                                         const label = document.querySelector('label[for="file"]');
-                                        
-                                        // Helper function to update the UI based on file info
-                                        const updateFileUI = (file: File, labelElem?: Element | null, rowCount?: number) => {
-                                          const uiLabel = labelElem || label;
-                                          if (uiLabel) {
-                                            uiLabel.classList.remove('border-slate-700/70');
-                                            uiLabel.classList.remove('bg-slate-900/40');
-                                            uiLabel.classList.add('border-cyan-500/70');
-                                            uiLabel.classList.add('bg-cyan-950/30');
-                                            
-                                            // Update the text content
-                                            const fileNameElem = uiLabel.querySelector('p.text-base.text-slate-300');
-                                            if (fileNameElem) {
-                                              fileNameElem.textContent = `Selected: ${file.name}`;
-                                              fileNameElem.classList.add('text-cyan-300');
-                                            }
-                                            
-                                            const fileSizeElem = uiLabel.querySelector('p.text-sm.text-slate-500');
-                                            if (fileSizeElem) {
-                                              const fileSize = `${(file.size / 1024).toFixed(1)} KB`;
-                                              const rowInfo = rowCount ? ` • ${rowCount.toLocaleString()} rows` : '';
-                                              fileSizeElem.textContent = `${fileSize}${rowInfo} • Ready to transform`;
-                                              fileSizeElem.classList.add('text-cyan-400/70');
-                                            }
-                                            
-                                            // Update icon
-                                            const iconContainer = uiLabel.querySelector('.rounded-full');
-                                            if (iconContainer) {
-                                              iconContainer.classList.remove('bg-slate-800');
-                                              iconContainer.classList.add('bg-cyan-900/60');
-                                            }
+                                        if (label) {
+                                          label.classList.remove('border-slate-700/70');
+                                          label.classList.remove('bg-slate-900/40');
+                                          label.classList.add('border-cyan-500/70');
+                                          label.classList.add('bg-cyan-950/30');
+                                          
+                                          // Update the text content
+                                          const fileNameElem = label.querySelector('p.text-base.text-slate-300');
+                                          if (fileNameElem) {
+                                            fileNameElem.textContent = `Selected: ${file.name}`;
+                                            fileNameElem.classList.add('text-cyan-300');
                                           }
-                                        };
-                                        
-                                        // Check CSV row limit
-                                        if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
-                                          const reader = new FileReader();
-                                          reader.onload = (event) => {
-                                            const content = event.target?.result as string;
-                                            if (content) {
-                                              const lines = content.split('\n').filter(line => line.trim().length > 0);
-                                              const rowCount = lines.length - 1; // Subtract header row
-                                              
-                                              if (rowCount > 1000) {
-                                                toast({
-                                                  title: "File too large",
-                                                  description: `Your CSV contains ${rowCount.toLocaleString()} rows. The maximum allowed is 1,000 rows.`,
-                                                  variant: "destructive",
-                                                  duration: 10000,
-                                                });
-                                                // Reset the file input
-                                                e.target.value = '';
-                                                return;
-                                              }
-                                              
-                                              // File is valid, continue with the upload
-                                              onChange(file);
-                                              updateFileUI(file, label, rowCount);
-                                            }
-                                          };
-                                          reader.readAsText(file);
-                                        } else {
-                                          // For non-CSV files, just proceed normally
-                                          onChange(file);
-                                          updateFileUI(file);
+                                          
+                                          const fileSizeElem = label.querySelector('p.text-sm.text-slate-500');
+                                          if (fileSizeElem) {
+                                            fileSizeElem.textContent = `${(file.size / 1024).toFixed(1)} KB · Ready to transform`;
+                                            fileSizeElem.classList.add('text-cyan-400/70');
+                                          }
+                                          
+                                          // Update icon
+                                          const iconContainer = label.querySelector('.rounded-full');
+                                          if (iconContainer) {
+                                            iconContainer.classList.remove('from-slate-800');
+                                            iconContainer.classList.remove('to-slate-700');
+                                            iconContainer.classList.add('from-cyan-900');
+                                            iconContainer.classList.add('to-cyan-800');
+                                          }
                                         }
                                       }
                                     }}
@@ -629,38 +592,31 @@ export default function NewFeedV2() {
                     <span className="text-slate-300">Transforming data for {feedForm.getValues().marketplace?.charAt(0).toUpperCase() + feedForm.getValues().marketplace?.slice(1)} format</span>
                   </div>
                   
-                  {/* Platform USPs - replacing required fields with platform benefits */}
-                  <div className="bg-gradient-to-br from-slate-900/90 to-slate-800/70 border border-slate-700/40 rounded-lg p-4 text-sm mt-4">
-                    <span className="font-medium text-blue-400 block mb-2">Platform Features:</span>
-                    <div className="grid gap-3">
-                      <div className="flex items-start">
-                        <div className="bg-blue-900/30 rounded-md p-1.5 mr-2.5">
-                          <Sparkles className="h-4 w-4 text-blue-300" />
-                        </div>
-                        <div>
-                          <span className="text-slate-200 font-medium block leading-tight">AI-Powered Data Quality</span>
-                          <span className="text-slate-400 text-xs">Automatically fixes missing fields and ensures data quality</span>
-                        </div>
+                  {/* Processing progress bar */}
+                  <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden relative mt-2">
+                    <div className="h-full bg-blue-600 rounded-full absolute top-0 left-0 animate-pulse" style={{width: '60%'}}></div>
+                    <div className="h-full bg-transparent absolute top-0 left-0 w-full bg-gradient-to-r from-transparent via-blue-500/20 to-transparent animate-pulse" style={{animationDuration: '1.5s'}}></div>
+                  </div>
+                  
+                  {/* Critical product data info */}
+                  <div className="bg-slate-900/80 border border-slate-800/70 rounded p-3 text-sm mt-2">
+                    <span className="font-medium text-blue-400 block mb-1">Required Data Fields:</span>
+                    <div className="grid grid-cols-2 gap-1 text-xs">
+                      <div className="flex items-center">
+                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
+                        <span className="text-slate-300">SKU</span>
                       </div>
-                      
-                      <div className="flex items-start">
-                        <div className="bg-cyan-900/30 rounded-md p-1.5 mr-2.5">
-                          <Zap className="h-4 w-4 text-cyan-300" />
-                        </div>
-                        <div>
-                          <span className="text-slate-200 font-medium block leading-tight">Smart Title Optimization</span>
-                          <span className="text-slate-400 text-xs">Enhances product titles for better marketplace visibility</span>
-                        </div>
+                      <div className="flex items-center">
+                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
+                        <span className="text-slate-300">Title</span>
                       </div>
-                      
-                      <div className="flex items-start">
-                        <div className="bg-indigo-900/30 rounded-md p-1.5 mr-2.5">
-                          <BarChart className="h-4 w-4 text-indigo-300" />
-                        </div>
-                        <div>
-                          <span className="text-slate-200 font-medium block leading-tight">Real-Time Data Validation</span>
-                          <span className="text-slate-400 text-xs">Validates all entries against marketplace requirements</span>
-                        </div>
+                      <div className="flex items-center">
+                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
+                        <span className="text-slate-300">Price</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle2 className="h-3 w-3 text-green-500 mr-1" />
+                        <span className="text-slate-300">Quantity</span>
                       </div>
                     </div>
                   </div>
@@ -864,9 +820,10 @@ export default function NewFeedV2() {
                     className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border-blue-700/50 shadow-xl"
                     onClick={() => {
                       if (uploadedInfo?.outputUrl) {
-                        window.location.href = uploadedInfo.outputUrl;
+                        window.open(`/api/feeds/${uploadedInfo.id}/download`, "_blank");
                       }
                     }}
+
                   >
                     <Download className="mr-2 h-5 w-5" />
                     Download Transformed Feed

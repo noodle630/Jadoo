@@ -42,8 +42,20 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Set up Replit Auth
+ // Temporarily skip Replit Auth for local dev
+if (process.env.NODE_ENV === 'development') {
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    (req as any).user = {
+      id: 'local-dev',
+      email: 'test@localhost',
+      name: 'Dev User'
+    };
+    next();
+  });
+} else {
   await setupAuth(app);
+}
+
   
   // Setup our simplified reliable routes
   app.use('/api', createSimpleRoutes());

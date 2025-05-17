@@ -1,72 +1,44 @@
-import { createContext, useContext, ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { createContext, useContext, useState, useEffect } from "react";
 
-// Define the User interface based on what the API returns
 interface User {
   id: string;
-  email: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  profileImageUrl: string | null;
+  email: string;
+  name: string;
 }
 
-// Define the context shape
 interface AuthContextType {
-  user: User | null | undefined;
-  isAuthenticated: boolean;
+  user: User | null;
   isLoading: boolean;
-  error: Error | null;
-  logout: () => void;
+  isAuthenticated: boolean;
 }
 
-// Create the context with default values
 const AuthContext = createContext<AuthContextType>({
-  user: undefined,
-  isAuthenticated: false,
+  user: null,
   isLoading: true,
-  error: null,
-  logout: () => {},
+  isAuthenticated: false,
 });
 
-export const useAuth = () => useContext(AuthContext);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  // Fetch the current user from the API
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['/api/auth/user'],
-    retry: false,
-    // The backend API should return the current authenticated user or a 401 status
-  });
-
-  // Handle logout
-  const logout = () => {
-    // Redirect to the logout endpoint
-    window.location.href = '/api/logout';
-  };
-
-  // Determine if the user is authenticated
-  // User is authenticated if the user data exists and there's no error
-  const isAuthenticated = !!user && !error;
+  useEffect(() => {
+    // 🧪 Fake login for dev mode
+    setTimeout(() => {
+      setUser({
+        id: "local-dev",
+        email: "dev@local.test",
+        name: "Local Dev",
+      });
+      setIsLoading(false);
+    }, 500); // mimic delay
+  }, []);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user: user as User | null | undefined,
-        isAuthenticated,
-        isLoading,
-        error: error as Error | null,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

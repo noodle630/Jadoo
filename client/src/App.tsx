@@ -5,19 +5,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/lib/theme-provider";
 
-// Import our pages
-import Dashboard from "@/pages/Dashboard";
-import Login from "@/pages/Login";
+// Updated Page Imports
+import NewFeedV2 from "@/pages/NewFeedV2";
 import NotFound from "@/pages/not-found";
-import Layout from "@/components/Layout";
+import Login from "@/pages/Login";
 
-// Import only the Create Feed page
-import CreateFeed from "@/pages/CreateFeed";
-
-// Import our AuthContext and AuthProvider
+// Auth context
 import { AuthProvider } from "@/contexts/AuthContext";
-
-// Import our ProtectedRoute component
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 function Router() {
@@ -25,21 +19,19 @@ function Router() {
     <Switch>
       {/* Public Routes */}
       <Route path="/login" component={Login} />
-      
+
       {/* Protected Routes */}
       <Route path="/">
         {() => (
           <ProtectedRoute>
-            <Layout>
-              <Switch>
-                <Route path="/" component={Dashboard} />
-                <Route path="/create-feed" component={CreateFeed} />
-                <Route component={NotFound} />
-              </Switch>
-            </Layout>
+            {/* Directly use NewFeedV2 without Layout wrapper for now */}
+            <NewFeedV2 />
           </ProtectedRoute>
         )}
       </Route>
+
+      {/* Catch-all 404 */}
+      <Route component={NotFound} />
     </Switch>
   );
 }
