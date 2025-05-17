@@ -5,8 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { storage } from "./storage";
-import { transformCSVWithOpenAI } from "./utils/transformer";
-import * as fs from "fs"; // already present, make sure it's available
+import { transformCSVWithOpenAI } from "./utils/transformer.js";
 import { v4 as uuidv4 } from "uuid"; // also required for filenames
 
 import { isAuthenticated } from "./replitAuth";
@@ -60,8 +59,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   router.get('/feeds', async (req, res) => {
     try {
       const userId = req.isAuthenticated() ? (req.user as any).id || '1' : '1';
-      const feeds = await storage.getFeeds(userId);
-      res.json(feeds);
+      // Assuming you want to get all feeds for a user, implement getFeeds in storage if not present
+      if (typeof storage.getFeeds === 'function') {
+        const feeds = await storage.getFeeds(userId);
+        res.json(feeds);
+      } else {
+        // If only getFeed exists, return an empty array or handle accordingly
+        res.json([]);
+      }
     } catch (error) {
       console.error('Error fetching feeds:', error);
       res.status(500).json({ message: 'Error fetching feeds' });
@@ -215,11 +220,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 });
 
 
-     import { transformCSVWithOpenAI } from "./utils/transformer"; // make sure this exists
-
 // Actually run the transformation
 try {
   const result = await transformCSVWithOpenAI(feed.sourceDetails.originalPath, feed.marketplace);
+
   await storage.updateFeed(id, {
     ...feed,
     status: 'completed',
@@ -228,14 +232,17 @@ try {
     aiChanges: result.aiChanges,
     processedAt: new Date()
   });
-  res.json({ message: "Feed processed successfully", id });
+
+  return res.json({ message: "Feed processed successfully", id }); // ✅ added return
 } catch (err) {
   console.error("Error during transformation:", err);
+
   await storage.updateFeed(id, {
     ...feed,
     status: 'failed'
   });
-  res.status(500).json({ message: "Feed processing failed" });
+
+  return res.status(500).json({ message: "Feed processing failed" }); // ✅ added return
 }
 
 
@@ -246,25 +253,28 @@ try {
     }
   });
 
-  router.get('/feeds/:id/download', (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) return res.status(400).json({ message: 'Invalid feed ID' });
+  router.get('/feeds/:id/download', async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: 'Invalid feed ID' });
 
-      res.redirect(`/api/direct-download/${id}`);
-    } catch (error) {
-      console.error('Error downloading feed:', error);
-      res.status(500).json({ message: 'Error downloading feed' });
+    const feed = await storage.getFeed(id);
+    if (!feed || !feed.outputUrl) {
+      return res.status(404).json({ message: 'Feed or output not found' });
     }
-  });
 
-  router.post('/transform-direct', upload.single('file'), async (req, res) => {
-    res.redirect(307, '/api/transform-direct');
-  });
+    const outputPath = path.resolve(feed.outputUrl);
 
-  router.get('/direct-download/:id', async (req: Request, res: Response) => {
-    res.redirect(`/api/direct-download/${req.params.id}`);
-  });
+    if (!fs.existsSync(outputPath)) {
+      return res.status(404).json({ message: 'Output file missing on disk' });
+    }
+
+    return res.download(outputPath, `${feed.name || 'output'}.csv`);
+  } catch (error) {
+    console.error('Download error:', error);
+    return res.status(500).json({ message: 'Download failed' });
+  }
+});
 
   router.get('/templates', async (req, res) => {
     try {

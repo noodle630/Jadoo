@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -6,6 +8,10 @@ import { setupAuth } from "./replitAuth";
 import { setupDirectRoutes } from "./direct-routes";
 // Import our simplified reliable routes
 import { createSimpleRoutes } from "./simple-routes";
+import 'dotenv/config';
+console.log("Loaded OPENAI_API_KEY:", process.env.OPENAI_API_KEY); // ✅ TEMP LOG
+
+
 
 const app = express();
 app.use(express.json());
