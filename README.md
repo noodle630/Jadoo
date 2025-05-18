@@ -1,89 +1,132 @@
-# Project "S" – AI-Powered Product Feed Manager
+# Project "S" – AI-Native Product Feed Engine
 
-Project "S" is an AI-native application that transforms messy vendor product data into clean, marketplace-ready product feeds using OpenAI's GPT models.
-
----
-
-## 📌 Overview
-
-This project started with a Python/Flask-based backend, but is now being actively migrated to a modern stack using **TypeScript**, **Node.js**, and **React**. Both versions currently coexist in this repo.
+**S** is an AI-first, marketplace-as-a-service platform that transforms messy vendor product data into clean, structured, marketplace-ready listings using OpenAI and marketplace-specific templates.
 
 ---
 
-## 🚀 Key Features (Target Version)
+## 🧠 Mission
 
-- Upload messy CSV product files from vendors
-- Transform rows into marketplace-ready format using OpenAI (GPT)
-- Support for Amazon, Walmart, Meta, TikTok, Catch, and Reebelo templates
-- 1:1 input-output transformation guarantee (no dropped rows)
-- Download final feed as CSV
-- Web UI + REST API
+**Give vendors superpowers.**  
+Let them upload any inventory file — in any format — and generate optimized, validated feeds for marketplaces like Amazon, Walmart, TikTok, Reebelo, and more, with one click.
 
 ---
 
-## 📦 Tech Stack (New Version)
+## ✅ Current Capabilities (MVP)
 
-- **Frontend**: React + Vite + Tailwind (`/client`)
-- **Backend**: Node.js + Express + TypeScript (`/server`)
-- **AI**: OpenAI GPT-4
-- **Dev**: GitHub Codespaces
-- **Templating**: Static CSV-based field maps in `/templates`
+- Upload CSVs via web UI
+- Supports authentication (dev bypass + Supabase for prod)
+- AI-powered transformation per marketplace (Amazon template live)
+- Templates are stored in `/attached_assets/templates/{marketplace}/base.csv`
+- Grounding files per marketplace for smarter output (in progress)
+- 1:1 input-output guarantee (no dropped rows)
+- Output file download
+- Supabase used for tracking feed status & row counts
+- Frontend flow: Upload → Processing → Summary → Download
+- Partial Products tab UI live (showing flagged rows needing review)
 
 ---
 
-## 🧪 Getting Started (New Version)
+## 🧩 Tech Stack
+
+| Layer        | Tech                             |
+|--------------|----------------------------------|
+| Frontend     | React + Tailwind + Vite          |
+| Backend      | Node.js + Express + TypeScript   |
+| AI Layer     | OpenAI GPT-4 (3.5 fallback soon) |
+| Storage      | Supabase (feeds, uploads, status)|
+| Auth         | Google OAuth (fallback to dev@local) |
+| Infra        | GitHub Codespaces (live dev)     |
+
+---
+
+## 🛠️ Local Dev Setup
 
 ```bash
 npm install
 npm run dev
-```
-
-Then open the app in your Codespaces preview or http://localhost:3000.
-
-🔄 Current Hybrid State
-| Stack           | Status                   | Path Example                      |
-| --------------- | ------------------------ | --------------------------------- |
-| 🟢 Node/React   | ✅ Actively developed     | `client/`, `server/`, `tsx` files |
-| 🔵 Python/Flask | 💤 Legacy/prototype code | `app.py`, `transform_to_*.py`     |
 
 
-You can still run legacy scripts like transform_to_amazon.py or run_amazon.sh for testing, but they are being phased out.
+## 🛠️ Local Dev Setup
 
-🛠 Roadmap Highlights
+```bash
+npm install
+npm run dev
+Visit: http://localhost:3000
 
-See ROADMAP.md for full context.
+Default dev auth: dev@local.test
 
-Immediate Priorities
-- Bulletproof 1:1 row mapping in core flow
-- Improve GPT prompt logic (infer full output from name/price/qty)
-- Remove dependency on Replit OAuth
-- Clean up and re-style the UI for feedback/testing
-- Future
-- Push listings directly to marketplaces (Amazon, Reebelo, etc.)
-- Expand category-specific prompts and validations
-- Support user templates, roles, dashboards
+📁 Directory Overview
+pgsql
+Copy
+Edit
+client/                         → React frontend (upload, processing, summary UI)
+server/                         → Express backend (routes, transform logic)
+attached_assets/templates/      → Marketplace-specific base templates
+grounding/{marketplace}/        → Vendor sample data (used for grounding, WIP)
+temp_uploads/                   → Uploaded CSVs before transformation
+transformer.ts / app_unified.py → Core logic (OpenAI-powered row transformer)
 
-🤖 How It Works
+🚀 What's Next
 
-Upload raw CSV
-Parse into rows
-GPT processes each row individually
-Output file generated (same # of rows, all columns enriched)
-Download CSV or push to marketplace (planned)
+🔧 Infra / Core Fixes
+ Fix Supabase write failures on large file uploads
 
+ Add background job or chunked transformation flow for 500+ row files
 
-📁 Repo Structure (Simplified)
-client/             → React frontend
-server/             → Express backend
-templates/          → CSV field templates
-transform_to_*.py   → Legacy per-marketplace transformers (Python)
-run_*.sh            → Legacy shell scripts
-*.csv               → Test/product sample data
+ Add retry logic & row-level error logging
 
-License
+🧠 Model & Grounding
+ Support grounding per marketplace using vendor samples
 
-[MIT License](https://github.com/noodle630/S/blob/main/LICENSE)
+ Smarter prompt templates using product title × price × category
 
-Acknowledgments
+ Add support for more templates (Walmart, TikTok, Reebelo)
 
-OpenAI for GPT. Docs from Amazon, TikTok, Reebelo, Walmart, and Meta.
+💾 Output File Improvements
+ Color-coded Excel output using OpenPyXL
+
+✅ Green = confident rows
+
+⚠️ Yellow = needs human review
+
+❌ Red = missing or invalid data
+
+ Maintain row metadata for "Products" tab inspection
+
+🧑‍💻 SaaS UX Polish
+ Sidebar UI with tabs: Upload Feed / Products / Marketplaces / Settings
+
+ Products Tab → View and correct flagged rows
+
+ Summary Tab → Show upload stats, % optimized, download links
+
+ Dashboard Tab → Recent uploads, total products processed
+
+🧪 Legacy Mode
+You can still run the old Python transformers:
+
+bash
+Copy
+Edit
+python app_unified.py sample.csv amazon
+But they are deprecated in favor of the TypeScript backend.
+
+🎯 Long-Term Vision
+S is becoming a centralized marketplace ops engine.
+Let vendors upload once, and auto-sync everywhere:
+
+Clean inventory → push to Amazon/Walmart/Meta/TikTok
+
+Flag dirty data → auto-review or human correction
+
+Track performance, reformat, relist — all from one place
+
+🤝 Acknowledgments
+OpenAI for GPT-4
+
+Supabase for simple infra
+
+Docs & templates from Amazon, Walmart, Meta, Reebelo
+
+📄 License
+MIT License: https://github.com/noodle630/S/blob/main/LICENSE
