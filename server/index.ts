@@ -1,103 +1,70 @@
 import dotenv from "dotenv";
 dotenv.config();
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+
+import express, { Request, Response, NextFunction } from "express";
+import { createServer } from "http";
+import cors from "cors";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./replitAuth";
-// Import our direct file handling routes for reliable CSV processing
-import { setupDirectRoutes } from "./direct-routes";
-// Import our simplified reliable routes
 import { createSimpleRoutes } from "./simple-routes";
-import 'dotenv/config';
-console.log("Loaded OPENAI_API_KEY:", process.env.OPENAI_API_KEY); // ✅ TEMP LOG
+import { setupDirectRoutes } from "./direct-routes";
+import routes from "./routes"; // FIXED: default import
 
-
+console.log("✅ Loaded OPENAI_API_KEY:", process.env.OPENAI_API_KEY);
 
 const app = express();
+const server = createServer(app);
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
+// Log API requests
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
+  const originalJson = res.json;
+  res.json = function (data) {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
+    const logLine = `${req.method} ${req.path} ${res.statusCode} in ${duration}ms :: ${JSON.stringify(data).slice(0, 100)}`;
+    if (req.path.startsWith("/api")) log(logLine);
+    return originalJson.call(this, data);
+  };
   next();
 });
 
 (async () => {
- // Temporarily skip Replit Auth for local dev
-if (process.env.NODE_ENV === 'development') {
-  app.use((req: Request, _res: Response, next: NextFunction) => {
-    (req as any).user = {
-      id: 'local-dev',
-      email: 'test@localhost',
-      name: 'Dev User'
-    };
-    next();
-  });
-} else {
-  await setupAuth(app);
-}
+  if (process.env.NODE_ENV === "development") {
+    app.use((req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = {
+        id: "local-dev",
+        email: "dev@local.test",
+        name: "Local Dev"
+      };
+      next();
+    });
+  } else {
+    await setupAuth(app);
+  }
 
-  
-  // Setup our simplified reliable routes
-  app.use('/api', createSimpleRoutes());
-  
-  // Setup our direct transformation routes
+  app.use("/api", createSimpleRoutes());
   setupDirectRoutes(app);
-  
-  // Register other API routes
-  const server = await registerRoutes(app);
+  app.use("/api", routes); // FIXED: actual API routes
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
+    const status = err.status || 500;
+    res.status(status).json({ message: err.message || "Server error" });
+    console.error("❌ Unhandled Error:", err);
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
+  server.listen(port, "0.0.0.0", () => {
+    log(`🌐 API & Frontend served on http://localhost:${port}`);
   });
 })();

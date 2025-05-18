@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+// Refactored NewFeedV2.tsx with clear error handling and stats
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,16 +30,6 @@ export default function NewFeedV2() {
     },
   });
 
-  const fetchFeedDetails = async (id: number) => {
-    try {
-      const res = await fetch(`/api/feeds/${id}`);
-      const json = await res.json();
-      setFeedStats(json);
-    } catch (e) {
-      console.error('Error fetching feed details:', e);
-    }
-  };
-
   const onSubmit = async (values: FormValues) => {
     try {
       const formData = new FormData();
@@ -50,20 +41,21 @@ export default function NewFeedV2() {
         method: 'POST',
         body: formData,
       });
-
       const uploadJson = await uploadRes.json();
-      if (!uploadRes.ok || !uploadJson.id) throw new Error('Upload failed');
+      if (!uploadRes.ok || !uploadJson.id) throw new Error(uploadJson.message || 'Upload failed');
 
       setFeedId(uploadJson.id);
       setStep('processing');
       setProcessing(true);
 
-      await fetch(`/api/feeds/${uploadJson.id}/process`, { method: 'POST' });
+      const processRes = await fetch(`/api/feeds/${uploadJson.id}/process`, { method: 'POST' });
+      if (!processRes.ok) throw new Error('Processing failed');
 
       const poll = async (attempt = 0) => {
-        if (attempt > 20) throw new Error('Timeout');
+        if (attempt > 40) throw new Error('Timeout');
         const res = await fetch(`/api/feeds/${uploadJson.id}`);
         const json = await res.json();
+
         if (json.status === 'completed') {
           setProcessing(false);
           setStep('done');
@@ -79,7 +71,7 @@ export default function NewFeedV2() {
       poll();
     } catch (err: any) {
       toast({
-        title: 'Upload failed',
+        title: 'Something went wrong',
         description: err.message || 'Unknown error',
         variant: 'destructive',
       });
@@ -129,13 +121,15 @@ export default function NewFeedV2() {
       {step === 'done' && feedStats && (
         <div className="mt-6 bg-slate-800 p-4 rounded text-white space-y-2">
           <p className="text-green-400 font-semibold">✅ Feed processed successfully!</p>
-          <p>📦 Rows Processed: <strong>{feedStats.itemCount}</strong></p>
+          <p>📦 Rows Processed: <strong>{feedStats.itemCount || feedStats.output_rows || 'Unknown'}</strong></p>
           <p>✨ AI Fixes:</p>
           <ul className="ml-4 list-disc text-sm text-slate-300">
             <li>Titles optimized: {feedStats.aiChanges?.titleOptimized}</li>
             <li>Descriptions enhanced: {feedStats.aiChanges?.descriptionEnhanced}</li>
             <li>Categories fixed: {feedStats.aiChanges?.categoryCorrected}</li>
             <li>Errors corrected: {feedStats.aiChanges?.errorsCorrected}</li>
+            <li>Empty rows: {feedStats.aiChanges?.emptyRows}</li>
+            <li>Filled rows: {feedStats.aiChanges?.filledRows}</li>
           </ul>
           <a
             href={`/api/feeds/${feedStats.id}/download`}
