@@ -1,7 +1,8 @@
+// File: server/routes.ts
 import express from "express";
 import multer from "multer";
 import path from "path";
-import { transform_csv_with_openai } from "./utils/transformer";
+import { transformCSVWithOpenAI } from "./utils/transformer";
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
 
@@ -17,20 +18,22 @@ const supabase = createClient(
 router.post("/feeds/upload", upload.single("file"), async (req, res) => {
   try {
     const file = req.file;
-    const marketplace = req.body.marketplace || "unknown";
+    const marketplace = (req.body.marketplace || "unknown").toLowerCase();
+    const category = req.body.category || "unknown";
     if (!file) return res.status(400).json({ error: "No file provided" });
 
     const feedId = file.filename.split("_")[0];
     const filename = file.originalname;
     const fullPath = path.resolve(file.path);
 
-const raw = fs.readFileSync(fullPath, "utf8");
-const rowCount = raw.split("\n").length - 1;
+    const raw = fs.readFileSync(fullPath, "utf8");
+    const rowCount = raw.split("\n").length - 1;
 
     const { error } = await supabase.from("feeds").insert({
       id: feedId,
       filename,
       platform: marketplace,
+      category,
       status: "uploaded",
       input_path: fullPath,
       row_count: rowCount,
@@ -40,9 +43,9 @@ const rowCount = raw.split("\n").length - 1;
 
     if (error) throw error;
     res.status(201).json({ message: "Feed created successfully", id: feedId });
-  } catch (err) {
+  } catch (err: any) {
     console.error("[UPLOAD ERROR]", err);
-    res.status(500).json({ error: "Upload failed" });
+    res.status(500).json({ error: "Upload failed", details: err.message || err.toString() });
   }
 });
 
@@ -53,35 +56,65 @@ router.post("/feeds/:id/process", async (req, res) => {
     const { data, error } = await supabase.from("feeds").select("*").eq("id", id).single();
     if (error || !data) return res.status(404).json({ error: "Feed not found" });
 
-    const result = await transform_csv_with_openai(data.input_path, data.platform);
+   const outputPath = await transformCSVWithOpenAI(
+  data.input_path,
+  data.platform
+);
+
 
     await supabase.from("feeds").update({
       status: "completed",
-      output_path: result.output_path,
-      row_count: result.row_count,
-      summary_json: result.summary,
+      output_path: outputPath,
+      summary_json: {},
     }).eq("id", id);
 
-    res.json({ message: "Processed", ...result });
-  } catch (err) {
+    res.status(200).json({ message: "Processed successfully" });
+  } catch (err: any) {
     console.error("[PROCESS ERROR]", err);
     await supabase.from("feeds").update({ status: "failed" }).eq("id", req.params.id);
-    res.status(500).json({ error: "Processing failed" });
+    res.status(500).json({ error: "Processing failed", details: err.message || err.toString() });
   }
 });
 
-// Status fetch
-router.get("/feeds/:id", async (req, res) => {
-  const { data, error } = await supabase.from("feeds").select("*").eq("id", req.params.id).single();
-  if (error || !data) return res.status(404).json({ error: "Feed not found" });
-  res.json(data);
-});
-
-// Download
+// Download result
 router.get("/feeds/:id/download", async (req, res) => {
-  const { data, error } = await supabase.from("feeds").select("output_path").eq("id", req.params.id).single();
-  if (error || !data) return res.status(404).json({ error: "Feed not found" });
-  res.download(data.output_path);
+  try {
+    const id = req.params.id;
+    const { data, error } = await supabase.from("feeds").select("output_path").eq("id", id).single();
+    if (error || !data) return res.status(404).json({ error: "Output not found" });
+
+    const filePath = data.output_path;
+    return res.download(filePath);
+  } catch (err: any) {
+    console.error("[DOWNLOAD ERROR]", err);
+    res.status(500).json({ error: "Download failed", details: err.message || err.toString() });
+  }
 });
 
 export default router;
+
+
+// Poll processing status
+router.get("/feeds/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { data, error } = await supabase
+      .from("feeds")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      return res.status(404).json({ error: "Feed not found" });
+    }
+
+    return res.json(data);
+  } catch (err: any) {
+    console.error("[GET FEED STATUS ERROR]", err);
+    res.status(500).json({
+      error: "Failed to retrieve feed",
+      details: err.message || err.toString(),
+    });
+  }
+});
+

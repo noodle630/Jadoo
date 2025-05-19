@@ -1,4 +1,4 @@
-# Fully integrated backend: app_unified.py
+# File: app_unified.py
 import os
 import csv
 import uuid
@@ -8,9 +8,10 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from supabase import create_client, Client
-from utils.transformer import transform_csv_with_openai
+from server.utils.transformer import transformCSVWithOpenAI
+import traceback
 
-# Load environment variables
+
 load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
@@ -22,7 +23,6 @@ ALLOWED_EXTENSIONS = {"csv"}
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 CORS(app)
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
@@ -42,15 +42,16 @@ def upload_file():
         filepath = os.path.join(app.config["UPLOAD_FOLDER"], new_filename)
         file.save(filepath)
 
-        # Count rows
-        with open(filepath, newline="", encoding="utf-8") as csvfile:
-            row_count = sum(1 for row in csv.reader(csvfile)) - 1
+        row_count = sum(1 for row in csv.reader(open(filepath, encoding="utf-8"))) - 1
 
-        # Create record in Supabase
+        marketplace = request.form.get("marketplace")
+        category = request.form.get("category") or "unknown"
+
         feed = {
             "id": uid,
             "filename": new_filename,
-            "platform": request.form.get("marketplace", "unknown"),
+            "platform": marketplace,
+            "category": category,
             "status": "uploaded",
             "upload_time": "now()",
             "row_count": row_count,
@@ -67,37 +68,39 @@ def upload_file():
 @app.route("/api/feeds/<feed_id>/process", methods=["POST"])
 def process_feed(feed_id):
     try:
-        # Fetch the feed metadata from Supabase
         feed_resp = supabase.table("feeds").select("*").eq("id", feed_id).single().execute()
         if not feed_resp.data:
             return jsonify({"error": "Feed not found"}), 404
 
         feed = feed_resp.data
         original_path = feed["input_path"]
-        platform = feed["platform"]
+        marketplace = feed["platform"]
+        category = feed.get("category", "unknown")
 
-        # Run transformation
-        result = transform_csv_with_openai(original_path, platform)
-        output_path = result["output_path"]
-        row_count = result.get("row_count", 0)
-        log_path = result.get("log_path", "")
-        summary = result.get("summary", {})
+        output_path = transformCSVWithOpenAI(original_path, marketplace, category)
 
-        # Update Supabase
         supabase.table("feeds").update({
             "status": "completed",
             "output_path": output_path,
-            "log_path": log_path,
-            "row_count": row_count,
-            "summary_json": summary
+            "row_count": feed["row_count"],
+            "summary_json": {}
         }).eq("id", feed_id).execute()
 
         return jsonify({
             "message": "Feed processed successfully",
-            "rowCount": row_count,
             "outputPath": output_path,
-            "logPath": log_path,
-            "summary": summary
+            "marketplace": marketplace,
+            "category": category,
+            "id": feed_id,
+            "itemCount": feed["row_count"],
+            "aiChanges": {
+                "titleOptimized": 0,
+                "descriptionEnhanced": 0,
+                "categoryCorrected": 0,
+                "errorsCorrected": 0,
+                "emptyRows": 0,
+                "filledRows": feed["row_count"]
+            }
         })
 
     except Exception as e:
@@ -107,10 +110,23 @@ def process_feed(feed_id):
 
 @app.route("/api/feeds/<feed_id>", methods=["GET"])
 def get_feed(feed_id):
-    result = supabase.table("feeds").select("*").eq("id", feed_id).execute()
-    if not result.data:
-        return jsonify({"error": "Feed not found"}), 404
-    return jsonify(result.data[0])
+    try:
+        print(f"[FEED POLL] Getting feed: {feed_id}")
+        result = supabase.table("feeds").select("*").eq("id", feed_id).single().execute()
+
+        if not result.data:
+            return jsonify({"error": "Feed not found"}), 404
+
+        return jsonify(result.data), 200
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "error": "Unexpected server error",
+            "details": str(e)
+        }), 500
+
 
 @app.route("/api/feeds/<feed_id>/download", methods=["GET"])
 def download_feed(feed_id):
