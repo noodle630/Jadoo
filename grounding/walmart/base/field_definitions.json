@@ -1,0 +1,2922 @@
+{
+  "Accessories Included": {
+    "description": "Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Charging Cable",
+      "Remote Control",
+      "Carrying Case"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Adaptive Sync Technology": {
+    "description": "Adaptive sync is technology to reduce frame rate stuttering and screen tearing in computer monitors. Free-Sync;;Adaptive sync was standardized by VESA and implemented in VESA's embedded DisplayPort (eDP) and DisplayPort 1.2a interfaces. AMD supports VESA Adaptive-Sync under the FreeSync brand. G-Sync is an adaptive sync technology from NVIDIA that must reside in both the card and monitor. G-Sync is NVIDIA's proprietary technology and is a subset of VESA Adaptive-Sync",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Additional Features": {
+    "description": "The distinguishing characteristics of a product that describe its appearance, components, and capabilities. Features often highlight the usefulness/advantages of the product to consumers. Input each feature as unique value.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Additional Image URL": {
+    "description": "Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 3,
+    "recommended_values": 7
+  },
+  "Age Group": {
+    "description": "A general grouping of ages into commonly used demographic labels. \u2022 Infant, 0-1 \u2022 Toddler, 1-3 \u2022 Child, 4-10 \u2022 Tween, 11-13 \u2022 Teen, 14-17 \u2022 Adult, 18-64 \u2022 Senior, 65+",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Apps Installed": {
+    "description": "The list of apps pre-installed on the tablet.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Word, Excel, PowerPoint, OneNote, Skype, OneDrive, Chrome, and Gmail."
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Aspect Ratio": {
+    "description": "The proportional relationship between the display's width and its height. Commonly expressed as two numbers separated by a colon.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "16:09"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Depth - Measure": {
+    "description": "The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Depth - Unit": {
+    "description": "The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Height - Measure": {
+    "description": "The height of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Height - Unit": {
+    "description": "The height of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Weight - Measure": {
+    "description": "The weight of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1.75",
+      "5",
+      "12",
+      "32"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Weight - Unit": {
+    "description": "The weight of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1.75",
+      "5",
+      "12",
+      "32"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Width - Measure": {
+    "description": "The width of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Width - Unit": {
+    "description": "The width of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Audio Features": {
+    "description": "Features intended to increase sound quality or fidelity.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Capacity - Measure": {
+    "description": "The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "4500 mAh",
+      "3400 mAh"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Capacity - Unit": {
+    "description": "The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "4500 mAh",
+      "3400 mAh"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Consumption Type": {
+    "description": "The consumption type of a battery. \nOne Time Use Battery -Batteries installed into the product that can not be exchanged, serviced, or recharged by the consumer. \nExchangeable Rechargeable Battery-Rechargeable battery that can be removed from the the product.\nChangeable Disposable Battery -A battery that can be removed from the product by the user and then disposed.\nIntegrated Rechargeable Battery-Batteries that are installed into a device and not exchangeable by the consumer and are recharged only when  connected to the primary device.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Count": {
+    "description": "The total number of batteries in the package.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Life - Measure": {
+    "description": "Life of the device's battery under ideal conditions (maximum run time).",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "1",
+      "2",
+      "24"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Life - Unit": {
+    "description": "Life of the device's battery under ideal conditions (maximum run time).",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "1",
+      "2",
+      "24"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Size": {
+    "description": "Identifies the size of a battery, as specified by its code. This lets customers know which size of battery to purchase to operate the device.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Bezel Width - Measure": {
+    "description": "The bezel is the rim or ring that at least gives the appearance to hold or secure a display, screen, gem or crystal. This identifies the width of the bezel on the product.",
+    "product_type": "Televisions",
+    "examples": [
+      ".25 in",
+      "1.95 mm"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Bezel Width - Unit": {
+    "description": "The bezel is the rim or ring that at least gives the appearance to hold or secure a display, screen, gem or crystal. This identifies the width of the bezel on the product.",
+    "product_type": "Televisions",
+    "examples": [
+      ".25 in",
+      "1.95 mm"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Biometric Security Features": {
+    "description": "Describes the type of biometric security features included in a product. Fingerprint Scan: Scans a fingerprint and uses as a unique identifier as an alternative to entering a password.;;Face Recognition: Scans facial features and uses as a unique identifier as an alternative to entering a password.;;Iris Scan: Scans an iris and uses as a unique identifier as an alternative to entering a password.;;Handprint Scan: Scans a handprint and uses as a unique identifier as an alternative to entering a password.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brand License": {
+    "description": "A brand name that is not owned by the product brand, but is licensed for the particular product. (Often character and media tie-ins and promotions.) It can also be another brand or a celebrity.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "Disney",
+      "Marvel",
+      "LEGO"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brand Name": {
+    "description": "The name provided by the brand owner that is intended to be recognized by the consumer as represented on the product. If item does not have a brand, use \"Unbranded\".  This should be the brand ONLY, not brand + product line. Make sure brand name is spelled, punctuated & capitalized properly according to the brand itself.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Bose",
+      "Samsung",
+      "Sony"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brightness - Measure": {
+    "description": "Brightness per bulb measured in lumens.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "200lm",
+      "1000lm",
+      "726 nits",
+      "440 Nits",
+      "250 Nits"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brightness - Unit": {
+    "description": "Brightness per bulb measured in lumens.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "200lm",
+      "1000lm",
+      "726 nits",
+      "440 Nits",
+      "250 Nits"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Built-in Camera Information - Built-in Camera Lens Type": {
+    "description": "Description of the lens's focal length, optical characteristics or special features.",
+    "product_type": "Laptop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Built-in Camera Information - Built-in Camera Location": {
+    "description": "Defines where an individual camera is positioned on the device (e.g. Front Facing, Rear Facing).",
+    "product_type": "Laptop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Built-in Camera Information - Built-in Camera Megapixels": {
+    "description": "Number of megapixels for an individual camera on the product.",
+    "product_type": "Laptop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "California Prop 65 Warning Text": {
+    "description": "This is a particular statement legally required by the State of California for certain products to warn consumers about potential health dangers. See the portions of the California Health and Safety Code related to Proposition 65 to see what products require labels and to verify the text of your warning label. If no Prop 65 warning please leave value blank for this attribute.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "For Example: This product can expose you to chemicals including [name of one or more chemicals], which is [are] known to the State of California to cause [list associated harm(s) e.g. cancer, birth defects or other reproductive harm, etc]."
+    ],
+    "min_characters": 1,
+    "max_characters": 5000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cell Phone Service Provider": {
+    "description": "The company responsible for the provision of the device's cellular service.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "AT&T",
+      "AT&T GoPhone",
+      "Black Wireless",
+      "Boost Mobile",
+      "Cricket Wireless",
+      "H2O Wireless",
+      "MetroPCS",
+      "Net10",
+      "Page Plus Cellular",
+      "PlatinumTel",
+      "Red Pocket Mobile",
+      "Republic Wireless",
+      "Simple Mobile",
+      "Sprint",
+      "Straight Talk",
+      "T-Mobile",
+      "Total Wireless",
+      "TracFone",
+      "Unlocked",
+      "US Cellular",
+      "Verizon",
+      "Virgin Mobile",
+      "Walmart Family Mobile"
+    ],
+    "min_characters": 1,
+    "max_characters": 600,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cell Phone Type": {
+    "description": "Groupings of cell phones based on contracts, payment requirements, lock status, and variety.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cellular Network Technology": {
+    "description": "The cellular technology used by the device.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cellular Service Plan": {
+    "description": "Provided as a mechanism to divide electronic devices that utilize a cellular connection by the nature of the plan with which they are initially provided. Unlocked Phones-An unlocked smartphone is a phone that isn't tied to a specific carrier or contract. A prepaid mobile device (also commonly referred to as pay-as-you-go (PAYG), pay-as-you-talk, pay and go, go-phone or prepay). Postpaid phones are inherently locked devices. Prepaid phones are inherently locked devices.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Character": {
+    "description": "A person or entity portrayed in print or visual media. A character might be a fictional personality or an actual living person.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Batman",
+      "Dora the Explorer",
+      "Hello Kitty",
+      "Jojo Siwa",
+      "Minnie Mouse",
+      "Power Rangers",
+      "Wonder Woman",
+      "SpongeBob SquarePants",
+      "Mario",
+      "Pac-Man",
+      "Elsa",
+      "Spider-Man"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Character Group": {
+    "description": "Character group name or fictional team name as they appear in a media product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "X-Men",
+      "Transformers",
+      "The Lion King",
+      "My Little Pony",
+      "Disney Inside Out",
+      "Avengers",
+      "Angry Birds",
+      "Disney Princesses",
+      "Delta Squad",
+      "Frozen",
+      "Trolls",
+      "Minecraft",
+      "Justice League"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color": {
+    "description": "Color refers to the actual color defined by the manufacturer. For Example, an item may be gray and black (which are used in the Color Category attribute) but the manufacturer calls the color Space Gray.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Black",
+      "Silver"
+    ],
+    "min_characters": 1,
+    "max_characters": 600,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color Category": {
+    "description": "Select the color from a short list that best describes the general color(s) of the item. This improves searchability as it allows customers to view items by color from the left navigation when they perform a search.\n\nPlease list all colors for the item. If the item has more than one color, please select Multi-color in addition to primary colors. Don\u2019t list more than the three main colors.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color Depth": {
+    "description": "The number of bits per pixel on a computer monitor to represent a specific color. The more bits per pixel, the higher color variety and quality of the monitor.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "64-bit",
+      "32-bit"
+    ],
+    "min_characters": 1,
+    "max_characters": 30,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Compatible Devices": {
+    "description": "A list of the devices compatible with the item.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "iPad",
+      "Tablet Computers",
+      "CD Players",
+      "GPS",
+      "Desktop Computers",
+      "Blu-ray players",
+      "DVD Players"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Compatible Smart Control Systems": {
+    "description": "Provision for \"works with\" badges commonly found on items considered \"smart\" and compatible with a particular system or systems available for the internet of things.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Condition": {
+    "description": "This refers to the state of an item, indicating its level of wear, prior use (if any), appearance, and overall quality. Availability of condition types may vary by product/category as well as by Seller eligibility per program. For more details, review this Help article: https://sellerhelp.walmart.com/seller/s/guide?language=en_US&article=000011205.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cone Composition": {
+    "description": "Intended to collect information pertaining to the composition of the cones found in a loudspeaker, 'Cone Composition' contains 3 distinct fields, one for each of the cones as demarcated by its frequency handling capabilities by the manufacturer:\nWoofer, Mid-range, and Tweeter.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "Composite Polymer",
+      "Aluminum Coated Polypropylene",
+      "Laminated Polyester"
+    ],
+    "min_characters": 1,
+    "max_characters": 250,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Configuration": {
+    "description": "WM internal usage only.   Utilized to capture components included for Virtual Bundles.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 400,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Contrast Ratio Range": {
+    "description": "Measured difference between a displayed image's brightest whites and darkest blacks. The larger the first number, the more detail and color that can be displayed.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "1000:01:00",
+      "500:01:00"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cord Length - Measure": {
+    "description": "Measurement of the length of the cord that comes with the item. For electrical appliances, the cord is typically a power cord. For other products, headphones, for example, the cord would connect to the receiver.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "2.5",
+      "6",
+      "12"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cord Length - Unit": {
+    "description": "Measurement of the length of the cord that comes with the item. For electrical appliances, the cord is typically a power cord. For other products, headphones, for example, the cord would connect to the receiver.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "2.5",
+      "6",
+      "12"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Count Per Pack": {
+    "description": "The number of identical items inside each individual package given by the \"Multipack Quantity\" attribute. Examples: (1) A single bottle of 50 pills has a \"Count Per Pack\" of 50. (2) A package containing two identical bottles of 50 pills has a \"Count Per Pack\" of 50. (3) A 6-pack of soda labeled for individual sale connected by plastic rings has a \"Count Per Pack\" of 1. (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a \"Count Per Pack\" of 6. (5) A gift basket of 5 different items has a \"Count Per Pack\" of 1.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "2",
+      "10",
+      "50"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Depth (with stand) - Measure": {
+    "description": "The depth of the product (horizontal measurement from the'face' to the rear of the unit) when mounted on the included stand.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "17\"",
+      "19\""
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Depth (with stand) - Unit": {
+    "description": "The depth of the product (horizontal measurement from the'face' to the rear of the unit) when mounted on the included stand.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "17\"",
+      "19\""
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Depth (without stand) - Measure": {
+    "description": "The depth of the product (horizontal measurement from the 'face' to the rear of the unit) if the included stand is not utilized.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "17\"",
+      "19\""
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Depth (without stand) - Unit": {
+    "description": "The depth of the product (horizontal measurement from the 'face' to the rear of the unit) if the included stand is not utilized.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "17\"",
+      "19\""
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Desktop Computer Type": {
+    "description": "The type of Desktop Computer.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Display Backlight Type": {
+    "description": "The light source that is situated directly behind the LCD/LED panel of the display.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Display Resolution": {
+    "description": "If the item has a screen display, the resolution value of the screen component of the product. Typically measured as the number of pixels creating the display expressed as a number of columns x number of rows. For example, a digital camera's screen resolution (vs. the image quality the camera can produce) of 640x480.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "1024 x 600",
+      "1024 x 640",
+      "1024 x 768",
+      "1136 x 640",
+      "1152 x 864",
+      "1280 x 1024",
+      "1280 x 720",
+      "1280 x 768",
+      "1280 x 800",
+      "1366 x 768",
+      "1386 x 768",
+      "1400 x 1050",
+      "1440 x 1080",
+      "1440 x 900",
+      "1600 x 1200",
+      "1680 x 1050",
+      "1920 x 1080",
+      "1920 x 1200",
+      "2560 x 1080",
+      "800 x 600",
+      "960 x 640",
+      "7680x4320",
+      "3840x2160",
+      "240 x 240"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Display Technology": {
+    "description": "The primary technology used for the item's display.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Drive Type": {
+    "description": "Does the item have a Hard Drive, an SSD Drive, both, or none?",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Ear Pad Material": {
+    "description": "Indicates the material used on a headphone or earbud's ear pad.",
+    "product_type": "Headphones",
+    "examples": [
+      "Protein Leather",
+      "Foam",
+      "Memory Foam"
+    ],
+    "min_characters": 1,
+    "max_characters": 80,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Edition": {
+    "description": "The specific edition of the item.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1st Edition",
+      "2nd Edition",
+      "3rd Edition",
+      "Anniversary Edition",
+      "Basic Edition",
+      "Book Club Edition",
+      "Classic Edition",
+      "Co-Edition",
+      "Collector's Edition",
+      "Deluxe Edition",
+      "Digital Copy",
+      "Unabridged",
+      "E-edition",
+      "Limited",
+      "Limited Edition",
+      "Premier Edition",
+      "Revised & Updated Edition",
+      "Revised Edition",
+      "Special Edition",
+      "Standard",
+      "Ultimate",
+      "Walmart Exclusive",
+      "Standard Edition",
+      "Gold Edition",
+      "Definitive Edition",
+      "Director's Cut",
+      "Remastered",
+      "Game of the Year Edition",
+      "MVP Edition"
+    ],
+    "min_characters": 1,
+    "max_characters": 300,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Edition Year": {
+    "description": "The year in which the computer was introduced.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "2018",
+      "2021"
+    ],
+    "min_characters": 4,
+    "max_characters": 4,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Electronics Certifications": {
+    "description": "Describes the type of Certification for Electronic Hardware Product.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Electronics Feature": {
+    "description": "Features distinct to electronic products.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Estimated Annual Operating Cost": {
+    "description": "Predicted cost of operating the product under average conditions for one year as listed on the Energy Star label.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "$16",
+      "$30",
+      "$50"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Form Factor": {
+    "description": "Commonly used term for the physical size to which the computer conforms.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Frequency Response Range - Measure": {
+    "description": "Incorporating fields of  Minimum Frequency Response and Maximum Frequency Response, values for the two attributes are combined to provide a frequency response range.\nThe two frequency values that create the upper and lower bounds of the range may be entered as differing orders of magnitude (hertz, and kilohertz) if appropriate.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "65-20000",
+      "45-18000",
+      "30-10000"
+    ],
+    "min_characters": 1,
+    "max_characters": 250,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Frequency Response Range - Unit": {
+    "description": "Incorporating fields of  Minimum Frequency Response and Maximum Frequency Response, values for the two attributes are combined to provide a frequency response range.\nThe two frequency values that create the upper and lower bounds of the range may be entered as differing orders of magnitude (hertz, and kilohertz) if appropriate.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "65-20000",
+      "45-18000",
+      "30-10000"
+    ],
+    "min_characters": 1,
+    "max_characters": 250,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Front-Facing Camera Megapixels - Measure": {
+    "description": "The maximum resolution of the camera that faces the user, provided in megapixels.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "16.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Front-Facing Camera Megapixels - Unit": {
+    "description": "The maximum resolution of the camera that faces the user, provided in megapixels.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "16.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Generation": {
+    "description": "Intended to collect the product generation for a particular instance of a device.  Primarily for use with mobile electronics.",
+    "product_type": "Headphones",
+    "examples": [
+      "1st Generation",
+      "2nd Generation",
+      "3rd Generation"
+    ],
+    "min_characters": 1,
+    "max_characters": 400,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Graphic Card": {
+    "description": "The name of the graphic card installed on the computer.  If the graphics are integrated, select \"Integrated Graphics\".",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "AMD Radeon RX 590",
+      "AMD Radeon VII",
+      "Integrated Graphics",
+      "MSI GeForce RTX 2080 Gaming X Trio",
+      "Nvidia GeForce RTX 2070 Super",
+      "Sapphire Pulse Radeon RX 5600 XT"
+    ],
+    "min_characters": 1,
+    "max_characters": 150,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Graphics Card Type": {
+    "description": "Describes whether a graphics card is integrated with the CPU or exists as a dedicated resource.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Hard Drive Capacity - Measure": {
+    "description": "The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "512"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Hard Drive Capacity - Unit": {
+    "description": "The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "512"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has Front-Facing Camera": {
+    "description": "Does the item incorporate a front-facing camera?",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has NRTL Listing Certification": {
+    "description": "Indicates an item has NRTL listing certification(s). A Nationally Recognized Testing Laboratory (NRTL) is an independent organization recognized by Occupational Safety & Health Administration (OSHA) to provide evaluation, testing and certification for products within its scope of recognition for the US market.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has Touchscreen": {
+    "description": "Does the display have touchscreen capabilities?",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has Written Warranty": {
+    "description": "Indicates an item has written warranty documentation included on the product label, inside the product packaging, or a website URL or PDF available for customer review. Pursuant to California Civil Code Section 1793.01 (The Song-Beverly Consumer Warranty Act), an express warranty for consumer goods sold within California must not commence earlier than the date of delivery of the item to the consumer. If applicable, please review and update the warranty terms for this item.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Headphone Features": {
+    "description": "List of features specific to headphones including the aspects of the design that consumers would look for because they affect the comfort, portability, compatibility, and quality of sound.",
+    "product_type": "Headphones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Headphone Style": {
+    "description": "Headphone style is intended for specification of the aural interface between headphone and user.",
+    "product_type": "Headphones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Headphone Type": {
+    "description": "General type attribute describing the purpose, application, or class of headphones.",
+    "product_type": "Headphones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Height (with stand) - Measure": {
+    "description": "The height of the product (vertical measurement) when mounted on the included stand.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "21\"",
+      "19\""
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Height (with stand) - Unit": {
+    "description": "The height of the product (vertical measurement) when mounted on the included stand.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "21\"",
+      "19\""
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Height (without stand) - Measure": {
+    "description": "The height of the product (vertical measurement) if the included stand is not utilized.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "21\"",
+      "19\""
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Height (without stand) - Unit": {
+    "description": "The height of the product (vertical measurement) if the included stand is not utilized.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "21\"",
+      "19\""
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "High Dynamic Range Format": {
+    "description": "HDR formats that tell the TV or other HDR-compatible product how to best utilize its capabilities to display HDR content. HDR technology can support one or multiple formats, each with various benefits to picture quality.",
+    "product_type": "Televisions",
+    "examples": [
+      "Dolby Vision",
+      "HDR Vivid",
+      "HDR10",
+      "HDR10 Plus",
+      "HLD",
+      "HLG",
+      "PQ10",
+      "SL-HDR1",
+      "SL-HDR2",
+      "SL-HDR3"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Home Speaker & Subwoofer Type": {
+    "description": "Types of Home Speakers & Subwoofers",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Horizontal Viewing Angle - Measure": {
+    "description": "The maximum angle at which the display can be viewed with acceptable visual performance from either side.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "178\u00b0",
+      "180\u00b0"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Horizontal Viewing Angle - Unit": {
+    "description": "The maximum angle at which the display can be viewed with acceptable visual performance from either side.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "178\u00b0",
+      "180\u00b0"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "IP Code": {
+    "description": "Outlined in IEC 60529, this standard applies to the classification of degrees of protection provided by enclosures for\nelectrical equipment with a rated voltage not exceeding 72,5 kV.",
+    "product_type": "Headphones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Impedance - Measure": {
+    "description": "The measure of the resistance that a circuit presents to a current when a voltage is applied. Expressed in ohms, or kohms. Important characteristic for audio products such as speakers, headphones, and measuring devices. Impedance is the electrical characteristic of a speaker that restricts (\"impedes\") the flow of power from the receiver or amplifier.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "4 Ohms",
+      "8 Ohms"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Impedance - Unit": {
+    "description": "The measure of the resistance that a circuit presents to a current when a voltage is applied. Expressed in ohms, or kohms. Important characteristic for audio products such as speakers, headphones, and measuring devices. Impedance is the electrical characteristic of a speaker that restricts (\"impedes\") the flow of power from the receiver or amplifier.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "4 Ohms",
+      "8 Ohms"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Included Software": {
+    "description": "The list of all software that comes with the computer.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "Microsoft Office, Microsoft Office 365, Photoshop"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input & Output Type": {
+    "description": "Type of connection.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input/Output Direction": {
+    "description": "Indicates whether a port for data, audio, or video is meant to receive (input-female), send (output-male) or both receive and send (bi-directional/input & output-female&male).",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input/Output Quantity": {
+    "description": "Number of connections corresponding to the Input/Output type.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "1",
+      "2",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Portable": {
+    "description": "Is the item designed to be easily moved?",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Primary Variant": {
+    "description": "Note whether item is intended as the main variant in a variant grouping. The primary variant will appear as the image when customers search and the first image displayed on the item page. This should be set as \"Yes\" for only one item in a group of variants.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Prop 65 Warning Required": {
+    "description": "Selecting \"Yes\" indicates the product requires California's Proposition 65 special warning. Proposition 65 entitles California consumers to special warnings for products that contain chemicals known to the state of California to cause cancer and birth defects or other reproductive harm if certain criteria are met (such as quantity of chemical contained in the product). See the portions of the California Health and Safety Code related to Proposition 65 for more information.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Smart": {
+    "description": "Indicates whether a device is among the set of \"smart\" appliances (indicating Web, wireless, or interactive technology has been integrated into device functionality).",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Water-Resistant": {
+    "description": "Indicates that the item has been especially made or treated to resist the effects of water, as specified by the manufacturer.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Key Features": {
+    "description": "Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "\u2022",
+      "Active Noise Cancellation for immersive sound",
+      "\u2022",
+      "Transparency mode for hearing and connecting with the world around you",
+      "\u2022",
+      "Three sizes of soft, tapered silicone tips for a customizable fit",
+      "\u2022",
+      "Sweat and water-resistant (1)",
+      "\u2022",
+      "Adaptive EQ automatically tunes music to the shape of your ear",
+      "\u2022",
+      "Easy setup for all your Apple devices (2)",
+      "\u2022",
+      "Quick access to Siri by saying \"\"Hey Siri\"\" (3)",
+      "\u2022",
+      "The Wireless Charging Case delivers more than 24 hours of battery life (4)"
+    ],
+    "min_characters": 1,
+    "max_characters": 10000,
+    "min_values": 5,
+    "recommended_values": null
+  },
+  "Keyboard Layout": {
+    "description": "The keyboard layout is the arrangement of the keys on a computer keyboard.",
+    "product_type": "Laptop Computers",
+    "examples": [
+      "Azerty",
+      "Qwerty",
+      "Qwertz",
+      "Dvorak",
+      "Colemak",
+      "Workman"
+    ],
+    "min_characters": 1,
+    "max_characters": 80,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Languages Supported": {
+    "description": "The languages that are supported by the item/product.",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Laptop Computer Type": {
+    "description": "The type of laptop computer.",
+    "product_type": "Laptop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Main Image URL": {
+    "description": "Main image of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Manufacturer Name": {
+    "description": "The name of the manufacturer.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Sony"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Manufacturer Part Number": {
+    "description": "MPN uniquely identifies the product to its manufacturer. For many products this will be identical to the model number. Some manufacturers distinguish part number from model number. Having this information allows customers to search for items on the site and informs product matching.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5061025",
+      "TSR-1002",
+      "4-40-3/4-pan-phil"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Material": {
+    "description": "The main material(s) in the product.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "Plastic, Metal, Ceramic"
+    ],
+    "min_characters": 1,
+    "max_characters": 1000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum Contrast Ratio": {
+    "description": "The ratio between the luminance of the brightest color to that of the darkest color capable of being displayed.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "20,000:1",
+      "30,000,000:1"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum Frequency Response - Measure": {
+    "description": "Used in conjunction with Minimum Frequency Response, values for the two attributes are combined to provide a frequency response range.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "240Hz",
+      "290 Hz"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum Frequency Response - Unit": {
+    "description": "Used in conjunction with Minimum Frequency Response, values for the two attributes are combined to provide a frequency response range.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "240Hz",
+      "290 Hz"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum RAM Supported - Measure": {
+    "description": "The maximum amount of RAM that the product can accommodate. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "16"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum RAM Supported - Unit": {
+    "description": "The maximum amount of RAM that the product can accommodate. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "16"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum Transmission Range - Measure": {
+    "description": "The maximum distance between any two nodes such that the signal emanating from one node could directly reach the other node with strength appreciable enough to correctly extract the encoded information.",
+    "product_type": "Headphones",
+    "examples": [
+      "15",
+      "30",
+      "50"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum Transmission Range - Unit": {
+    "description": "The maximum distance between any two nodes such that the signal emanating from one node could directly reach the other node with strength appreciable enough to correctly extract the encoded information.",
+    "product_type": "Headphones",
+    "examples": [
+      "15",
+      "30",
+      "50"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Memory Card Format": {
+    "description": "The memory card format applicable to the product.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Minimum Frequency Response - Measure": {
+    "description": "Used in conjunction with Maximum Frequency Response, values for the two attributes are combined to provide a frequency response range.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "16 Hz",
+      "23 Hz"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Minimum Frequency Response - Unit": {
+    "description": "Used in conjunction with Maximum Frequency Response, values for the two attributes are combined to provide a frequency response range.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "16 Hz",
+      "23 Hz"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Mobile Operating System": {
+    "description": "Mobile device operating system titles for cellular phones, tablet computers, smart watches, etc.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Android",
+      "Blackberry",
+      "iOS",
+      "Windows"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Model Name": {
+    "description": "The model name of the product as commonly used in marketing communications.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "AirPods",
+      "LinkBuds",
+      "QuietComfort 45",
+      "Studio3",
+      "Powerbeats3",
+      "Solo Pro",
+      "Galaxy Buds",
+      "iPod Touch",
+      "ICD-PX Series"
+    ],
+    "min_characters": 1,
+    "max_characters": 800,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Model Number": {
+    "description": "Model numbers\u00a0allow manufacturers to keep track of each hardware device and identify or replace the proper part when needed.\u00a0Model numbers\u00a0are often found on the bottom, back, or side of a product.\u00a0Having this information allows customers to search for items on the site and informs product matching.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Indigo"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Mount Type": {
+    "description": "How the item is attached. Used for products such as shelving and fixture hardware.",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Multipack Quantity": {
+    "description": "The number of identical, individually packaged-for-sale items. If an item does not contain other items, does not contain identical items, or if the items contained within cannot be sold individually, the value for this attribute should be\"1.\" Examples: (1) A single bottle of 50 pills has a \"Multipack Quantity\" of\"1.\" (2) A package containing two identical bottles of 50 pills has a \"Multipack Quantity\" of 2. (3) A 6-pack of soda labelled for individual sale connected by plastic rings has a \"Multipack Quantity\" of\"6.\" (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a \"Multipack Quantity\" of\"1.\" (5) A gift basket of 5 different items has a \"Multipack Quantity\" of\"1.\"",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "2",
+      "4",
+      "6"
+    ],
+    "min_characters": 1,
+    "max_characters": 4,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "NRTL Information - NRTL Organization": {
+    "description": "The Nationally Recognized Testing Laboratory (NRTL) that tested and certified your product to safety test standard(s) within its scope of OSHA recognized test standards. Please select one or more of the appropriate NRTL(s) in the drop-down menu.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "NRTL Information - NRTL Test Standard": {
+    "description": "Please provide the certified test standard number(s) in the designated text field, separated by a comma (Ex: UL 1484, ANSI Z21.1). Selecting one or more NRTL(s) indicates you are able to provide proof of listing certification(s) upon request, and you will update the certification information when there's a change in the certification.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Native Resolution": {
+    "description": "If the item has a screen display, the resolution value of the screen component of the product. Typically measured as the number of pixels creating the display expressed as number of columns x number of rows. For example, a digital camera's screen resolution (vs. the image quality the camera can produce) of 640x480.  The resolution of a flat panel display at which no scaling is used to create the images.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1024 x 640",
+      "1136 x 640",
+      "1152 x 864",
+      "1280 x 1024",
+      "1280 x 768",
+      "1366 x 768",
+      "1400 x 1050",
+      "1440 x 900",
+      "1600 x 1200",
+      "1920 x 1080",
+      "2560 x 1080",
+      "4096 x 2160",
+      "800 x 600",
+      "960 x 640"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content - Measure": {
+    "description": "The numeric net content portion that appears on an item. \n\nPlease Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "12",
+      "32"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content - Unit": {
+    "description": "The unit of measure as defined on the product labeling. For example, a gallon of milk has 128 Fluid Ounces: Measure = 128 and Units = Fluid Ounces.\n\nPlease Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content Statement": {
+    "description": "Complete product net content statement, as it appears on product packaging.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Boombox(Net Wt 4.5Lbs)"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Noise Control Technology": {
+    "description": "Describes the technology used to create noise cancellation.",
+    "product_type": "Headphones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of HDMI Connections": {
+    "description": "The number of HDMI Connections of the item",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of Microphones": {
+    "description": "Identifies the number of microphones found in a device.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of Pieces": {
+    "description": "The number of small pieces, slices, or different items within the product. Piece Count applies to things such as puzzles, building block sets, and products that contain multiple different items (such as tool sets, dinnerware sets, gift baskets, art sets, makeup kits, or shaving kits.) Examples: A gift basket of 5 different items has a \u201cPiece Count\u201d of 5.; A 105-Piece Socket Wrench set has a \"Piece Count\" of 105.; A 500-piece puzzle has a \u201cPiece Count\u201d of 500.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5",
+      "105",
+      "500"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of Speakers": {
+    "description": "The number of speakers included in the product.",
+    "product_type": "Televisions",
+    "examples": [
+      "1",
+      "2",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Occasion": {
+    "description": "The particular target time, event, or holiday for the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Halloween",
+      "Christmas",
+      "Wedding",
+      "Anniversary",
+      "Back to School",
+      "Birthday",
+      "Graduation"
+    ],
+    "min_characters": 1,
+    "max_characters": 2000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Operating System": {
+    "description": "The operating system loaded on the device or upon which the software is designed to operate.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "Android",
+      "iOS",
+      "Windows",
+      "Windows 10",
+      "Fire OS"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Optical Drive": {
+    "description": "Technology of the optical disk drive if one be present.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Original/New Equivalent Product Identifier - Original Product ID": {
+    "description": "For refurbished items, this is the original/new equivalent product identifier ID which is different from the restored product identifier ID.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 80,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Original/New Equivalent Product Identifier - Original Product ID Type": {
+    "description": "To be used for refurbished items: This refers to the original/new equivalent product identifier.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Output Mode": {
+    "description": "The output type of a particular audio product.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Peak Audio Power Capacity - Measure": {
+    "description": "Most commonly associated with loudspeakers, the peak audio power handling value is the maximum power in watts (W) that the unit has been designed and manufactured to handle in short bursts.;This should never be confused with the continuous, mean, or root mean square (RMS) power rating, which provides the sustained wattage at which a unit may be driven indefinitely.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "400"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Peak Audio Power Capacity - Unit": {
+    "description": "Most commonly associated with loudspeakers, the peak audio power handling value is the maximum power in watts (W) that the unit has been designed and manufactured to handle in short bursts.;This should never be confused with the continuous, mean, or root mean square (RMS) power rating, which provides the sustained wattage at which a unit may be driven indefinitely.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "400"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Phone Feature": {
+    "description": "Features of cellular and landline phones, as well as any other items that provide telephony function.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Power Type": {
+    "description": "Provides information on the exact type of power used by the item.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Brand": {
+    "description": "The brand of the processor.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "AMD",
+      "Intel",
+      "Nvidia",
+      "ROCKCHIP"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Core Count": {
+    "description": "Many microprocessors, particularly central processing units, utilize multiple processing units (cores) in a singular, packaged component.  This attribute is designed capture the number of cores present in a given processor package.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Speed - Measure": {
+    "description": "Operational frequency of the central processing unit.  Please do not list the overclocked speed.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "3.00",
+      "3.40"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Speed - Unit": {
+    "description": "Operational frequency of the central processing unit.  Please do not list the overclocked speed.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "3.00",
+      "3.40"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Type": {
+    "description": "Commonly used retail name for the central processing unit.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "AMD A12-9800",
+      "AMD Athlon Gold 3150G",
+      "AMD Phenom 1 X3",
+      "AMD Ryzen 5 5600X",
+      "ARM1136",
+      "Freescale i.MX515",
+      "IMAPX200",
+      "Intel Celeron 2955U",
+      "Intel Core 2 Duo e7500",
+      "Intel Core i3-10100T",
+      "Intel Core i5-10600KF",
+      "Intel Core i7-10700F",
+      "Intel Core i9-10850K",
+      "NVidia Tegra3",
+      "ROCKCHIP 2818",
+      "Samsung S5PV210",
+      "Telechip TCC8902",
+      "TI OMAP 4440"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Product Name": {
+    "description": "Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO).",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Sony Linkbuds True Wireless In-Ear Earbuds, Black",
+      "Apple AirPods Pro w/ MagSafe Charging Case",
+      "Beats by Dr. Dre Beats Studio3 Over-Ear Headphones with Apple W1 Headphone Chip, Defiant Black & Red",
+      "Bose QuietComfort 45 Noise Cancelling Bluetooth Over-Ear Headphones, Black"
+    ],
+    "min_characters": 10,
+    "max_characters": 199,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Memory - Measure": {
+    "description": "The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "16"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Memory - Unit": {
+    "description": "The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "16"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Memory Type": {
+    "description": "The type of RAM preinstalled in the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Speed - Measure": {
+    "description": "The amount of time that it takes RAM to receive a request from the processor and then read or write data.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "2400 MHz"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Speed - Unit": {
+    "description": "The amount of time that it takes RAM to receive a request from the processor and then read or write data.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "2400 MHz"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RMS Power Rating - Measure": {
+    "description": "RMS Power Rating is a calculated, statistical average expressed in Watts, and is indicative of the continuous power level that an amplifier can sustain, or a speaker can handle, without physical damage or degradation of performance.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "20",
+      "35"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RMS Power Rating - Unit": {
+    "description": "RMS Power Rating is a calculated, statistical average expressed in Watts, and is indicative of the continuous power level that an amplifier can sustain, or a speaker can handle, without physical damage or degradation of performance.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "20",
+      "35"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Rear-Facing Camera Megapixels - Measure": {
+    "description": "The maximum resolution of the camera that faces away from the user, provided in megapixels.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "16.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Rear-Facing Camera Megapixels - Unit": {
+    "description": "The maximum resolution of the camera that faces away from the user, provided in megapixels.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "16.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Recommended Locations": {
+    "description": "The primary location recommended for the item's use.",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Recommended Use": {
+    "description": "Further clarification of what the item may be used for.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Refresh Rate - Measure": {
+    "description": "Commonly the vertical refresh rate of the display. This is a measurement of the number of times the picture is updated per second, and should be recorded in Hz.",
+    "product_type": "Laptop Computers",
+    "examples": [
+      "75 Hz",
+      "80 Hz",
+      "85 Hz",
+      "100 Hz"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Refresh Rate - Unit": {
+    "description": "Commonly the vertical refresh rate of the display. This is a measurement of the number of times the picture is updated per second, and should be recorded in Hz.",
+    "product_type": "Laptop Computers",
+    "examples": [
+      "75 Hz",
+      "80 Hz",
+      "85 Hz",
+      "100 Hz"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Resolution": {
+    "description": "The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on.  Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example).",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1080i",
+      "1080p",
+      "2160p",
+      "240p",
+      "480i",
+      "480p",
+      "4K",
+      "576i",
+      "576p",
+      "5K",
+      "6K",
+      "720i",
+      "720p",
+      "7K",
+      "8K"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Response Time - Measure": {
+    "description": "The amount of time the pixels in the display take to change from one state to another. Measured in milliseconds.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "5 ms",
+      "8 ms"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Response Time - Unit": {
+    "description": "The amount of time the pixels in the display take to change from one state to another. Measured in milliseconds.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "5 ms",
+      "8 ms"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Restored Product Identifier - Restored Product ID": {
+    "description": "This code is to identify Restored Products",
+    "product_type": "Cell Phones",
+    "examples": [
+      "12345678905"
+    ],
+    "min_characters": 1,
+    "max_characters": 14,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Restored Product Identifier - Restored Product ID Type": {
+    "description": "To identify the type of identifier for restored products",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Retail Packaging": {
+    "description": "Descriptive terms for the way a product is packaged for sale to the customer.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "SIM Card Size": {
+    "description": "The size of a SIM card item, or the size of the SIM card which a cell phone accommodates",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Micro",
+      "Mini",
+      "Nano",
+      "Standard"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "SIM Card Type": {
+    "description": "Describes the type of SIM card used in the product, specifically the serial number used to identify the SIM card itself, For example, ICCID (Integrated Circuit Card ID) is the identifier for a profile and identifies the network operator that supplied the profile. By comparison, the EID is a serial number attached to a device that uses an eSIM.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Screen Size - Measure": {
+    "description": "Typically measured on the diagonal in inches or Screen Class Size",
+    "product_type": "Cell Phones",
+    "examples": [
+      "32\"",
+      "55\"",
+      "65\""
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Screen Size - Unit": {
+    "description": "Typically measured on the diagonal in inches or Screen Class Size",
+    "product_type": "Cell Phones",
+    "examples": [
+      "32\"",
+      "55\"",
+      "65\""
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Series": {
+    "description": "Series is often used by manufacturers to align similar products that only vary by one or two particular characteristics. For example a series of televisions may have an identical feature list and functionality, but differ from model to model based on the screen size and whether the panel is curved or flat.  **DO NOT USE** this Attribute to indicate a movie or TV series name (e.g. Game of Thrones).\nThis differs from Product Line which sees dissimilar products brought together but marketed with a consistent presentation. The Samsung Galaxy product line for instance, which includes smartphones, tablets, virtual reality headsets, watches and 360\u00b0 cameras.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "70 Series",
+      "80 Series"
+    ],
+    "min_characters": 1,
+    "max_characters": 250,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Shape": {
+    "description": "The physical shape of the item.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Pill, Curved",
+      "Rectanangle"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Single or Dual IMEI": {
+    "description": "Describes whether the cell phone has a single or dual IMEI.  The International Mobile Equipment Identity (IMEI) is a unique ID number for mobile phones which can be associated to a transaction enabling activation of a cell phone by a customer.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Site Description": {
+    "description": "Overview of the key selling points of the item, marketing content, and highlights in paragraph form. For SEO purposes, repeat the product name and relevant keywords here.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "The new AirPods combine intelligent design with breakthrough technology and crystal clear sound. Powered by the new Apple H1 headphone chip, AirPods now feature hands-free access to Siri using just your voice. And up to 3 hours of talk time on a single charge."
+    ],
+    "min_characters": 1,
+    "max_characters": 100000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Size": {
+    "description": "Overall dimensions of an item. Used only for products that do not already have a more specific attribute, such as ring size, clothing size, and bottled pen ink.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5 oz",
+      "250 g",
+      "12 fl oz",
+      "10 oz"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Size Descriptor": {
+    "description": "General descriptors related to product sizes.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Small Parts Warning Code": {
+    "description": "To determine if any choking warnings are applicable, check current product packaging for choking warning message(s). Please indicate the warning number (0-6). 0- No warning applicable; 1- Choking hazard is a small ball; 2- Choking hazard contains small ball; 3- Choking hazard contains small parts; 4- Choking hazard balloon; 5- Choking hazard is a marble; 6- Choking hazard contains a marble.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Smart TV Platform": {
+    "description": "Platform native to the TV with smart capabilities.",
+    "product_type": "Televisions",
+    "examples": [
+      "Comcast",
+      "Google TV",
+      "Xumo"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Solid State Drive Capacity - Measure": {
+    "description": "Intended for use in cases where the product incorporates both solid state and hard disc storage drives working in tandem, Solid State Drive Capacity collects the data storage potential of the solid state drive (SSD) component.\nThis value should be entered as a prefixed number of bytes, gigabytes (GB), terabytes (TB) etc.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "1",
+      "256"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Solid State Drive Capacity - Unit": {
+    "description": "Intended for use in cases where the product incorporates both solid state and hard disc storage drives working in tandem, Solid State Drive Capacity collects the data storage potential of the solid state drive (SSD) component.\nThis value should be entered as a prefixed number of bytes, gigabytes (GB), terabytes (TB) etc.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "1",
+      "256"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sound Bar Length - Measure": {
+    "description": "The length of the sound bar measured from left to right in inches.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "32\"",
+      "42\"",
+      "36\""
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sound Bar Length - Unit": {
+    "description": "The length of the sound bar measured from left to right in inches.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "32\"",
+      "42\"",
+      "36\""
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sound Bar Thickness - Measure": {
+    "description": "The thickness of the sound bar measure from top to bottom (height) inches.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "3.43\"",
+      "3\""
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sound Bar Thickness - Unit": {
+    "description": "The thickness of the sound bar measure from top to bottom (height) inches.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "3.43\"",
+      "3\""
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sound Bar Width - Measure": {
+    "description": "The width of the sound bar measured from front to back in inches",
+    "product_type": "Sound Bars",
+    "examples": [
+      "4.5\"",
+      "4\""
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sound Bar Width - Unit": {
+    "description": "The width of the sound bar measured from front to back in inches",
+    "product_type": "Sound Bars",
+    "examples": [
+      "4.5\"",
+      "4\""
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sound Technology": {
+    "description": "The licensed technology format used by the product to use, create, or store the audio component of home theater systems, audio video receivers, and other sound products.",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Speaker Channel Configuration": {
+    "description": "The number of channels of audio information supported by the product as described in a format of \u201cnumber of main speakers\u201d + . + \u201cnumber of subwoofers\u201d + . + \u201cnumber of upward firing/ceiling speakers\u201d. The number of upward firing or overhead speakers is not a component of all systems.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sports League": {
+    "description": "If your item has any association with a specific sports league, enter the league name. Abbreviations are fine. NOTE: This attribute flags an item for inclusion in the online fan shop.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "NFL",
+      "WWE",
+      "MLB",
+      "NBA",
+      "NASCAR",
+      "USA Archery"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sports Team": {
+    "description": "If your item has any association with a specific sports team, enter the team name. NOTE: This attribute flags an item for inclusion in the online fan shop.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "San Jose Earthquakes",
+      "San Jose Sharks",
+      "Golden State Warriors",
+      "Las Vegas Raiders",
+      "San Francisco 49ers",
+      "San Francisco Giants",
+      "Stanford Cardinal",
+      "Oakland Athletics"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Streaming Services": {
+    "description": "Services that come imbedded in an electronic product (TV, etc.) that are ready for customer subscription.",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Swatch Images - Swatch Image URL": {
+    "description": "URL of the color or pattern swatch image. This is required for products with visual variations and will be shown as a small circle on the item page. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 100px x 100px. Resolution: 300 ppi. Maximum file size: 5MB. Recommended File Naming: GTIN-14 digit. Provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required.)",
+    "product_type": "Cell Phones",
+    "examples": [
+      "http://www.walmart.com/somepath/some-image.jpg"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Swatch Images - Swatch Variant Attribute": {
+    "description": "Attribute name corresponding to the swatch.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "TV Features": {
+    "description": "The various features of a TV.",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Target Audience": {
+    "description": "The demographic for which the item is targeted.",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "Child",
+      "Adult",
+      "Teen"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Television Type": {
+    "description": "The type of TV with reference to its technology and capabilities.",
+    "product_type": "Televisions",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Theme": {
+    "description": "A dominant idea, meaning, or setting applied to an item.",
+    "product_type": "Headphones",
+    "examples": [
+      "Beach",
+      "New York City",
+      "Religious",
+      "Retro",
+      "Love",
+      "Be Kind",
+      "Princesses",
+      "Animal",
+      "Space",
+      "Hollywood",
+      "Magic",
+      "Jungle",
+      "Unicorns",
+      "Desert",
+      "Carnival",
+      "Hawaiian",
+      "Multi-theme"
+    ],
+    "min_characters": 1,
+    "max_characters": 800,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Third Party Accreditation Symbol on Product Package Code": {
+    "description": "The code representing a symbol or marking third party accreditation on the product package.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Total Count": {
+    "description": "The total number of identical items in the package or box; a result of the multiplication of Multipack Quantity by Count Per Pack. Examples: (1) A single bottle of 50 pills has a \"Total Count\" of 50. (2) A package containing two identical bottles of 50 pills has a \"Total Count\" of 100. (3) A gift basket of 5 different items has a \"Total Count\" of 1.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "50",
+      "100"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Total Data Storage - Measure": {
+    "description": "This attribute is intended to provide a broad base for gathering the data storage potential of a given product in bytes (and various powers of).",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "32 GB",
+      "256 GB",
+      "1 TB",
+      "512 GB",
+      "32 MB",
+      "8 KB"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Total Data Storage - Unit": {
+    "description": "This attribute is intended to provide a broad base for gathering the data storage potential of a given product in bytes (and various powers of).",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "32 GB",
+      "256 GB",
+      "1 TB",
+      "512 GB",
+      "32 MB",
+      "8 KB"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "VESA Mounting Pattern": {
+    "description": "The distance in millimeters between the four mounting holes on the back of a TV or Monitor.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Variant Attribute Names": {
+    "description": "The designated attribute by which an item is varying.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Variant Group ID": {
+    "description": "Required if item is a variant. Make up a number and/or letter code for \"Variant Group ID\" and add this to all variations of the same product. Partners must ensure uniqueness of their Variant Group IDs.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "HANESV025"
+    ],
+    "min_characters": 1,
+    "max_characters": 300,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Vertical Viewing Angle - Measure": {
+    "description": "The maximum angle at which the display can be viewed with acceptable visual performance from above or below.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "100\u00b0",
+      "178\u00b0"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Vertical Viewing Angle - Unit": {
+    "description": "The maximum angle at which the display can be viewed with acceptable visual performance from above or below.",
+    "product_type": "Computer Monitors",
+    "examples": [
+      "100\u00b0",
+      "178\u00b0"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Video Game Platform": {
+    "description": "A list of the hardware that is compatible with this video game.",
+    "product_type": "Headphones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Video Memory - Measure": {
+    "description": "Video memory is memory on a video card.  Do not fill out this attribute if there is Integrated Graphics.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "64",
+      "256"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Video Memory - Unit": {
+    "description": "Video memory is memory on a video card.  Do not fill out this attribute if there is Integrated Graphics.",
+    "product_type": "Desktop Computers",
+    "examples": [
+      "64",
+      "256"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Video Streaming Quality": {
+    "description": "The video resolution quality while streaming.",
+    "product_type": "Televisions",
+    "examples": [
+      "FD",
+      "FHD",
+      "HD",
+      "HDR",
+      "HDX",
+      "Other",
+      "QHD",
+      "SD",
+      "UHD"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Viewing Angle": {
+    "description": "Viewing angle is the angle at which a display can be viewed with an acceptable visual performance.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Wide",
+      "90 Degree",
+      "190\u00ba"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Virtual Assistant": {
+    "description": "Name of the virtual assistant provided as a function of the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Alexa",
+      "Google Assistant"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Warranty Text": {
+    "description": "Warranty Text (the full text of the warranty terms, including what is covered by the warranty and the duration of the warranty). NOTE: please remember to update the text of your warranty as your warranty changes.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "This warranty covers any defects in materials or workmanship, including installation, with the exceptions of fading or discoloration caused by exposure to sunlight or chemicals. This warranty runs for five years from the date your carpet is installed. Counterpoint will either replace your carpet with new carpet of similar composition and price, or refund the full purchase price of your carpet, whichever you prefer. Contact Counterpoint at 800-867-5309."
+    ],
+    "min_characters": 1,
+    "max_characters": 20000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Warranty URL": {
+    "description": "The Warranty URL is the web location of the image, PDF, or link to the manufacturer's warranty page, showing the warranty and its terms, including the duration of the warranty. URLs must begin with http:// or https:// NOTE: Please remember to update the link and/or text of the warranty as the warranty changes. If supplying an image, provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required) and ends in a proper image extension. Recommended file type: JPEG Accepted file types: JPG, PNG, GIF, BMP Maximum file size: 5 MB.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "http://www.walmart.com/warranty_info.pdf"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Wireless": {
+    "description": "This indicates if the item has wireless capabilities.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Wireless Capabilities": {
+    "description": "Describes the wireless capabilities of the electronic device.",
+    "product_type": "Sound Bars",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Wireless Technologies": {
+    "description": "Any wireless communications standard used within or by the item.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "2.4 GHz",
+      "3G",
+      "4G",
+      "4G LTE",
+      "5 GHz",
+      "5G",
+      "802.11ac",
+      "802.11n",
+      "AM",
+      "Bluetooth",
+      "FM",
+      "Infrared",
+      "KLEER",
+      "NFC",
+      "None",
+      "Radio Frequency (RF)",
+      "VHF",
+      "Wi-Fi",
+      "Not Applicable"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Woofer Size - Measure": {
+    "description": "A woofer can be as small as 4 inches in diameter or as large as 15 inches. Woofers with 6.5-inch to 8-inch diameters are common in floor standing speakers. Woofers with diameters in the 4-inch and 5-inch range are common in bookshelf speakers",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "5\"",
+      "5.5\"",
+      "8\"",
+      "10\""
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Woofer Size - Unit": {
+    "description": "A woofer can be as small as 4 inches in diameter or as large as 15 inches. Woofers with 6.5-inch to 8-inch diameters are common in floor standing speakers. Woofers with diameters in the 4-inch and 5-inch range are common in bookshelf speakers",
+    "product_type": "Home Speakers & Subwoofers",
+    "examples": [
+      "5\"",
+      "5.5\"",
+      "8\"",
+      "10\""
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  }
+}

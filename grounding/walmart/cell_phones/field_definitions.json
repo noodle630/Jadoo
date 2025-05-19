@@ -1,0 +1,1151 @@
+{
+  "Accessories Included": {
+    "description": "Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "AC Adapter",
+      "Mounting Bracket"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Additional Image URL": {
+    "description": "Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 4,
+    "recommended_values": 9
+  },
+  "Assembled Product Weight - Measure": {
+    "description": "The weight of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "20 lb",
+      "40 lb"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Weight - Unit": {
+    "description": "The weight of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "20 lb",
+      "40 lb"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Capacity - Measure": {
+    "description": "The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "4500 mAh",
+      "3400 mAh"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Capacity - Unit": {
+    "description": "The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "4500 mAh",
+      "3400 mAh"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Biometric Security Features": {
+    "description": "Describes the type of biometric security features included in a product. Fingerprint Scan: Scans a fingerprint and uses as a unique identifier as an alternative to entering a password.;;Face Recognition: Scans facial features and uses as a unique identifier as an alternative to entering a password.;;Iris Scan: Scans an iris and uses as a unique identifier as an alternative to entering a password.;;Handprint Scan: Scans a handprint and uses as a unique identifier as an alternative to entering a password.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "California Prop 65 Warning Text": {
+    "description": "This is a particular statement legally required by the State of California for certain products to warn consumers about potential health dangers. See the portions of the California Health and Safety Code related to Proposition 65 to see what products require labels and to verify the text of your warning label. If no Prop 65 warning please leave value blank for this attribute.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "For Example: This product can expose you to chemicals including [name of one or more chemicals], which is [are] known to the State of California to cause [list associated harm(s) e.g. cancer, birth defects or other reproductive harm, etc]."
+    ],
+    "min_characters": 1,
+    "max_characters": 5000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cell Phone Service Provider": {
+    "description": "The company responsible for the provision of the device's cellular service.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "AT&T",
+      "AT&T GoPhone",
+      "Black Wireless",
+      "Boost Mobile",
+      "Cricket Wireless",
+      "H2O Wireless",
+      "MetroPCS",
+      "Net10",
+      "Page Plus Cellular",
+      "PlatinumTel",
+      "Red Pocket Mobile",
+      "Republic Wireless",
+      "Simple Mobile",
+      "Sprint",
+      "Straight Talk",
+      "T-Mobile",
+      "Total Wireless",
+      "TracFone",
+      "UScellular",
+      "Verizon",
+      "Virgin Mobile",
+      "Walmart Family Mobile"
+    ],
+    "min_characters": 1,
+    "max_characters": 600,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Character": {
+    "description": "A person or entity portrayed in print or visual media. A character might be a fictional personality or an actual living person.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Batman",
+      "Dora the Explorer",
+      "Hello Kitty",
+      "Jojo Siwa",
+      "Minnie Mouse",
+      "Power Rangers",
+      "Wonder Woman",
+      "SpongeBob SquarePants",
+      "Mario",
+      "Pac-Man",
+      "Elsa",
+      "Spider-Man"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Configuration": {
+    "description": "WM internal usage only.   Utilized to capture components included for Virtual Bundles.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 400,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Display Technology": {
+    "description": "The primary technologies used for the item's display.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Edition": {
+    "description": "The specific edition of the item.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1st Edition",
+      "2nd Edition",
+      "3rd Edition",
+      "Anniversary Edition",
+      "Basic Edition",
+      "Book Club Edition",
+      "Classic Edition",
+      "Co-Edition",
+      "Collector's Edition",
+      "Deluxe Edition",
+      "Digital Copy",
+      "Unabridged",
+      "E-edition",
+      "Limited",
+      "Limited Edition",
+      "Premier Edition",
+      "Revised & Updated Edition",
+      "Revised Edition",
+      "Special Edition",
+      "Standard",
+      "Ultimate",
+      "Walmart Exclusive",
+      "Standard Edition",
+      "Gold Edition",
+      "Definitive Edition",
+      "Director's Cut",
+      "Remastered",
+      "Game of the Year Edition",
+      "MVP Edition"
+    ],
+    "min_characters": 1,
+    "max_characters": 300,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Front-Facing Camera Megapixels - Measure": {
+    "description": "The maximum resolution of the camera that faces the user, provided in megapixels.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "32 MP",
+      "8 MP"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Front-Facing Camera Megapixels - Unit": {
+    "description": "The maximum resolution of the camera that faces the user, provided in megapixels.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "32 MP",
+      "8 MP"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has Front-Facing Camera": {
+    "description": "Does the item incorporate a front-facing camera?",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Manufacturer Name": {
+    "description": "The name of the manufacturer.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Apple",
+      "AT&T",
+      "Samsung"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Manufacturer Part Number": {
+    "description": "MPN uniquely identifies the product to its manufacturer. For many products this will be identical to the model number. Some manufacturers distinguish part number from model number. Having this information allows customers to search for items on the site and informs product matching.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "YST-MyPBX",
+      "8113120",
+      "CX500"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Mobile Operating System": {
+    "description": "Mobile device operating system titles for cellular phones, tablet computers, smart watches, etc.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Android",
+      "Blackberry",
+      "iOS",
+      "Windows"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Model Name": {
+    "description": "The model name of the product as commonly used in marketing communications.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Galaxy A12",
+      "iPhone SE"
+    ],
+    "min_characters": 1,
+    "max_characters": 800,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Model Number": {
+    "description": "Model numbers\u00a0allow manufacturers to keep track of each hardware device and identify or replace the proper part when needed.\u00a0Model numbers\u00a0are often found on the bottom, back, or side of a product.\u00a0Having this information allows customers to search for items on the site and informs product matching.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "PPRETRO25BK",
+      "1103-1WTGA",
+      "210BK",
+      "KX-TGF380M"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Native Resolution": {
+    "description": "The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on. Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example).",
+    "product_type": "Cell Phones",
+    "examples": [
+      "248 x 68",
+      "720 x 1280"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content Statement": {
+    "description": "Complete product net content statement, as it appears on product packaging.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "PBX System =*1.98kg(4.31LB)69OZ"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "NRTL Information - NRTL Test Standard": {
+    "description": "Please provide the certified test standard number(s) in the designated text field, separated by a comma (Ex: UL 1484, ANSI Z21.1). Selecting one or more NRTL(s) indicates you are able to provide proof of listing certification(s) upon request, and you will update the certification information when there's a change in the certification.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "NRTL Information - NRTL Organization": {
+    "description": "The Nationally Recognized Testing Laboratory (NRTL) that tested and certified your product to safety test standard(s) within its scope of OSHA recognized test standards. Please select one or more of the appropriate NRTL(s) in the drop-down menu.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of Pieces": {
+    "description": "The number of small pieces, slices, or different items within the product. Piece Count applies to things such as puzzles, building block sets, and products that contain multiple different items (such as tool sets, dinnerware sets, gift baskets, art sets, makeup kits, or shaving kits.) Examples: A gift basket of 5 different items has a \u201cPiece Count\u201d of 5.; A 105-Piece Socket Wrench set has a \"Piece Count\" of 105.; A 500-piece puzzle has a \u201cPiece Count\u201d of 500.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5",
+      "105",
+      "500"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Occasion": {
+    "description": "The particular target time, event, or holiday for the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Birthday",
+      "Graduation",
+      "Wedding"
+    ],
+    "min_characters": 1,
+    "max_characters": 2000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Original/New Equivalent Product Identifier - Original Product ID": {
+    "description": "For refurbished items, this is the original/new equivalent product identifier ID which is different from the restored product identifier ID.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 80,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Original/New Equivalent Product Identifier - Original Product ID Type": {
+    "description": "To be used for refurbished items: This refers to the original/new equivalent product identifier.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Phone Feature": {
+    "description": "Features of cellular and landline phones, as well as any other items that provide telephony function.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Brand": {
+    "description": "The brand of the processor.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Apple",
+      "Samsung"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Speed - Measure": {
+    "description": "Operational frequency of the central processing unit.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "3.00 GHz",
+      "1.60 GHz",
+      "66 MHz",
+      "2.5 GHz"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Speed - Unit": {
+    "description": "Operational frequency of the central processing unit.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "3.00 GHz",
+      "1.60 GHz",
+      "66 MHz",
+      "2.5 GHz"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Memory - Measure": {
+    "description": "The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "6 GB",
+      "8 GB",
+      "16 GB"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Memory - Unit": {
+    "description": "The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "6 GB",
+      "8 GB",
+      "16 GB"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Rear-Facing Camera Megapixels - Measure": {
+    "description": "The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "16 MP",
+      "24 MP"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Rear-Facing Camera Megapixels - Unit": {
+    "description": "The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "16 MP",
+      "24 MP"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Resolution": {
+    "description": "The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on.  Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example).",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1080p (HDTV)\n1080\n240p\n480i\n480p\n4K UHD\n576\n576p\n720i\n720p\n8K UHD"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Restored Product Identifier - Restored Product ID": {
+    "description": "This code is to identify Restored Products",
+    "product_type": "Cell Phones",
+    "examples": [
+      "12345678905"
+    ],
+    "min_characters": 1,
+    "max_characters": 14,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Restored Product Identifier - Restored Product ID Type": {
+    "description": "To identify the type of identifier for restored products",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Retail Packaging": {
+    "description": "Descriptive terms for the way a product is packaged for sale to the customer.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Series": {
+    "description": "Series is often used by manufacturers to align similar products that only vary by one or two particular characteristics. For example a series of televisions may have an identical feature list and functionality, but differ from model to model based on the screen size and whether the panel is curved or flat.  **DO NOT USE** this Attribute to indicate a movie or TV series name (e.g. Game of Thrones).\\nThis differs from Product Line which sees dissimilar products brought together but marketed with a consistent presentation. The Samsung Galaxy product line for instance, which includes smartphones, tablets, virtual reality headsets, watches and 360\u00c2\u00b0 cameras.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "S21 FE",
+      "S22",
+      "S22+",
+      "S22 Ultra"
+    ],
+    "min_characters": 1,
+    "max_characters": 250,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "SIM Card Size": {
+    "description": "The size of a SIM card item, or the size of the SIM card which a cell phone accommodates",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Micro",
+      "Mini",
+      "Nano",
+      "Standard"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "SIM Card Type": {
+    "description": "Describes the type of SIM card used in the product, specifically the serial number used to identify the SIM card itself, For example, ICCID (Integrated Circuit Card ID) is the identifier for a profile and identifies the network operator that supplied the profile. By comparison, the EID is a serial number attached to a device that uses an eSIM.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Single or Dual IMEI": {
+    "description": "Describes whether the cell phone has a single or dual IMEI.  The International Mobile Equipment Identity (IMEI) is a unique ID number for mobile phones which can be associated to a transaction enabling activation of a cell phone by a customer.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Size": {
+    "description": "Overall dimensions of an item. Used only for products that do not already have a more specific attribute, such as ring size, clothing size, and bottled pen ink.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "5 oz",
+      "250 g",
+      "12 fl oz",
+      "10 oz"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sports League": {
+    "description": "If your item has any association with a specific sports league, enter the league name. Abbreviations are fine. NOTE: This attribute flags an item for inclusion in the online fan shop.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "NFL",
+      "WWE",
+      "MLB",
+      "NBA",
+      "NASCAR",
+      "USA Archery"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sports Team": {
+    "description": "If your item has any association with a specific sports team, enter the team name. NOTE: This attribute flags an item for inclusion in the online fan shop.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "San Jose Earthquakes",
+      "San Jose Sharks",
+      "Golden State Warriors",
+      "Las Vegas Raiders",
+      "San Francisco 49ers",
+      "San Francisco Giants",
+      "Stanford Cardinal",
+      "Oakland Athletics"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Third Party Accreditation Symbol on Product Package Code": {
+    "description": "The code representing a symbol or marking third party accreditation on the product package.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Total Count": {
+    "description": "The total number of identical items in the package or box; a result of the multiplication of Multipack Quantity by Count Per Pack. Examples: (1) A single bottle of 50 pills has a \"Total Count\" of 50. (2) A package containing two identical bottles of 50 pills has a \"Total Count\" of 100. (3) A gift basket of 5 different items has a \"Total Count\" of 1.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "50",
+      "100"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Virtual Assistant": {
+    "description": "Name of the virtual assistant provided as a function of the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Siri"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Warranty Text": {
+    "description": "Warranty Text (the full text of the warranty terms, including what is covered by the warranty and the duration of the warranty). NOTE: please remember to update the text of your warranty as your warranty changes.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "This warranty covers any defects in materials or workmanship, including installation, with the exceptions of fading or discoloration caused by exposure to sunlight or chemicals. This warranty runs for five years from the date your carpet is installed. Counterpoint will either replace your carpet with new carpet of similar composition and price, or refund the full purchase price of your carpet, whichever you prefer. Contact Counterpoint at 800-867-5309."
+    ],
+    "min_characters": 1,
+    "max_characters": 20000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Warranty URL": {
+    "description": "The Warranty URL is the web location of the image, PDF, or link to the manufacturer's warranty page, showing the warranty and its terms, including the duration of the warranty. URLs must begin with http:// or https:// NOTE: Please remember to update the link and/or text of the warranty as the warranty changes. If supplying an image, provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required) and ends in a proper image extension. Recommended file type: JPEG Accepted file types: JPG, PNG, GIF, BMP Maximum file size: 5 MB.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "http://www.walmart.com/warranty_info.pdf"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Product Name": {
+    "description": "Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO).",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Apple iPhone SE 5G 4GB (Unlocked ), Black"
+    ],
+    "min_characters": 10,
+    "max_characters": 199,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brand Name": {
+    "description": "The name provided by the brand owner that is intended to be recognized by the consumer as represented on the product. If item does not have a brand, use \"Unbranded\".  This should be the brand ONLY, not brand + product line. Make sure brand name is spelled, punctuated & capitalized properly according to the brand itself.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "AT&T",
+      "LG"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Site Description": {
+    "description": "Overview of the key selling points of the item, marketing content, and highlights in paragraph form. For SEO purposes, repeat the product name and relevant keywords here.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "An all-screen design gives you a large, beautiful canvas for everything you love to do. And iPhone XS Max makes it massive, with a screen that measures 6.5 inches. The OLED panels in iPhone XS allow for an HDR display with the industry's best color accuracy, true blacks, and remarkable brightness and contrast. They're the sharpest displays, with the highest pixel density, on any Apple device. Advanced color management automatically displays your content in wide color. So everything you look at looks beautiful. With support for Dolby Vision and HDR10 titles from iTunes, Netflix, and Amazon Prime Video, movie night comes to iPhone. Wider stereo playback makes it all sound great. And your HDR photos - even those you captured before - will have a 60 percent greater dynamic range. An innovative dual-camera system integrates the ISP, the Neural Engine, and advanced algorithms to unlock creative possibilities and help you capture incredible photos. Leveraging multiple technologies - like faster sensors, an enhanced ISP, and advanced algorithms - Smart HDR brings more highlight and shadow detail to your photos. Take a great portrait and make it even more amazing with Depth Control, which lets you adjust the depth of field to blur the background as much or as little as you want. The TrueDepth camera generates a precise depth map to keep you in focus against a blurred background. Depth Control lets you adjust the depth of field after you shoot. The camera sensor features deeper, larger pixels. Deeper to improve image fidelity. And larger to allow more light to hit the sensor. The result? Even better low? Light photos. Faster sensors, Smart HDR, and zero shutter lag combine to let you freeze a moment in time with more highlight and shadow detail."
+    ],
+    "min_characters": 1,
+    "max_characters": 100000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Key Features": {
+    "description": "Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "\u2022",
+      "Custom-built OLED",
+      "\u2022",
+      "HDR10 and wider stereo sound",
+      "\u2022",
+      "Water resistance",
+      "\u2022",
+      "Sharper action shots",
+      "\u2022",
+      "Adjustable depth of field",
+      "\u2022",
+      "Enhanced Portrait mode selfies",
+      "\u2022",
+      "4K video"
+    ],
+    "min_characters": 1,
+    "max_characters": 10000,
+    "min_values": 5,
+    "recommended_values": 5
+  },
+  "Main Image URL": {
+    "description": "Main image of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Count Per Pack": {
+    "description": "The number of identical items inside each individual package given by the \"Multipack Quantity\" attribute. Examples: (1) A single bottle of 50 pills has a \"Count Per Pack\" of 50. (2) A package containing two identical bottles of 50 pills has a \"Count Per Pack\" of 50. (3) A 6-pack of soda labeled for individual sale connected by plastic rings has a \"Count Per Pack\" of 1. (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a \"Count Per Pack\" of 6. (5) A gift basket of 5 different items has a \"Count Per Pack\" of 1.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "2",
+      "10",
+      "50"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Multipack Quantity": {
+    "description": "The number of identical, individually packaged-for-sale items. If an item does not contain other items, does not contain identical items, or if the items contained within cannot be sold individually, the value for this attribute should be\"1.\" Examples: (1) A single bottle of 50 pills has a \"Multipack Quantity\" of\"1.\" (2) A package containing two identical bottles of 50 pills has a \"Multipack Quantity\" of 2. (3) A 6-pack of soda labelled for individual sale connected by plastic rings has a \"Multipack Quantity\" of\"6.\" (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a \"Multipack Quantity\" of\"1.\" (5) A gift basket of 5 different items has a \"Multipack Quantity\" of\"1.\"",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "2",
+      "4",
+      "6"
+    ],
+    "min_characters": 1,
+    "max_characters": 4,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Prop 65 Warning Required": {
+    "description": "Selecting \"Yes\" indicates the product requires California's Proposition 65 special warning. Proposition 65 entitles California consumers to special warnings for products that contain chemicals known to the state of California to cause cancer and birth defects or other reproductive harm if certain criteria are met (such as quantity of chemical contained in the product). See the portions of the California Health and Safety Code related to Proposition 65 for more information.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Depth - Measure": {
+    "description": "The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "24\"",
+      "3'"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Depth - Unit": {
+    "description": "The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "24\"",
+      "3'"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Height - Measure": {
+    "description": "The height of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "2'",
+      "24\""
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Height - Unit": {
+    "description": "The height of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "2'",
+      "24\""
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Width - Measure": {
+    "description": "The width of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "6\"",
+      "2'"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Width - Unit": {
+    "description": "The width of the fully assembled product.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "6\"",
+      "2'"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cell Phone Type": {
+    "description": "Groupings of cell phones based on contracts, payment requirements, lock status, and variety.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cellular Service Plan": {
+    "description": "Provided as a mechanism to divide electronic devices that utilize a cellular connection by the nature of the plan with which they are initially provided. Unlocked Phones-An unlocked smartphone is a phone that isn't tied to a specific carrier or contract. A prepaid mobile device (also commonly referred to as pay-as-you-go (PAYG), pay-as-you-talk, pay and go, go-phone or prepay). Postpaid phones are inherently locked devices. Prepaid phones are inherently locked devices.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color": {
+    "description": "Color refers to the actual color defined by the manufacturer. For Example, an item may be gray and black (which are used in the Color Category attribute) but the manufacturer calls the color Space Gray.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "Sky Blue",
+      "Wonderland White",
+      "Robin-breast Red",
+      "Yum-Yum-Yellow",
+      "Red, White & Blue",
+      "Black/Hot Pink",
+      "Black",
+      "Lime Green",
+      "Multicolor",
+      "Assorted"
+    ],
+    "min_characters": 1,
+    "max_characters": 600,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color Category": {
+    "description": "Select the color from a short list that best describes the general color(s) of the item. This improves searchability as it allows customers to view items by color from the left navigation when they perform a search.\n\nPlease list all colors for the item. If the item has more than one color, please select Multi-color in addition to primary colors. Don\u2019t list more than the three main colors.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Condition": {
+    "description": "This refers to the state of an item, indicating its level of wear, prior use (if any), appearance, and overall quality. Availability of condition types may vary by product/category as well as by Seller eligibility per program. For more details, review this Help article: https://sellerhelp.walmart.com/seller/s/guide?language=en_US&article=000011205.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Hard Drive Capacity - Measure": {
+    "description": "The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "128",
+      "256",
+      "512"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Hard Drive Capacity - Unit": {
+    "description": "The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "128",
+      "256",
+      "512"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has NRTL Listing Certification": {
+    "description": "Indicates an item has NRTL listing certification(s). A Nationally Recognized Testing Laboratory (NRTL) is an independent organization recognized by Occupational Safety & Health Administration (OSHA) to provide evaluation, testing and certification for products within its scope of recognition for the US market.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has Written Warranty": {
+    "description": "Indicates an item has written warranty documentation included on the product label, inside the product packaging, or a website URL or PDF available for customer review. Pursuant to California Civil Code Section 1793.01 (The Song-Beverly Consumer Warranty Act), an express warranty for consumer goods sold within California must not commence earlier than the date of delivery of the item to the consumer. If applicable, please review and update the warranty terms for this item.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content - Unit": {
+    "description": "The unit of measure as defined on the product labeling. For example, a gallon of milk has 128 Fluid Ounces: Measure = 128 and Units = Fluid Ounces.\n\nPlease Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content - Measure": {
+    "description": "The numeric net content portion that appears on an item. \n\nPlease Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "1",
+      "12",
+      "32"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Screen Size - Measure": {
+    "description": "The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.)",
+    "product_type": "Cell Phones",
+    "examples": [
+      "4.4\"",
+      "5.9\"",
+      "5.5\"",
+      "3\"",
+      "6.5\"",
+      "6.1\"",
+      "5.8\"",
+      "1.8\"",
+      "4.3\""
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Screen Size - Unit": {
+    "description": "The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.)",
+    "product_type": "Cell Phones",
+    "examples": [
+      "4.4\"",
+      "5.9\"",
+      "5.5\"",
+      "3\"",
+      "6.5\"",
+      "6.1\"",
+      "5.8\"",
+      "1.8\"",
+      "4.3\""
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Small Parts Warning Code": {
+    "description": "To determine if any choking warnings are applicable, check current product packaging for choking warning message(s). Please indicate the warning number (0-6). 0- No warning applicable; 1- Choking hazard is a small ball; 2- Choking hazard contains small ball; 3- Choking hazard contains small parts; 4- Choking hazard balloon; 5- Choking hazard is a marble; 6- Choking hazard contains a marble.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Wireless Technologies": {
+    "description": "Any wireless communications standard used within or by the item.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "NFC, 2.4 GHz",
+      "2G",
+      "3G",
+      "4G",
+      "4G LTE",
+      "5.6 GHz",
+      "5G",
+      "Bluetooth",
+      "Wi-Fi",
+      "CDMA",
+      "GSM",
+      "Wireless AX",
+      "Wireless B",
+      "Wireless G",
+      "Wireless N",
+      "USB",
+      "DECT 6.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Variant Group ID": {
+    "description": "Required if item is a variant. Make up a number and/or letter code for \"Variant Group ID\" and add this to all variations of the same product. Partners must ensure uniqueness of their Variant Group IDs.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "HANESV025"
+    ],
+    "min_characters": 1,
+    "max_characters": 300,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Variant Attribute Names": {
+    "description": "The designated attribute by which an item is varying.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Primary Variant": {
+    "description": "Note whether item is intended as the main variant in a variant grouping. The primary variant will appear as the image when customers search and the first image displayed on the item page. This should be set as \"Yes\" for only one item in a group of variants.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Swatch Images - Swatch Image URL": {
+    "description": "URL of the color or pattern swatch image. This is required for products with visual variations and will be shown as a small circle on the item page. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 100px x 100px. Resolution: 300 ppi. Maximum file size: 5MB. Recommended File Naming: GTIN-14 digit. Provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required.)",
+    "product_type": "Cell Phones",
+    "examples": [
+      "http://www.walmart.com/somepath/some-image.jpg"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Swatch Images - Swatch Variant Attribute": {
+    "description": "Attribute name corresponding to the swatch.",
+    "product_type": "Cell Phones",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  }
+}

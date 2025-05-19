@@ -1,0 +1,1085 @@
+{
+  "Accessories Included": {
+    "description": "Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Charging Cable",
+      "Remote Control",
+      "Carrying Case"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Additional Image URL": {
+    "description": "Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 3,
+    "recommended_values": 7
+  },
+  "Age Group": {
+    "description": "A general grouping of ages into commonly used demographic labels. \u2022 Infant, 0-1 \u2022 Toddler, 1-3 \u2022 Child, 4-10 \u2022 Tween, 11-13 \u2022 Teen, 14-17 \u2022 Adult, 18-64 \u2022 Senior, 65+",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Consumption Type": {
+    "description": "The consumption type of a battery. \nOne Time Use Battery -Batteries installed into the product that can not be exchanged, serviced, or recharged by the consumer. \nExchangeable Rechargeable Battery-Rechargeable battery that can be removed from the the product.\nChangeable Disposable Battery -A battery that can be removed from the product by the user and then disposed.\nIntegrated Rechargeable Battery-Batteries that are installed into a device and not exchangeable by the consumer and are recharged only when  connected to the primary device.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Count": {
+    "description": "The total number of batteries in the package.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Life - Measure": {
+    "description": "Life of the device's battery under ideal conditions (maximum run time).",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "24"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Life - Unit": {
+    "description": "Life of the device's battery under ideal conditions (maximum run time).",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "24"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Size": {
+    "description": "Identifies the size of a battery, as specified by its code. This lets customers know which size of battery to purchase to operate the device.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brand License": {
+    "description": "A brand name that is not owned by the product brand, but is licensed for the particular product. (Often character and media tie-ins and promotions.) It can also be another brand or a celebrity.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Disney",
+      "Marvel",
+      "LEGO"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "California Prop 65 Warning Text": {
+    "description": "This is a particular statement legally required by the State of California for certain products to warn consumers about potential health dangers. See the portions of the California Health and Safety Code related to Proposition 65 to see what products require labels and to verify the text of your warning label. If no Prop 65 warning please leave value blank for this attribute.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "For Example: This product can expose you to chemicals including [name of one or more chemicals], which is [are] known to the State of California to cause [list associated harm(s) e.g. cancer, birth defects or other reproductive harm, etc]."
+    ],
+    "min_characters": 1,
+    "max_characters": 5000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Character": {
+    "description": "A person or entity portrayed in print or visual media. A character might be a fictional personality or an actual living person.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Batman",
+      "Dora the Explorer",
+      "Hello Kitty",
+      "Jojo Siwa",
+      "Minnie Mouse",
+      "Power Rangers",
+      "Wonder Woman",
+      "SpongeBob SquarePants",
+      "Mario",
+      "Pac-Man",
+      "Elsa",
+      "Spider-Man"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Character Group": {
+    "description": "Character group name or fictional team name as they appear in a media product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "X-Men",
+      "Transformers",
+      "The Lion King",
+      "My Little Pony",
+      "Disney Inside Out",
+      "Avengers",
+      "Angry Birds",
+      "Disney Princesses",
+      "Delta Squad",
+      "Frozen",
+      "Trolls",
+      "Minecraft",
+      "Justice League"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color Category": {
+    "description": "Select the color from a short list that best describes the general color(s) of the item. This improves searchability as it allows customers to view items by color from the left navigation when they perform a search.\n\nPlease list all colors for the item. If the item has more than one color, please select Multi-color in addition to primary colors. Don\u2019t list more than the three main colors.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Compatible Smart Control Systems": {
+    "description": "Provision for \"works with\" badges commonly found on items considered \"smart\" and compatible with a particular system or systems available for the internet of things.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Count Per Pack": {
+    "description": "The number of identical items inside each individual package given by the \"Multipack Quantity\" attribute. Examples: (1) A single bottle of 50 pills has a \"Count Per Pack\" of 50. (2) A package containing two identical bottles of 50 pills has a \"Count Per Pack\" of 50. (3) A 6-pack of soda labeled for individual sale connected by plastic rings has a \"Count Per Pack\" of 1. (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a \"Count Per Pack\" of 6. (5) A gift basket of 5 different items has a \"Count Per Pack\" of 1.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "10",
+      "50"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Electronics Feature": {
+    "description": "Features distinct to electronic products.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Frequency Response Range - Measure": {
+    "description": "Incorporating fields of  Minimum Frequency Response and Maximum Frequency Response, values for the two attributes are combined to provide a frequency response range.\nThe two frequency values that create the upper and lower bounds of the range may be entered as differing orders of magnitude (hertz, and kilohertz) if appropriate.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "65-20000",
+      "45-18000",
+      "30-10000"
+    ],
+    "min_characters": 1,
+    "max_characters": 250,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Frequency Response Range - Unit": {
+    "description": "Incorporating fields of  Minimum Frequency Response and Maximum Frequency Response, values for the two attributes are combined to provide a frequency response range.\nThe two frequency values that create the upper and lower bounds of the range may be entered as differing orders of magnitude (hertz, and kilohertz) if appropriate.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "65-20000",
+      "45-18000",
+      "30-10000"
+    ],
+    "min_characters": 1,
+    "max_characters": 250,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "IP Code": {
+    "description": "Outlined in IEC 60529, this standard applies to the classification of degrees of protection provided by enclosures for\nelectrical equipment with a rated voltage not exceeding 72,5 kV.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Smart": {
+    "description": "Indicates whether a device is among the set of \"smart\" appliances (indicating Web, wireless, or interactive technology has been integrated into device functionality).",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Water-Resistant": {
+    "description": "Indicates that the item has been especially made or treated to resist the effects of water, as specified by the manufacturer.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Manufacturer Name": {
+    "description": "The name of the manufacturer.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Apple",
+      "Bose",
+      "Sony"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Manufacturer Part Number": {
+    "description": "MPN uniquely identifies the product to its manufacturer. For many products this will be identical to the model number. Some manufacturers distinguish part number from model number. Having this information allows customers to search for items on the site and informs product matching.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5061025",
+      "TSR-1002",
+      "4-40-3/4-pan-phil"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum Transmission Range - Measure": {
+    "description": "The maximum distance between any two nodes such that the signal emanating from one node could directly reach the other node with strength appreciable enough to correctly extract the encoded information.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "15",
+      "30",
+      "50"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum Transmission Range - Unit": {
+    "description": "The maximum distance between any two nodes such that the signal emanating from one node could directly reach the other node with strength appreciable enough to correctly extract the encoded information.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "15",
+      "30",
+      "50"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Model Name": {
+    "description": "The model name of the product as commonly used in marketing communications.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "AirPods",
+      "LinkBuds",
+      "QuietComfort 45",
+      "Studio3",
+      "Powerbeats3",
+      "Solo Pro",
+      "Galaxy Buds",
+      "iPod Touch",
+      "ICD-PX Series"
+    ],
+    "min_characters": 1,
+    "max_characters": 800,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Model Number": {
+    "description": "Model numbers\u00a0allow manufacturers to keep track of each hardware device and identify or replace the proper part when needed.\u00a0Model numbers\u00a0are often found on the bottom, back, or side of a product.\u00a0Having this information allows customers to search for items on the site and informs product matching.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "WM-123",
+      "ABC123"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Multipack Quantity": {
+    "description": "The number of identical, individually packaged-for-sale items. If an item does not contain other items, does not contain identical items, or if the items contained within cannot be sold individually, the value for this attribute should be\"1.\" Examples: (1) A single bottle of 50 pills has a \"Multipack Quantity\" of\"1.\" (2) A package containing two identical bottles of 50 pills has a \"Multipack Quantity\" of 2. (3) A 6-pack of soda labelled for individual sale connected by plastic rings has a \"Multipack Quantity\" of\"6.\" (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a \"Multipack Quantity\" of\"1.\" (5) A gift basket of 5 different items has a \"Multipack Quantity\" of\"1.\"",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "4",
+      "6"
+    ],
+    "min_characters": 1,
+    "max_characters": 4,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content Statement": {
+    "description": "Complete product net content statement, as it appears on product packaging.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Boombox(Net Wt 4.5Lbs)"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "NRTL Information - NRTL Organization": {
+    "description": "The Nationally Recognized Testing Laboratory (NRTL) that tested and certified your product to safety test standard(s) within its scope of OSHA recognized test standards. Please select one or more of the appropriate NRTL(s) in the drop-down menu.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "NRTL Information - NRTL Test Standard": {
+    "description": "Please provide the certified test standard number(s) in the designated text field, separated by a comma (Ex: UL 1484, ANSI Z21.1). Selecting one or more NRTL(s) indicates you are able to provide proof of listing certification(s) upon request, and you will update the certification information when there's a change in the certification.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of Microphones": {
+    "description": "Identifies the number of microphones found in a device.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of Pieces": {
+    "description": "The number of small pieces, slices, or different items within the product. Piece Count applies to things such as puzzles, building block sets, and products that contain multiple different items (such as tool sets, dinnerware sets, gift baskets, art sets, makeup kits, or shaving kits.) Examples: A gift basket of 5 different items has a \u201cPiece Count\u201d of 5.; A 105-Piece Socket Wrench set has a \"Piece Count\" of 105.; A 500-piece puzzle has a \u201cPiece Count\u201d of 500.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5",
+      "105",
+      "500"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Occasion": {
+    "description": "The particular target time, event, or holiday for the product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Halloween",
+      "Christmas",
+      "Wedding",
+      "Anniversary",
+      "Back to School",
+      "Birthday",
+      "Graduation"
+    ],
+    "min_characters": 1,
+    "max_characters": 2000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Original/New Equivalent Product Identifier - Original Product ID Type": {
+    "description": "To be used for refurbished items: This refers to the original/new equivalent product identifier.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Original/New Equivalent Product Identifier - Original Product ID": {
+    "description": "For refurbished items, this is the original/new equivalent product identifier ID which is different from the restored product identifier ID.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 80,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Peak Audio Power Capacity - Measure": {
+    "description": "Most commonly associated with loudspeakers, the peak audio power handling value is the maximum power in watts (W) that the unit has been designed and manufactured to handle in short bursts.;This should never be confused with the continuous, mean, or root mean square (RMS) power rating, which provides the sustained wattage at which a unit may be driven indefinitely.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "400"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Peak Audio Power Capacity - Unit": {
+    "description": "Most commonly associated with loudspeakers, the peak audio power handling value is the maximum power in watts (W) that the unit has been designed and manufactured to handle in short bursts.;This should never be confused with the continuous, mean, or root mean square (RMS) power rating, which provides the sustained wattage at which a unit may be driven indefinitely.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "400"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Recommended Locations": {
+    "description": "The primary location recommended for the item's use.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Restored Product Identifier - Restored Product ID Type": {
+    "description": "To identify the type of identifier for restored products",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Restored Product Identifier - Restored Product ID": {
+    "description": "This code is to identify Restored Products",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "12345678905"
+    ],
+    "min_characters": 1,
+    "max_characters": 14,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Retail Packaging": {
+    "description": "Descriptive terms for the way a product is packaged for sale to the customer.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RMS Power Rating - Measure": {
+    "description": "RMS Power Rating is a calculated, statistical average expressed in Watts, and is indicative of the continuous power level that an amplifier can sustain, or a speaker can handle, without physical damage or degradation of performance.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "20",
+      "35"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RMS Power Rating - Unit": {
+    "description": "RMS Power Rating is a calculated, statistical average expressed in Watts, and is indicative of the continuous power level that an amplifier can sustain, or a speaker can handle, without physical damage or degradation of performance.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "20",
+      "35"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Shape": {
+    "description": "The physical shape of the item.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Pill, Curved",
+      "Rectanangle"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Size": {
+    "description": "Overall dimensions of an item. Used only for products that do not already have a more specific attribute, such as ring size, clothing size, and bottled pen ink.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5 oz",
+      "250 g",
+      "12 fl oz",
+      "10 oz"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sports League": {
+    "description": "If your item has any association with a specific sports league, enter the league name. Abbreviations are fine. NOTE: This attribute flags an item for inclusion in the online fan shop.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "NFL",
+      "WWE",
+      "MLB",
+      "NBA",
+      "NASCAR",
+      "USA Archery"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sports Team": {
+    "description": "If your item has any association with a specific sports team, enter the team name. NOTE: This attribute flags an item for inclusion in the online fan shop.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "San Jose Earthquakes",
+      "San Jose Sharks",
+      "Golden State Warriors",
+      "Las Vegas Raiders",
+      "San Francisco 49ers",
+      "San Francisco Giants",
+      "Stanford Cardinal",
+      "Oakland Athletics"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Third Party Accreditation Symbol on Product Package Code": {
+    "description": "The code representing a symbol or marking third party accreditation on the product package.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Total Count": {
+    "description": "The total number of identical items in the package or box; a result of the multiplication of Multipack Quantity by Count Per Pack. Examples: (1) A single bottle of 50 pills has a \"Total Count\" of 50. (2) A package containing two identical bottles of 50 pills has a \"Total Count\" of 100. (3) A gift basket of 5 different items has a \"Total Count\" of 1.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "50",
+      "100"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Virtual Assistant": {
+    "description": "Name of the virtual assistant provided as a function of the product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Alexa",
+      "Google Assistant"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Warranty Text": {
+    "description": "Warranty Text (the full text of the warranty terms, including what is covered by the warranty and the duration of the warranty). NOTE: please remember to update the text of your warranty as your warranty changes.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "This warranty covers any defects in materials or workmanship, including installation, with the exceptions of fading or discoloration caused by exposure to sunlight or chemicals. This warranty runs for five years from the date your carpet is installed. Counterpoint will either replace your carpet with new carpet of similar composition and price, or refund the full purchase price of your carpet, whichever you prefer. Contact Counterpoint at 800-867-5309."
+    ],
+    "min_characters": 1,
+    "max_characters": 20000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Warranty URL": {
+    "description": "The Warranty URL is the web location of the image, PDF, or link to the manufacturer's warranty page, showing the warranty and its terms, including the duration of the warranty. URLs must begin with http:// or https:// NOTE: Please remember to update the link and/or text of the warranty as the warranty changes. If supplying an image, provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required) and ends in a proper image extension. Recommended file type: JPEG Accepted file types: JPG, PNG, GIF, BMP Maximum file size: 5 MB.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "http://www.walmart.com/warranty_info.pdf"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Wireless Technologies": {
+    "description": "Any wireless communications standard used within or by the item.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Bluetooth",
+      "Wi-Fi",
+      "NFC"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Product Name": {
+    "description": "Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO).",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "eKids Star Wars Mandalorian The Child  Bluetooth Portable Speaker, Gray",
+      "Strategic Printing Green Bay Packers End Zone Bluetooth Portable Speaker",
+      "JBL Clip 3 Bluetooth Portable  Speaker, Dusty Pink"
+    ],
+    "min_characters": 10,
+    "max_characters": 199,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brand Name": {
+    "description": "The name provided by the brand owner that is intended to be recognized by the consumer as represented on the product. If item does not have a brand, use \"Unbranded\".  This should be the brand ONLY, not brand + product line. Make sure brand name is spelled, punctuated & capitalized properly according to the brand itself.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Bose",
+      "Samsung",
+      "Sony"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Site Description": {
+    "description": "Overview of the key selling points of the item, marketing content, and highlights in paragraph form. For SEO purposes, repeat the product name and relevant keywords here.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "The new AirPods combine intelligent design with breakthrough technology and crystal clear sound. Powered by the new Apple H1 headphone chip, AirPods now feature hands-free access to Siri using just your voice. And up to 3 hours of talk time on a single charge."
+    ],
+    "min_characters": 1,
+    "max_characters": 100000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Key Features": {
+    "description": "Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "\u2022",
+      "Active Noise Cancellation for immersive sound",
+      "\u2022",
+      "Transparency mode for hearing and connecting with the world around you",
+      "\u2022",
+      "Three sizes of soft, tapered silicone tips for a customizable fit",
+      "\u2022",
+      "Sweat and water-resistant (1)",
+      "\u2022",
+      "Adaptive EQ automatically tunes music to the shape of your ear",
+      "\u2022",
+      "Easy setup for all your Apple devices (2)",
+      "\u2022",
+      "Quick access to Siri by saying \"\"Hey Siri\"\" (3)",
+      "\u2022",
+      "The Wireless Charging Case delivers more than 24 hours of battery life (4)"
+    ],
+    "min_characters": 1,
+    "max_characters": 10000,
+    "min_values": 5,
+    "recommended_values": null
+  },
+  "Main Image URL": {
+    "description": "Main image of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Prop 65 Warning Required": {
+    "description": "Selecting \"Yes\" indicates the product requires California's Proposition 65 special warning. Proposition 65 entitles California consumers to special warnings for products that contain chemicals known to the state of California to cause cancer and birth defects or other reproductive harm if certain criteria are met (such as quantity of chemical contained in the product). See the portions of the California Health and Safety Code related to Proposition 65 for more information.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Depth - Measure": {
+    "description": "The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Depth - Unit": {
+    "description": "The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Height - Measure": {
+    "description": "The height of the fully assembled product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Height - Unit": {
+    "description": "The height of the fully assembled product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Weight - Measure": {
+    "description": "The weight of the fully assembled product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "24",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Weight - Unit": {
+    "description": "The weight of the fully assembled product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "24",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Width - Measure": {
+    "description": "The width of the fully assembled product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Width - Unit": {
+    "description": "The width of the fully assembled product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color": {
+    "description": "Color refers to the actual color defined by the manufacturer. For Example, an item may be gray and black (which are used in the Color Category attribute) but the manufacturer calls the color Space Gray.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "Sky Blue",
+      "Wonderland White",
+      "Robin-breast Red",
+      "Yum-Yum-Yellow",
+      "Red, White & Blue",
+      "Black/Hot Pink",
+      "Black",
+      "Lime Green",
+      "Multicolor",
+      "Assorted"
+    ],
+    "min_characters": 1,
+    "max_characters": 600,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Condition": {
+    "description": "This refers to the state of an item, indicating its level of wear, prior use (if any), appearance, and overall quality. Availability of condition types may vary by product/category as well as by Seller eligibility per program. For more details, review this Help article: https://sellerhelp.walmart.com/seller/s/guide?language=en_US&article=000011205.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has NRTL Listing Certification": {
+    "description": "Indicates an item has NRTL listing certification(s). A Nationally Recognized Testing Laboratory (NRTL) is an independent organization recognized by Occupational Safety & Health Administration (OSHA) to provide evaluation, testing and certification for products within its scope of recognition for the US market.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has Written Warranty": {
+    "description": "Indicates an item has written warranty documentation included on the product label, inside the product packaging, or a website URL or PDF available for customer review. Pursuant to California Civil Code Section 1793.01 (The Song-Beverly Consumer Warranty Act), an express warranty for consumer goods sold within California must not commence earlier than the date of delivery of the item to the consumer. If applicable, please review and update the warranty terms for this item.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input/Output Direction": {
+    "description": "Indicates whether a port for data, audio, or video is meant to receive (input-female), send (output-male) or both receive and send (bi-directional/input & output-female&male).",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input & Output Type": {
+    "description": "Type of connection.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input/Output Quantity": {
+    "description": "Number of connections corresponding to the Input/Output type.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content - Measure": {
+    "description": "The numeric net content portion that appears on an item. \n\nPlease Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "12",
+      "32"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content - Unit": {
+    "description": "The unit of measure as defined on the product labeling. For example, a gallon of milk has 128 Fluid Ounces: Measure = 128 and Units = Fluid Ounces.\n\nPlease Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of Speakers": {
+    "description": "The number of speakers included in the product.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "1",
+      "2",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Power Type": {
+    "description": "Provides information on the exact type of power used by the item.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Small Parts Warning Code": {
+    "description": "To determine if any choking warnings are applicable, check current product packaging for choking warning message(s). Please indicate the warning number (0-6). 0- No warning applicable; 1- Choking hazard is a small ball; 2- Choking hazard contains small ball; 3- Choking hazard contains small parts; 4- Choking hazard balloon; 5- Choking hazard is a marble; 6- Choking hazard contains a marble.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Variant Group ID": {
+    "description": "Required if item is a variant. Make up a number and/or letter code for \"Variant Group ID\" and add this to all variations of the same product. Partners must ensure uniqueness of their Variant Group IDs.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "HANESV025"
+    ],
+    "min_characters": 1,
+    "max_characters": 300,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Variant Attribute Names": {
+    "description": "The designated attribute by which an item is varying.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Primary Variant": {
+    "description": "Note whether item is intended as the main variant in a variant grouping. The primary variant will appear as the image when customers search and the first image displayed on the item page. This should be set as \"Yes\" for only one item in a group of variants.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Swatch Images - Swatch Image URL": {
+    "description": "URL of the color or pattern swatch image. This is required for products with visual variations and will be shown as a small circle on the item page. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 100px x 100px. Resolution: 300 ppi. Maximum file size: 5MB. Recommended File Naming: GTIN-14 digit. Provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required.)",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "http://www.walmart.com/somepath/some-image.jpg"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Swatch Images - Swatch Variant Attribute": {
+    "description": "Attribute name corresponding to the swatch.",
+    "product_type": "Portable Speakers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  }
+}

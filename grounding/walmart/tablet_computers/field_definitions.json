@@ -1,0 +1,1377 @@
+{
+  "Accessories Included": {
+    "description": "Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Keyboard",
+      "Stand",
+      "Case",
+      "Stylus",
+      "Speaker",
+      "Digitizer Pen",
+      "Passive Pen"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Additional Features": {
+    "description": "The distinguishing characteristics of a product that describe its appearance, components, and capabilities. Features often highlight the usefulness/advantages of the product to consumers. Input each feature as unique value.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Additional Image URL": {
+    "description": "Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 4,
+    "recommended_values": 7
+  },
+  "Age Group": {
+    "description": "A general grouping of ages into commonly used demographic labels. \u2022 Infant, 0-1 \u2022 Toddler, 1-3 \u2022 Child, 4-10 \u2022 Tween, 11-13 \u2022 Teen, 14-17 \u2022 Adult, 18-64 \u2022 Senior, 65+",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Apps Installed": {
+    "description": "The list of apps pre-installed on the tablet.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Word, Excel, PowerPoint, OneNote, Skype, OneDrive, Chrome, and Gmail."
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Depth - Measure": {
+    "description": "The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Depth - Unit": {
+    "description": "The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Height - Measure": {
+    "description": "The height of the fully assembled product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Height - Unit": {
+    "description": "The height of the fully assembled product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Weight - Measure": {
+    "description": "The weight of the fully assembled product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1.75",
+      "5",
+      "12",
+      "32"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Weight - Unit": {
+    "description": "The weight of the fully assembled product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1.75",
+      "5",
+      "12",
+      "32"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Width - Measure": {
+    "description": "The width of the fully assembled product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Assembled Product Width - Unit": {
+    "description": "The width of the fully assembled product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5",
+      "10",
+      "16",
+      "22"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Life - Measure": {
+    "description": "Life of the device's battery under ideal conditions (maximum run time).",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "2",
+      "24"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Battery Life - Unit": {
+    "description": "Life of the device's battery under ideal conditions (maximum run time).",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "2",
+      "24"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brand License": {
+    "description": "A brand name that is not owned by the product brand, but is licensed for the particular product. (Often character and media tie-ins and promotions.) It can also be another brand or a celebrity.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Disney",
+      "Marvel",
+      "LEGO"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brightness - Measure": {
+    "description": "Brightness per bulb measured in lumens.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "25",
+      "400"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brightness - Unit": {
+    "description": "Brightness per bulb measured in lumens.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "25",
+      "400"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "California Prop 65 Warning Text": {
+    "description": "This is a particular statement legally required by the State of California for certain products to warn consumers about potential health dangers. See the portions of the California Health and Safety Code related to Proposition 65 to see what products require labels and to verify the text of your warning label. If no Prop 65 warning please leave value blank for this attribute.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "For Example: This product can expose you to chemicals including [name of one or more chemicals], which is [are] known to the State of California to cause [list associated harm(s) e.g. cancer, birth defects or other reproductive harm, etc]."
+    ],
+    "min_characters": 1,
+    "max_characters": 5000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cell Phone Service Provider": {
+    "description": "The company responsible for the provision of the device's cellular service.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "AT&T",
+      "AT&T GoPhone",
+      "Black Wireless",
+      "Boost Mobile",
+      "Cricket Wireless",
+      "H2O Wireless",
+      "MetroPCS",
+      "Net10",
+      "Page Plus Cellular",
+      "PlatinumTel",
+      "Red Pocket Mobile",
+      "Republic Wireless",
+      "Simple Mobile",
+      "Sprint",
+      "Straight Talk",
+      "T-Mobile",
+      "Total Wireless",
+      "TracFone",
+      "Unlocked",
+      "US Cellular",
+      "Verizon",
+      "Virgin Mobile",
+      "Walmart Family Mobile"
+    ],
+    "min_characters": 1,
+    "max_characters": 600,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cellular Network Technology": {
+    "description": "The cellular technology used by the device.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Cellular Service Plan": {
+    "description": "Provided as a mechanism to divide electronic devices that utilize a cellular connection by the nature of the plan with which they are initially provided. Unlocked Phones-An unlocked smartphone is a phone that isn't tied to a specific carrier or contract. A prepaid mobile device (also commonly referred to as pay-as-you-go (PAYG), pay-as-you-talk, pay and go, go-phone or prepay). Postpaid phones are inherently locked devices. Prepaid phones are inherently locked devices.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color": {
+    "description": "Color refers to the actual color defined by the manufacturer. For Example, an item may be gray and black (which are used in the Color Category attribute) but the manufacturer calls the color Space Gray.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Aqua",
+      "Black",
+      "Blue",
+      "Jet Black",
+      "Lime Green",
+      "Silver",
+      "Space Gray"
+    ],
+    "min_characters": 1,
+    "max_characters": 600,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color Category": {
+    "description": "Select the color from a short list that best describes the general color(s) of the item. This improves searchability as it allows customers to view items by color from the left navigation when they perform a search.\n\nPlease list all colors for the item. If the item has more than one color, please select Multi-color in addition to primary colors. Don\u2019t list more than the three main colors.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Color Depth": {
+    "description": "The number of bits per pixel on a computer monitor to represent a specific color. The more bits per pixel, the higher color variety and quality of the monitor.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "64-bit",
+      "32-bit"
+    ],
+    "min_characters": 1,
+    "max_characters": 30,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Count Per Pack": {
+    "description": "The number of identical items inside each individual package given by the \"Multipack Quantity\" attribute. Examples: (1) A single bottle of 50 pills has a \"Count Per Pack\" of 50. (2) A package containing two identical bottles of 50 pills has a \"Count Per Pack\" of 50. (3) A 6-pack of soda labeled for individual sale connected by plastic rings has a \"Count Per Pack\" of 1. (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a \"Count Per Pack\" of 6. (5) A gift basket of 5 different items has a \"Count Per Pack\" of 1.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "2",
+      "10",
+      "50"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Display Technology": {
+    "description": "The primary technology used for the item's display.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Edition": {
+    "description": "The specific edition of the item.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1st Edition",
+      "2nd Edition",
+      "3rd Edition",
+      "Anniversary Edition",
+      "Basic Edition",
+      "Book Club Edition",
+      "Classic Edition",
+      "Co-Edition",
+      "Collector's Edition",
+      "Deluxe Edition",
+      "Digital Copy",
+      "Unabridged",
+      "E-edition",
+      "Limited",
+      "Limited Edition",
+      "Premier Edition",
+      "Revised & Updated Edition",
+      "Revised Edition",
+      "Special Edition",
+      "Standard",
+      "Ultimate",
+      "Walmart Exclusive",
+      "Standard Edition",
+      "Gold Edition",
+      "Definitive Edition",
+      "Director's Cut",
+      "Remastered",
+      "Game of the Year Edition",
+      "MVP Edition"
+    ],
+    "min_characters": 1,
+    "max_characters": 300,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Edition Year": {
+    "description": "The year an item was introduced.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "2018",
+      "2021"
+    ],
+    "min_characters": 4,
+    "max_characters": 4,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Front-Facing Camera Megapixels - Measure": {
+    "description": "The maximum resolution of the camera that faces the user, provided in megapixels.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "16.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Front-Facing Camera Megapixels - Unit": {
+    "description": "The maximum resolution of the camera that faces the user, provided in megapixels.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "16.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Graphic Card": {
+    "description": "The name of the graphic card.  If the item has Integrated Graphics, please list \"Integrated Graphics\" in this field.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "AMD Radeon RX 590",
+      "AMD Radeon VII",
+      "Integrated Graphics",
+      "MSI GeForce RTX 2080 Gaming X Trio",
+      "Nvidia GeForce RTX 2070 Super",
+      "Sapphire Pulse Radeon RX 5600 XT"
+    ],
+    "min_characters": 1,
+    "max_characters": 150,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Hard Drive Capacity - Measure": {
+    "description": "The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "512"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Hard Drive Capacity - Unit": {
+    "description": "The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "512"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Manufacturer Name": {
+    "description": "The name of the manufacturer.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Procter & Gamble",
+      "Apple",
+      "Sony",
+      "General Motors",
+      "Yamaha"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Manufacturer Part Number": {
+    "description": "MPN uniquely identifies the product to its manufacturer. For many products this will be identical to the model number. Some manufacturers distinguish part number from model number. Having this information allows customers to search for items on the site and informs product matching.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5061025",
+      "TSR-1002",
+      "4-40-3/4-pan-phil"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Material": {
+    "description": "The main material(s) in the product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Plastic",
+      "Aluminium",
+      "Polycarbonate"
+    ],
+    "min_characters": 1,
+    "max_characters": 1000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Maximum Contrast Ratio": {
+    "description": "The ratio between the luminance of the brightest color to that of the darkest color capable of being displayed.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "20,000:1",
+      "30,000,000:1"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Memory Card Format": {
+    "description": "The memory card format applicable to the product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Model Name": {
+    "description": "The model name of the product as commonly used in marketing communications.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "iPad mini 3",
+      "iPad Pro",
+      "Galaxy Tab S4",
+      "Surface",
+      "Kindle Oasis",
+      "Pixel Slate",
+      "Surface Pro 6",
+      "Prestige Elite Q",
+      "Intuos Pro",
+      "IdeaPad"
+    ],
+    "min_characters": 1,
+    "max_characters": 800,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Model Number": {
+    "description": "Model numbers\u00a0allow manufacturers to keep track of each hardware device and identify or replace the proper part when needed.\u00a0Model numbers\u00a0are often found on the bottom, back, or side of a product.\u00a0Having this information allows customers to search for items on the site and informs product matching.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "15-cw1064wm",
+      "UX333FA-AB77",
+      "WA563GT3",
+      "Not Applicable"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Multipack Quantity": {
+    "description": "The number of identical, individually packaged-for-sale items. If an item does not contain other items, does not contain identical items, or if the items contained within cannot be sold individually, the value for this attribute should be\"1.\" Examples: (1) A single bottle of 50 pills has a \"Multipack Quantity\" of\"1.\" (2) A package containing two identical bottles of 50 pills has a \"Multipack Quantity\" of 2. (3) A 6-pack of soda labelled for individual sale connected by plastic rings has a \"Multipack Quantity\" of\"6.\" (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a \"Multipack Quantity\" of\"1.\" (5) A gift basket of 5 different items has a \"Multipack Quantity\" of\"1.\"",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "2",
+      "4",
+      "6"
+    ],
+    "min_characters": 1,
+    "max_characters": 4,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Native Resolution": {
+    "description": "If the item has a screen display, the resolution value of the screen component of the product. Typically measured as the number of pixels creating the display expressed as number of columns x number of rows. For example, a digital camera's screen resolution (vs. the image quality the camera can produce) of 640x480.  The resolution of a flat panel display at which no scaling is used to create the images.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1024 x 640",
+      "1136 x 640",
+      "1152 x 864",
+      "1280 x 1024",
+      "1280 x 768",
+      "1366 x 768",
+      "1400 x 1050",
+      "1440 x 900",
+      "1600 x 1200",
+      "1920 x 1080",
+      "2560 x 1080",
+      "4096 x 2160",
+      "800 x 600",
+      "960 x 640"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content Statement": {
+    "description": "Complete product net content statement, as it appears on product packaging.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "6 - 5.3 OZ (150g) CUPS",
+      "1.98 Lb (900g)"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "NRTL Information - NRTL Organization": {
+    "description": "The Nationally Recognized Testing Laboratory (NRTL) that tested and certified your product to safety test standard(s) within its scope of OSHA recognized test standards. Please select one or more of the appropriate NRTL(s) in the drop-down menu.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "NRTL Information - NRTL Test Standard": {
+    "description": "Please provide the certified test standard number(s) in the designated text field, separated by a comma (Ex: UL 1484, ANSI Z21.1). Selecting one or more NRTL(s) indicates you are able to provide proof of listing certification(s) upon request, and you will update the certification information when there's a change in the certification.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Number of Pieces": {
+    "description": "The number of small pieces, slices, or different items within the product. Piece Count applies to things such as puzzles, building block sets, and products that contain multiple different items (such as tool sets, dinnerware sets, gift baskets, art sets, makeup kits, or shaving kits.) Examples: A gift basket of 5 different items has a \u201cPiece Count\u201d of 5.; A 105-Piece Socket Wrench set has a \"Piece Count\" of 105.; A 500-piece puzzle has a \u201cPiece Count\u201d of 500.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5",
+      "105",
+      "500"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Occasion": {
+    "description": "The particular target time, event, or holiday for the product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Halloween",
+      "Christmas",
+      "Wedding",
+      "Anniversary",
+      "Back to School",
+      "Birthday",
+      "Graduation"
+    ],
+    "min_characters": 1,
+    "max_characters": 2000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Operating System": {
+    "description": "The operating system loaded on the device or upon which the software is designed to operate.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Android",
+      "iOS",
+      "Windows",
+      "Windows 10",
+      "Fire OS"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Original/New Equivalent Product Identifier - Original Product ID": {
+    "description": "For refurbished items, this is the original/new equivalent product identifier ID which is different from the restored product identifier ID.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 80,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Original/New Equivalent Product Identifier - Original Product ID Type": {
+    "description": "To be used for refurbished items: This refers to the original/new equivalent product identifier.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Brand": {
+    "description": "The brand of the processor.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "AMD",
+      "Intel",
+      "Nvidia",
+      "ROCKCHIP"
+    ],
+    "min_characters": 1,
+    "max_characters": 50,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Speed - Measure": {
+    "description": "Operational frequency of the central processing unit.  Please do not list the overclocked speed.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "3.00",
+      "3.40"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Speed - Unit": {
+    "description": "Operational frequency of the central processing unit.  Please do not list the overclocked speed.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "3.00",
+      "3.40"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Processor Type": {
+    "description": "Commonly used retail name for the central processing unit.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "AMD A12-9800",
+      "AMD Athlon Gold 3150G",
+      "AMD Phenom 1 X3",
+      "AMD Ryzen 5 5600X",
+      "ARM1136",
+      "Freescale i.MX515",
+      "IMAPX200",
+      "Intel Celeron 2955U",
+      "Intel Core 2 Duo e7500",
+      "Intel Core i3-10100T",
+      "Intel Core i5-10600KF",
+      "Intel Core i7-10700F",
+      "Intel Core i9-10850K",
+      "NVidia Tegra3",
+      "ROCKCHIP 2818",
+      "Samsung S5PV210",
+      "Telechip TCC8902",
+      "TI OMAP 4440"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Memory - Measure": {
+    "description": "The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "16"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Memory - Unit": {
+    "description": "The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "16"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "RAM Memory Type": {
+    "description": "The type of RAM preinstalled in the product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Rear-Facing Camera Megapixels - Measure": {
+    "description": "The maximum resolution of the camera that faces away from the user, provided in megapixels.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "16.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Rear-Facing Camera Megapixels - Unit": {
+    "description": "The maximum resolution of the camera that faces away from the user, provided in megapixels.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "16.0"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Resolution": {
+    "description": "The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on.  Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example).",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1080i",
+      "1080p",
+      "1440p QHD",
+      "240p",
+      "480i",
+      "480p",
+      "4K UHD",
+      "576i",
+      "576p",
+      "5K WUHD",
+      "720i",
+      "720p",
+      "8K UHD",
+      "Retina",
+      "WUXGA"
+    ],
+    "min_characters": 1,
+    "max_characters": 4000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Restored Product Identifier - Restored Product ID": {
+    "description": "This code is to identify Restored Products",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "12345678905"
+    ],
+    "min_characters": 1,
+    "max_characters": 14,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Restored Product Identifier - Restored Product ID Type": {
+    "description": "To identify the type of identifier for restored products",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Retail Packaging": {
+    "description": "Descriptive terms for the way a product is packaged for sale to the customer.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Screen Size - Measure": {
+    "description": "Typically measured on the diagonal in inches, mm",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "17.3",
+      "42"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Screen Size - Unit": {
+    "description": "Typically measured on the diagonal in inches, mm",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "17.3",
+      "42"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Size": {
+    "description": "Overall dimensions of an item. Used only for products that do not already have a more specific attribute, such as ring size, clothing size, and bottled pen ink.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "5 oz",
+      "250 g",
+      "12 fl oz",
+      "10 oz"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Solid State Drive Capacity - Measure": {
+    "description": "Intended for use in cases where the product incorporates both solid state and hard disc storage drives working in tandem, Solid State Drive Capacity collects the data storage potential of the solid state drive (SSD) component.\nThis value should be entered as a prefixed number of bytes, gigabytes (GB), terabytes (TB) etc.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "256"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Solid State Drive Capacity - Unit": {
+    "description": "Intended for use in cases where the product incorporates both solid state and hard disc storage drives working in tandem, Solid State Drive Capacity collects the data storage potential of the solid state drive (SSD) component.\nThis value should be entered as a prefixed number of bytes, gigabytes (GB), terabytes (TB) etc.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "256"
+    ],
+    "min_characters": 1,
+    "max_characters": 10,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sports League": {
+    "description": "If your item has any association with a specific sports league, enter the league name. Abbreviations are fine. NOTE: This attribute flags an item for inclusion in the online fan shop.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "NFL",
+      "WWE",
+      "MLB",
+      "NBA",
+      "NASCAR",
+      "USA Archery"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Sports Team": {
+    "description": "If your item has any association with a specific sports team, enter the team name. NOTE: This attribute flags an item for inclusion in the online fan shop.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "San Jose Earthquakes",
+      "San Jose Sharks",
+      "Golden State Warriors",
+      "Las Vegas Raiders",
+      "San Francisco 49ers",
+      "San Francisco Giants",
+      "Stanford Cardinal",
+      "Oakland Athletics"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Third Party Accreditation Symbol on Product Package Code": {
+    "description": "The code representing a symbol or marking third party accreditation on the product package.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Total Count": {
+    "description": "The total number of identical items in the package or box; a result of the multiplication of Multipack Quantity by Count Per Pack. Examples: (1) A single bottle of 50 pills has a \"Total Count\" of 50. (2) A package containing two identical bottles of 50 pills has a \"Total Count\" of 100. (3) A gift basket of 5 different items has a \"Total Count\" of 1.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "50",
+      "100"
+    ],
+    "min_characters": 1,
+    "max_characters": 17,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Total Data Storage - Measure": {
+    "description": "This attribute is intended to provide a broad base for gathering the data storage potential of a given product in bytes (and various powers of).",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "32 GB",
+      "256 GB",
+      "1 TB",
+      "512 GB",
+      "32 MB",
+      "8 KB"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Total Data Storage - Unit": {
+    "description": "This attribute is intended to provide a broad base for gathering the data storage potential of a given product in bytes (and various powers of).",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "32 GB",
+      "256 GB",
+      "1 TB",
+      "512 GB",
+      "32 MB",
+      "8 KB"
+    ],
+    "min_characters": 1,
+    "max_characters": 200,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Video Memory - Measure": {
+    "description": "Video memory is memory on a video card.  Do not fill out this attribute if there is Integrated Graphics.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "64",
+      "256"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Video Memory - Unit": {
+    "description": "Video memory is memory on a video card.  Do not fill out this attribute if there is Integrated Graphics.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "64",
+      "256"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Viewing Angle": {
+    "description": "Viewing angle is the angle at which a display can be viewed with an acceptable visual performance.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Wide",
+      "90 Degree",
+      "190\u00ba"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Virtual Assistant": {
+    "description": "Name of the virtual assistant provided as a function of the product.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Alexa",
+      "Google Assistant"
+    ],
+    "min_characters": 1,
+    "max_characters": 100,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Warranty Text": {
+    "description": "Warranty Text (the full text of the warranty terms, including what is covered by the warranty and the duration of the warranty). NOTE: please remember to update the text of your warranty as your warranty changes.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "This warranty covers any defects in materials or workmanship, including installation, with the exceptions of fading or discoloration caused by exposure to sunlight or chemicals. This warranty runs for five years from the date your carpet is installed. Counterpoint will either replace your carpet with new carpet of similar composition and price, or refund the full purchase price of your carpet, whichever you prefer. Contact Counterpoint at 800-867-5309."
+    ],
+    "min_characters": 1,
+    "max_characters": 20000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Warranty URL": {
+    "description": "The Warranty URL is the web location of the image, PDF, or link to the manufacturer's warranty page, showing the warranty and its terms, including the duration of the warranty. URLs must begin with http:// or https:// NOTE: Please remember to update the link and/or text of the warranty as the warranty changes. If supplying an image, provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required) and ends in a proper image extension. Recommended file type: JPEG Accepted file types: JPG, PNG, GIF, BMP Maximum file size: 5 MB.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "http://www.walmart.com/warranty_info.pdf"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Wireless Technologies": {
+    "description": "Any wireless communications standard used within or by the item.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "2.4 GHz",
+      "3G",
+      "4G",
+      "4G LTE",
+      "5G",
+      "Bluetooth",
+      "Wi-Fi",
+      "Not Applicable"
+    ],
+    "min_characters": 1,
+    "max_characters": 500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Product Name": {
+    "description": "Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO).",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "\"Microsoft Surface Pro 7 12.3\"\" FHD 2-in-1 Tablet, 256GB SSD, Windows 10, Wi-Fi, Platinum",
+      "Apple iPad Air 9.7\"\" Tablet Bundle, 64GB, 4G AT&T, Space Gray (Refurbished)\""
+    ],
+    "min_characters": 10,
+    "max_characters": 199,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Brand Name": {
+    "description": "The name provided by the brand owner that is intended to be recognized by the consumer as represented on the product. If item does not have a brand, use \"Unbranded\".  This should be the brand ONLY, not brand + product line. Make sure brand name is spelled, punctuated & capitalized properly according to the brand itself.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Apple, Samsung, Lenovo, Kobo, RCA"
+    ],
+    "min_characters": 1,
+    "max_characters": 60,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Site Description": {
+    "description": "Overview of the key selling points of the item, marketing content, and highlights in paragraph form. For SEO purposes, repeat the product name and relevant keywords here.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "iPad Pro features the powerful Apple M1 chip with next-level performance and all-day battery life.2 The Liquid Retina display on the 11-inch iPad Pro is not only gorgeous, but super portable.1 Wi-Fi 6 for incredibly fast download speeds. And a front camera with Center Stage keeps you in frame automatically during video calls. iPad Pro has pro cameras and a LiDAR Scanner for stunning photos, videos, and immersive AR. Thunderbolt for connecting to high-performance accessories. And you can add Apple Pencil for note-taking, drawing, and marking up documents, and the Magic Keyboard for a responsive typing experience and trackpad."
+    ],
+    "min_characters": 1,
+    "max_characters": 100000,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Key Features": {
+    "description": "Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "Standing screen display size 8 Inches",
+      "Screen Resolution :1280 x 800 pixels",
+      "Series Samsung Galaxy Tab A 8.0\"\"",
+      "Hardware Platform:Android",
+      "Operating System: Android",
+      "Item Weight:1.32 pounds",
+      "Product Dimensions:0.31 x 4.89 x 8.27 inches",
+      "Color:Black",
+      "Rear Webcam Resolution:40 MP",
+      "Processor :Brand Qualcomm",
+      "Processor :Count 4",
+      "Flash Memory:Size:32 GB",
+      "Wireless Type:Bluetooth, 802.11a/b/g/n/ac, 5 GHz Radio Frequency, 2.4 GHz Radio Frequency",
+      "Number of USB 2.0 Ports:1"
+    ],
+    "min_characters": 1,
+    "max_characters": 10000,
+    "min_values": 4,
+    "recommended_values": 6
+  },
+  "Main Image URL": {
+    "description": "Main image of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Prop 65 Warning Required": {
+    "description": "Selecting \"Yes\" indicates the product requires California's Proposition 65 special warning. Proposition 65 entitles California consumers to special warnings for products that contain chemicals known to the state of California to cause cancer and birth defects or other reproductive harm if certain criteria are met (such as quantity of chemical contained in the product). See the portions of the California Health and Safety Code related to Proposition 65 for more information.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Condition": {
+    "description": "This refers to the state of an item, indicating its level of wear, prior use (if any), appearance, and overall quality. Availability of condition types may vary by product/category as well as by Seller eligibility per program. For more details, review this Help article: https://sellerhelp.walmart.com/seller/s/guide?language=en_US&article=000011205.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has NRTL Listing Certification": {
+    "description": "Indicates an item has NRTL listing certification(s). A Nationally Recognized Testing Laboratory (NRTL) is an independent organization recognized by Occupational Safety & Health Administration (OSHA) to provide evaluation, testing and certification for products within its scope of recognition for the US market.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Has Written Warranty": {
+    "description": "Indicates an item has written warranty documentation included on the product label, inside the product packaging, or a website URL or PDF available for customer review. Pursuant to California Civil Code Section 1793.01 (The Song-Beverly Consumer Warranty Act), an express warranty for consumer goods sold within California must not commence earlier than the date of delivery of the item to the consumer. If applicable, please review and update the warranty terms for this item.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input & Output Type": {
+    "description": "Type of connection.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input/Output Quantity": {
+    "description": "Number of connections corresponding to the Input/Output type.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "2",
+      "3"
+    ],
+    "min_characters": 1,
+    "max_characters": 7,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Inputs/Outputs - Input/Output Direction": {
+    "description": "Indicates whether a port for data, audio, or video is meant to receive (input-female), send (output-male) or both receive and send (bi-directional/input & output-female&male).",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content - Measure": {
+    "description": "The numeric net content portion that appears on an item. \n\nPlease Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "1",
+      "12",
+      "32"
+    ],
+    "min_characters": 1,
+    "max_characters": 16,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Net Content - Unit": {
+    "description": "The unit of measure as defined on the product labeling. For example, a gallon of milk has 128 Fluid Ounces: Measure = 128 and Units = Fluid Ounces.\n\nPlease Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Wireless Capabilities": {
+    "description": "Describes the wireless capabilities of the electronic device.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Variant Group ID": {
+    "description": "Required if item is a variant. Make up a number and/or letter code for \"Variant Group ID\" and add this to all variations of the same product. Partners must ensure uniqueness of their Variant Group IDs.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "HANESV025"
+    ],
+    "min_characters": 1,
+    "max_characters": 300,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Variant Attribute Names": {
+    "description": "The designated attribute by which an item is varying.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Is Primary Variant": {
+    "description": "Note whether item is intended as the main variant in a variant grouping. The primary variant will appear as the image when customers search and the first image displayed on the item page. This should be set as \"Yes\" for only one item in a group of variants.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Swatch Images - Swatch Variant Attribute": {
+    "description": "Attribute name corresponding to the swatch.",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "nan"
+    ],
+    "min_characters": null,
+    "max_characters": 0,
+    "min_values": 0,
+    "recommended_values": null
+  },
+  "Swatch Images - Swatch Image URL": {
+    "description": "URL of the color or pattern swatch image. This is required for products with visual variations and will be shown as a small circle on the item page. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 100px x 100px. Resolution: 300 ppi. Maximum file size: 5MB. Recommended File Naming: GTIN-14 digit. Provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required.)",
+    "product_type": "Tablet Computers",
+    "examples": [
+      "http://www.walmart.com/somepath/some-image.jpg"
+    ],
+    "min_characters": 1,
+    "max_characters": 2500,
+    "min_values": 0,
+    "recommended_values": null
+  }
+}

@@ -1,145 +1,177 @@
-// Refactored NewFeedV2.tsx with clear error handling and stats
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/hooks/use-toast';
-import { useQueryClient } from '@tanstack/react-query';
+// File: client/src/pages/NewFeedV2.tsx
 
-const schema = z.object({
-  name: z.string().min(1),
-  marketplace: z.string().min(1),
-  file: z.any(),
-});
-
-type FormValues = z.infer<typeof schema>;
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { useDropzone } from "react-dropzone";
 
 export default function NewFeedV2() {
-  const { toast } = useToast();
-  const [step, setStep] = useState<'upload' | 'processing' | 'done'>('upload');
-  const [feedId, setFeedId] = useState<number | null>(null);
-  const [feedStats, setFeedStats] = useState<any | null>(null);
+  const [feedName, setFeedName] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [marketplace, setMarketplace] = useState("Walmart");
+  const [step, setStep] = useState<"upload" | "processing" | "done">("upload");
   const [processing, setProcessing] = useState(false);
+  const [feedStats, setFeedStats] = useState<any>(null);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      name: '',
-      marketplace: 'amazon',
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        setFile(acceptedFiles[0]);
+      }
     },
   });
 
-  const onSubmit = async (values: FormValues) => {
-    try {
-      const formData = new FormData();
-      formData.append('name', values.name);
-      formData.append('marketplace', values.marketplace);
-      formData.append('file', values.file);
+  const uploadAndProcess = async () => {
+    if (!file || !feedName || !marketplace) {
+      toast({
+        title: "Missing info",
+        description: "Please fill out all fields before uploading.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-      const uploadRes = await fetch('/api/feeds/upload', {
-        method: 'POST',
+    setProcessing(true);
+    setStep("processing");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("marketplace", marketplace);
+    formData.append("feedName", feedName);
+
+    try {
+      const res = await fetch("/api/feeds/upload", {
+        method: "POST",
         body: formData,
       });
-      const uploadJson = await uploadRes.json();
-      if (!uploadRes.ok || !uploadJson.id) throw new Error(uploadJson.message || 'Upload failed');
+      const uploadJson = await res.json();
+      if (!uploadJson.id) throw new Error("Upload failed");
 
-      setFeedId(uploadJson.id);
-      setStep('processing');
-      setProcessing(true);
+      const trigger = await fetch(`/api/feeds/${uploadJson.id}/process`, {
+        method: "POST",
+      });
 
-      const processRes = await fetch(`/api/feeds/${uploadJson.id}/process`, { method: 'POST' });
-      if (!processRes.ok) throw new Error('Processing failed');
+      if (!trigger.ok) throw new Error("Processing initiation failed");
 
       const poll = async (attempt = 0) => {
-        if (attempt > 40) throw new Error('Timeout');
-        const res = await fetch(`/api/feeds/${uploadJson.id}`);
-        const json = await res.json();
+        if (attempt > 40) throw new Error("Timeout while polling result");
 
-        if (json.status === 'completed') {
+        try {
+          const res = await fetch(`/api/feeds/${uploadJson.id}`);
+          const contentType = res.headers.get("content-type");
+
+          if (!res.ok || !contentType?.includes("application/json")) {
+            const fallback = await res.text();
+            console.error("❌ Not JSON:", fallback.slice(0, 200));
+            toast({
+              title: "Unexpected response",
+              description: "Server returned invalid content. Check logs.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          const json = await res.json();
+          if (json.status === "completed") {
+            setProcessing(false);
+            setStep("done");
+            setFeedStats(json);
+            queryClient.invalidateQueries({ queryKey: ["/api/feeds"] });
+          } else if (json.status === "failed") {
+            toast({
+              title: "Feed processing failed",
+              description: "Check your input and try again.",
+              variant: "destructive",
+            });
+            setProcessing(false);
+          } else {
+            setTimeout(() => poll(attempt + 1), 2000);
+          }
+        } catch (err: any) {
+          console.error("❌ Polling failed", err);
+          toast({
+            title: "Polling error",
+            description: err.message || "Unknown error",
+            variant: "destructive",
+          });
           setProcessing(false);
-          setStep('done');
-          setFeedStats(json);
-          queryClient.invalidateQueries({ queryKey: ['/api/feeds'] });
-        } else if (json.status === 'failed') {
-          throw new Error('Feed processing failed');
-        } else {
-          setTimeout(() => poll(attempt + 1), 2000);
         }
       };
 
       poll();
     } catch (err: any) {
+      console.error("Upload error", err);
       toast({
-        title: 'Something went wrong',
-        description: err.message || 'Unknown error',
-        variant: 'destructive',
+        title: "Upload or processing failed",
+        description: err.message,
+        variant: "destructive",
       });
       setProcessing(false);
-      setStep('upload');
     }
   };
 
+if (step === "done") {
   return (
-    <div className="max-w-xl mx-auto p-8">
-      <h1 className="text-2xl font-bold text-cyan-400 mb-4">New Feed</h1>
+    <div className="max-w-xl mx-auto mt-10 text-center space-y-4">
+      <h2 className="text-2xl font-bold text-green-500">✅ Feed Processed!</h2>
+      <p className="text-lg">Rows Processed: {feedStats?.row_count}</p>
+      <a
+        href={`/api/feeds/${feedStats?.id}/download`}
+        className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        ⬇️ Download Transformed CSV
+      </a>
+      <Button onClick={() => setStep("upload")}>Upload Another</Button>
+    </div>
+  );
+}
+  
 
-      {step === 'upload' || step === 'processing' ? (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+  return (
+    <div className="max-w-xl mx-auto mt-10">
+      <Card>
+        <CardContent className="p-6 space-y-4">
+          <h2 className="text-xl font-semibold">📤 Upload New Feed</h2>
+
           <div>
-            <label>Feed Name</label>
-            <input {...form.register('name')} className="w-full border p-2 bg-slate-900 text-white" />
-          </div>
-          <div>
-            <label>Upload File</label>
-            <input
-              type="file"
-              onChange={(e) => form.setValue('file', e.target.files?.[0])}
-              className="w-full border p-2 bg-slate-900 text-white"
+            <Label>Feed Name</Label>
+            <Input
+              value={feedName}
+              onChange={(e) => setFeedName(e.target.value)}
             />
           </div>
+
           <div>
-            <label>Marketplace</label>
-            <select {...form.register('marketplace')} className="w-full border p-2 bg-slate-900 text-white">
-              <option value="amazon">Amazon</option>
-              <option value="walmart">Walmart</option>
-              <option value="reebelo">Reebelo</option>
-              <option value="meta">Meta</option>
-              <option value="tiktok">TikTok</option>
+            <Label>Upload File</Label>
+            <Input
+              type="file"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+            />
+          </div>
+
+          <div>
+            <Label>Marketplace</Label>
+            <select
+              className="w-full border border-gray-300 p-2 rounded bg-white text-black"
+              value={marketplace}
+              onChange={(e) => setMarketplace(e.target.value)}
+            >
+              <option value="Walmart">Walmart</option>
+              <option value="Amazon">Amazon</option>
             </select>
           </div>
-          <button
-            type="submit"
-            disabled={processing}
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-          >
-            {processing ? 'Processing...' : 'Upload & Process'}
-          </button>
-        </form>
-      ) : null}
 
-      {step === 'done' && feedStats && (
-        <div className="mt-6 bg-slate-800 p-4 rounded text-white space-y-2">
-          <p className="text-green-400 font-semibold">✅ Feed processed successfully!</p>
-          <p>📦 Rows Processed: <strong>{feedStats.itemCount || feedStats.output_rows || 'Unknown'}</strong></p>
-          <p>✨ AI Fixes:</p>
-          <ul className="ml-4 list-disc text-sm text-slate-300">
-            <li>Titles optimized: {feedStats.aiChanges?.titleOptimized}</li>
-            <li>Descriptions enhanced: {feedStats.aiChanges?.descriptionEnhanced}</li>
-            <li>Categories fixed: {feedStats.aiChanges?.categoryCorrected}</li>
-            <li>Errors corrected: {feedStats.aiChanges?.errorsCorrected}</li>
-            <li>Empty rows: {feedStats.aiChanges?.emptyRows}</li>
-            <li>Filled rows: {feedStats.aiChanges?.filledRows}</li>
-          </ul>
-          <a
-            href={`/api/feeds/${feedStats.id}/download`}
-            target="_blank"
-            className="inline-block mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            ⬇️ Download Transformed CSV
-          </a>
-        </div>
-      )}
+          <Button disabled={processing} onClick={uploadAndProcess}>
+            {processing ? "Processing..." : "Upload & Transform"}
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
