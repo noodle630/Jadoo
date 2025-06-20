@@ -2919,4 +2919,26 @@
     "min_values": 0,
     "recommended_values": null
   }
+,
+  "Product ID Type": {
+    "description": "Type of unique product identifier.",
+    "product_type": "ALL",
+    "allowed_values": ["EAN", "GTIN", "ISBN", "UPC"]
+  },
+  "Spec Product Type": {
+    "description": "Detailed product category type.",
+    "product_type": "ALL",
+    "allowed_values": [
+      "Cell Phones",
+      "Desktop Computers",
+      "Laptop Computers",
+      "Computer Monitors",
+      "Televisions",
+      "Sound Bars",
+      "Home Speakers & Subwoofers",
+      "Tablet Computers",
+      "Headphones",
+      "Portable Speakers"
+    ]
+  }
 }

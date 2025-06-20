@@ -1,5 +1,9 @@
 {
-  "Accessories Included": {
+  "Product ID Type": {
+    "description": "Type of unique product identifier.",
+    "product_type": "ALL",
+    "allowed_values": ["EAN", "GTIN", "ISBN", "UPC"]
+  },"Accessories Included": {
     "description": "Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.",
     "product_type": "Smart Watches",
     "examples": [
