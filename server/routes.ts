@@ -1,62 +1,56 @@
-// routes.ts
 import express from "express";
-import { Router } from "express";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
-import { handleUpload, handleProcess } from "./utils/transformer.js"; // adjust if your transformer is in ./utils
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { v4 as uuidv4 } from "uuid";
+import supabase from "../supabaseClient"; // ✅ at root
+import { handleProcess } from "./utils/transformer"; // ✅ match your tree
 
 const router = express.Router();
 
-// ✅ Health check
-router.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
-
-// ✅ Upload route — uses express-fileupload
-router.post("/feeds/upload", async (req, res) => {
-  if (!req.files || !req.files.file) {
-    return res.status(400).json({ error: "No file uploaded" });
-  }
-
-  const file = req.files.file;
-  const id = Date.now().toString();
-  const uploadDir = path.join(process.cwd(), "temp_uploads");
-
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
-  const savePath = path.join(uploadDir, `${id}.csv`);
-  await file.mv(savePath);
-
-  console.log("✅ File uploaded:", savePath);
-  res.json({ id });
-});
-
-// ✅ Process route
-router.post("/feeds/:id/process", async (req, res) => {
+// ✅ /api/upload — uses express-fileupload
+router.post("/upload", async (req, res) => {
   try {
-    const { id } = req.params;
-    const result = await handleProcess(id);
-    res.json({ status: "processed", file: result });
+    if (!req.files || !req.files.file) {
+      return res.status(400).json({ error: "No file uploaded." });
+    }
+
+    const file = req.files.file as fileUpload.UploadedFile;
+    const id = uuidv4();
+    const uploadPath = path.join("temp_uploads", `${id}.csv`);
+
+    await file.mv(uploadPath);
+
+    console.log(`✅ File saved: ${uploadPath}`);
+    return res.json({ id });
   } catch (err) {
-    console.error("[PROCESS ERROR]", err);
-    res.status(500).json({ error: err.message });
+    console.error(`❌ Upload error: ${err}`);
+    return res.status(500).json({ error: err.message });
   }
 });
 
-// ✅ Download route
-router.get("/feeds/:id/download", (req, res) => {
-  const { id } = req.params;
-  const outputPath = path.join(__dirname, "../outputs", `${id}.xlsx`);
-  if (!fs.existsSync(outputPath)) {
-    return res.status(404).json({ error: "Output file not found" });
-  }
-  res.download(outputPath);
-});
+// ✅ /api/process/:id
+router.post("/process/:id", handleProcess);
 
 export default router;
+
+// Add below your POST routes
+router.get("/logs/:id", async (req, res) => {
+  const { id } = req.params;
+  const { data, error } = await supabase.from("logs").select("*").eq("feed_id", id).order("row_number");
+  if (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+  return res.json(data);
+});
+
+
+router.get("/download/:file", async (req, res) => {
+  const file = req.params.file;
+  const filePath = path.join("outputs", file);
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send("File not found");
+  }
+  res.download(filePath);
+});
+
