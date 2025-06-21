@@ -1,0 +1,6 @@
+{
+  "category": "base",
+  "vendorFields": [
+    "item_sku,product_id,product_id_type,item_name,brand_name,product_description,feed_product_type,update_delete,standard_price,quantity,main_image_url,condition_type"
+  ]
+}
