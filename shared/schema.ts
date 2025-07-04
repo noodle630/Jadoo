@@ -229,6 +229,33 @@ export const insertTemplateSchema = createInsertSchema(templates).omit({
   usageCount: true,
 });
 
+// Logs table for tracking transformation results
+export const logs = pgTable("logs", {
+  id: serial("id").primaryKey(),
+  feed_id: text("feed_id").notNull(),
+  row_number: integer("row_number").notNull(),
+  status: text("status").notNull(), // 'SUCCESS', 'ERROR', 'PARTIAL'
+  confidence: text("confidence").notNull(), // 'green', 'yellow', 'red'
+  original_data: jsonb("original_data"),
+  transformed_data: jsonb("transformed_data"),
+  error_message: text("error_message"),
+  processing_time_ms: integer("processing_time_ms"),
+  retry_count: integer("retry_count").default(0),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const logsRelations = relations(logs, ({ one }) => ({
+  feed: one(feeds, {
+    fields: [logs.feed_id],
+    references: [feeds.id],
+  }),
+}));
+
+export const insertLogSchema = createInsertSchema(logs).omit({
+  id: true,
+  created_at: true,
+});
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -247,6 +274,9 @@ export type InsertFeed = z.infer<typeof insertFeedSchema>;
 
 export type Template = typeof templates.$inferSelect;
 export type InsertTemplate = z.infer<typeof insertTemplateSchema>;
+
+export type Log = typeof logs.$inferSelect;
+export type InsertLog = z.infer<typeof insertLogSchema>;
 
 // Define marketplace types for validation
 export const marketplaceEnum = z.enum([
