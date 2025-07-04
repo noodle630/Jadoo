@@ -1,0 +1,6 @@
+"item_sku,product_id,product_id_type,item_name,brand_name,product_description,feed_product_type,update_delete,standard_price,quantity,main_image_url,condition_type"
+"ELEC-001,123456789012,1,Wireless Bluetooth Headphones,SoundTech,""High quality wireless headphones with noise cancellation"",consumer_electronics,Update,59.99,100,https://example.com/image1.jpg,new"
+"ELEC-002,,1,Bluetooth Speaker,,,"""",Update,29.99,50,https://example.com/image2.jpg,new"
+"ELEC-003,987654321098,2,Smartphone,TechBrand,""Latest model smartphone with advanced features"",consumer_electronics,Update,,25,https://example.com/image3.jpg,used_like_new"
+"ELEC-004,112233445566,1,4K LED TV,ViewPlus,""Ultra HD television with smart features"",consumer_electronics,Update,399.99,,https://example.com/image4.jpg,new"
+"ELEC-005,998877665544,1,Laptop,CompTech,""High-performance laptop suitable for gaming and work"",consumer_electronics,Update,899.99,30,,new"
