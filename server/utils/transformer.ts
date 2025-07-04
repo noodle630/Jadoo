@@ -74,6 +74,36 @@ function normalizeHeader(header: string): string {
   return header.replace(/[_\s]/g, '').toLowerCase();
 }
 
+// --- Attribute extraction utility ---
+function extractAttributes(row: Record<string, any>): Record<string, string> {
+  const attrs: Record<string, string> = {};
+  const title = row['Product Name'] || row['productName'] || row['Title'] || '';
+  // Color
+  const colorMatch = title.match(/\b(Black|White|Green|Blue|Red|Yellow|Pink|Gold|Silver|Gray|Jade)\b/i);
+  if (colorMatch) attrs['Color'] = colorMatch[0];
+  // Storage
+  const storageMatch = title.match(/(\d{2,4}GB|\d{1,2}TB)/i);
+  if (storageMatch) attrs['Storage Capacity'] = storageMatch[0];
+  // Carrier
+  const carrierMatch = title.match(/(T-Mobile|Verizon|AT&T|Unlocked|Sprint)/i);
+  if (carrierMatch) attrs['Carrier'] = carrierMatch[0];
+  // Condition
+  const condMatch = title.match(/(Excellent|Good|Premium|Acceptable|New|Refurbished|Used)/i);
+  if (condMatch) attrs['Condition'] = condMatch[0];
+  // Model Name
+  const modelMatch = title.match(/Galaxy S\d{2,}/i);
+  if (modelMatch) attrs['Model Name'] = modelMatch[0];
+  // Model Number (if present)
+  if (row['Model Number']) attrs['Model Number'] = row['Model Number'];
+  // Quantity
+  if (row['Quantity']) attrs['Quantity'] = row['Quantity'];
+  // Brand
+  if (row['Brand Name']) attrs['Brand Name'] = row['Brand Name'];
+  // SKU
+  if (row['SKU']) attrs['SKU'] = row['SKU'];
+  return attrs;
+}
+
 // MAIN handler with comprehensive logging
 export const handleProcess = async (req: Request, res: Response) => {
   const startTime = Date.now();
@@ -209,85 +239,255 @@ export const handleProcess = async (req: Request, res: Response) => {
     });
     logger.info('Sample output rows (template-mapped)', { sample: outputRows.slice(0, 2) });
 
-    // --- AI enrichment batching for optimizable fields ---
-    // For each batch, send all optimizable fields to OpenAI for enrichment, with full row context
-    // Instruct OpenAI to return a JSON array of objects, each with only the enriched fields, each with a value and confidence
-    // Log all enrichment actions, original vs. AI values, and confidence scores
-    // 2. Group rows into batches (default: 10 rows per batch)
-    const batchSize = 10;
-    const concurrency = 5;
-    const batches: Array<Array<{ row: Record<string, any>; idx: number }>> = [];
-    for (let i = 0; i < outputRows.length; i += batchSize) {
-      batches.push(outputRows.slice(i, i + batchSize).map((row, idx) => ({ row, idx: i + idx })));
+    // --- Load grounding examples for the detected category ---
+    const groundingExamples = await loadGroundingExamples(category, groundingRoot, 3);
+    logger.info('Loaded grounding examples for enrichment', { count: groundingExamples.length });
+
+    // --- Group template headers by priority using LLM ---
+    const headerGroupingPrompt = `Group these Walmart template headers into 3 priority groups for AI enrichment:
+
+A0 (Critical - Must fill): Product identification, core attributes, platform requirements
+A1 (Important - Should fill): Enhanced descriptions, features, specifications  
+A2 (Nice-to-have - Optional): Additional details, marketing content
+
+Headers: ${outputColumns.join(', ')}
+
+Respond with JSON: {"A0": ["header1", "header2"], "A1": ["header3"], "A2": ["header4"]}`;
+
+    let headerGroups: { A0: string[], A1: string[], A2: string[] } = { A0: [], A1: [], A2: [] };
+    try {
+      const groupingResp = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: "You are a product feed optimization expert. Group headers by marketplace priority." },
+          { role: "user", content: headerGroupingPrompt }
+        ],
+        temperature: 0.1,
+        max_tokens: 1000,
+        response_format: { type: "json_object" }
+      });
+      const groupingContent = groupingResp.choices[0].message.content;
+      if (groupingContent) {
+        headerGroups = JSON.parse(groupingContent);
+        logger.info('Header priority groups created', { headerGroups });
+      }
+    } catch (error: unknown) {
+      logger.warn('Failed to group headers, using fallback grouping', { error: error instanceof Error ? error.message : error });
+      // Fallback: manually group critical fields
+      headerGroups = {
+        A0: ['Product Name', 'Brand Name', 'Product ID', 'Product ID Type', 'Site Description', 'Key Features (+)', 'Color', 'Condition'],
+        A1: ['Key Features 1 (+)', 'Key Features 2 (+)', 'Key Features 3 (+)', 'Key Features 4 (+)', 'Color Category (+)', 'Mobile Operating System (+)', 'Display Technology', 'Processor Brand'],
+        A2: outputColumns.filter(col => !['Product Name', 'Brand Name', 'Product ID', 'Product ID Type', 'Site Description', 'Key Features (+)', 'Color', 'Condition', 'Key Features 1 (+)', 'Key Features 2 (+)', 'Key Features 3 (+)', 'Key Features 4 (+)', 'Color Category (+)', 'Mobile Operating System (+)', 'Display Technology', 'Processor Brand'].includes(col))
+      };
     }
-    // For each batch, always enrich all aiFillColumns (not just empty fields)
-    for (const batch of batches) {
-      const fieldsToFill = aiFillColumns; // Always enrich all optimizable fields
-      logger.info('AI enrichment batch fieldsToFill', { fieldsToFill, aiFillColumns });
-      // Build field definitions for only those fields
-      const defs = fieldsToFill.map((col: string) => `- ${col}: ${fieldDefinitions[col] || ''}`).join('\n');
-      // Build prompt: instruct GPT to optimize/enrich the fields, not just fill if empty
-      const prompt = `For each product row below, optimize and enrich the following fields using the provided field definitions. For each field, return a new value that is more marketplace-ready, descriptive, or appealing. Respond in JSON, one object per row, with only the enriched fields.\n\nField definitions:\n${defs}\n\nRows:\n${JSON.stringify(batch.map(({ row }) => row), null, 2)}\n\nResponse:`;
-      logger.info('Sending AI enrichment batch', { batchSize: batch.length, fieldsToFill, promptLength: prompt.length });
-      try {
-        const resp = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: "You are a product feed enrichment engine. Respond ONLY with a JSON array, one object per row, with only the enriched fields. The array length must match the number of rows provided." },
-            { role: "user", content: prompt }
-          ],
-          temperature: 0.2,
-          max_tokens: 2000,
-          response_format: { type: "json_object" }
-        });
-        const content = resp.choices[0].message.content;
-        let aiResults: Array<Record<string, any>> = [];
-        if (content) {
+
+    // --- Row-level memory for critical fields ---
+    const rowMemory: { [key: string]: { [key: string]: any } } = {};
+
+    // --- Step 1: Algorithmically define A0 fields ---
+    const alwaysA0 = [
+      'Product Name', 'Site Description', 'Brand Name', 'Product ID', 'Product ID Type',
+      'Price', 'Selling Price', 'Color', 'Key Features (+)', 'Condition', 'SKU', 'Quantity', 'Storage Capacity', 'Carrier', 'Model Name', 'Model Number'
+    ];
+    headerGroups.A0 = outputColumns.filter(col => alwaysA0.includes(col));
+    headerGroups.A1 = outputColumns.filter(col => !headerGroups.A0.includes(col));
+    headerGroups.A2 = [];
+    logger.info('Algorithmic A0/A1 grouping', { A0: headerGroups.A0, A1: headerGroups.A1 });
+
+    // --- Step 2: Attribute extraction from Product Name/title and vendor fields ---
+    for (let rowIdx = 0; rowIdx < outputRows.length; rowIdx++) {
+      const row: { [key: string]: any } = outputRows[rowIdx];
+      const vendorRow: { [key: string]: any } = rows[rowIdx] || {};
+      const extracted: { [key: string]: string } = extractAttributes(vendorRow);
+      const productKey = row['Product Name'] || row['SKU'] || `row${rowIdx}`;
+      if (!rowMemory[productKey]) rowMemory[productKey] = {};
+      for (const col of headerGroups.A0) {
+        if (!row[col] || row[col].trim() === '') {
+          if (extracted[col]) {
+            logger.info('A0 field filled by extraction', { row: rowIdx, field: col, value: extracted[col] });
+            outputRows[rowIdx][col] = extracted[col];
+            rowMemory[productKey][col] = extracted[col];
+            continue;
+          }
+          // LLM fallback as before
+          const fieldDef = fieldDefinitions[col] || '';
+          const exampleValues = groundingExamples.map(ex => ex[col]).filter(Boolean);
+          const prompt = `You are enriching a product feed for Walmart. Given this product row, create a high-quality value for the ${col} field. Respond with JSON: { "${col}": "...", "confidence": 0.xx }
+
+Product row: ${JSON.stringify(row, null, 2)}
+Field: ${col}
+Definition: ${fieldDef}
+Examples: ${exampleValues.slice(0,3).map(v => `- ${v}`).join('\\n')}
+
+Instructions:
+- Create a professional, marketplace-ready value
+- Use the product context to infer missing information
+- For Product Name: Make it descriptive and searchable
+- For Brand Name: Extract from product name or infer
+- For Site Description: Write a compelling product description
+- For Key Features: List 3-5 key selling points
+- For Color: Extract from product name or infer
+- For Product ID Type: Use GTIN, UPC, or ASIN as appropriate
+- Respond with a confidence score (0-1) for the value
+
+Response:`;
           try {
-            let parsed = JSON.parse(content);
-            // If it's a single object, wrap in array
-            if (!Array.isArray(parsed)) {
-              if (typeof parsed === 'object' && parsed !== null) {
-                parsed = [parsed];
-              } else if (typeof parsed === 'string') {
-                parsed = JSON.parse(parsed);
-                if (!Array.isArray(parsed)) parsed = [parsed];
+            const resp = await openai.chat.completions.create({
+              model: "gpt-4o-mini",
+              messages: [
+                { role: "system", content: "You are a product feed enrichment expert. Create high-quality, marketplace-ready values." },
+                { role: "user", content: prompt }
+              ],
+              temperature: 0.3,
+              max_tokens: 500,
+              response_format: { type: "json_object" }
+            });
+            const content = resp.choices[0].message.content;
+            logger.info('Raw LLM response (A0 field)', { row: rowIdx, field: col, content });
+            let parsed: Record<string, any> = {};
+            if (content) {
+              try {
+                parsed = JSON.parse(content);
+              } catch (e) {
+                logger.warn('Failed to parse A0 field AI response', { error: e, content });
+                parsed = {};
               }
             }
-            aiResults = parsed;
-          } catch (e) {
-            logger.warn('Failed to parse AI JSON response', { error: e, content });
-            // Log raw response for debugging
-            aiResults = [];
+            const aiValue = parsed[col];
+            const confidence = typeof parsed.confidence === 'number' ? parsed.confidence : 0.5;
+            if (aiValue && confidence >= 0.7) {
+              logger.info('A0 field enrichment result', {
+                row: rowIdx,
+                field: col,
+                before: row[col],
+                after: aiValue,
+                confidence
+              });
+              outputRows[rowIdx][col] = aiValue;
+              rowMemory[productKey][col] = aiValue;
+            } else if (rowMemory[productKey][col]) {
+              logger.info('A0 field consistency override (row memory)', {
+                row: rowIdx,
+                field: col,
+                before: row[col],
+                after: rowMemory[productKey][col],
+                confidence: 'memory'
+              });
+              outputRows[rowIdx][col] = rowMemory[productKey][col];
+            } else if (vendorRow[col]) {
+              logger.info('A0 field fallback to vendor data', {
+                row: rowIdx,
+                field: col,
+                before: row[col],
+                after: vendorRow[col],
+                confidence: 'vendor'
+              });
+              outputRows[rowIdx][col] = vendorRow[col];
+            } else {
+              logger.info('A0 field remains blank', { row: rowIdx, field: col });
+            }
+          } catch (error: unknown) {
+            logger.warn('A0 field enrichment failed', { row: rowIdx, field: col, error: error instanceof Error ? error.message : error });
           }
-        } else {
-          logger.warn('AI response content is null', {});
-          aiResults = [];
         }
-        // Fallback: if aiResults is not an array of correct length, fill with empty objects
-        if (!Array.isArray(aiResults) || aiResults.length !== batch.length) {
-          logger.warn('AI response array length mismatch or invalid, falling back to empty objects', { aiResultsLength: aiResults.length, batchLength: batch.length });
-          aiResults = Array(batch.length).fill({});
-        }
-        // Update outputRows in memory and log before/after
-        aiResults.forEach((filled: Record<string, any>, i: number) => {
-          const rowIdx = batch[i].idx;
-          Object.entries(filled).forEach(([col, val]) => {
-            logger.info('AI enrichment result', {
-              row: rowIdx,
-              field: col,
-              before: outputRows[rowIdx][col],
-              after: val
-            });
-            outputRows[rowIdx][col] = val;
-          });
-        });
-        logger.info('AI enrichment batch completed', { batchRows: batch.length, aiResults: aiResults.length });
-      } catch (error: unknown) {
-        logger.warn('AI enrichment batch failed', { error: error instanceof Error ? (error as Error).message : error });
       }
     }
-    logger.info('All AI enrichment batches completed', { totalBatches: batches.length });
+
+    // --- Batch enrichment for A1 (Important) fields ---
+    logger.info('Starting A1 (Important) field batch enrichment', { fields: headerGroups.A1 });
+    const a1BatchSize = 5;
+    for (let i = 0; i < outputRows.length; i += a1BatchSize) {
+      const batch = outputRows.slice(i, i + a1BatchSize);
+      const emptyA1Fields = headerGroups.A1.filter(col => batch.some(row => !row[col] || row[col].trim() === ''));
+      if (emptyA1Fields.length > 0) {
+        const batchPrompt = `Enrich these product rows with missing A1 fields. For each value, also return a confidence score (0-1). Respond with a JSON array, one object per row, with keys matching the fields to fill and a confidence for each field. Example: [{ "Site Description": "...", "confidence": 0.92 }, ...]
+
+Fields to fill: ${emptyA1Fields.join(', ')}
+Field definitions: ${emptyA1Fields.map(col => `${col}: ${fieldDefinitions[col] || ''}`).join('\\n')}
+
+Product rows: ${JSON.stringify(batch, null, 2)}
+
+Response:`;
+        try {
+          const resp = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: "You are a product feed enrichment expert. Fill missing fields with high-quality values and confidence scores." },
+              { role: "user", content: batchPrompt }
+            ],
+            temperature: 0.3,
+            max_tokens: 2000,
+            response_format: { type: "json_object" }
+          });
+          const content = resp.choices[0].message.content;
+          logger.info('Raw LLM response (A1 batch)', { content });
+          let enrichedRows: any[] = [];
+          if (content) {
+            try {
+              let parsed = JSON.parse(content);
+              // Accept both flat arrays and { products: [...] }
+              if (Array.isArray(parsed)) {
+                enrichedRows = parsed;
+              } else if (parsed.products && Array.isArray(parsed.products)) {
+                enrichedRows = parsed.products;
+              } else {
+                logger.warn('A1 batch response format not recognized', { parsed });
+                enrichedRows = [];
+              }
+            } catch (e) {
+              logger.warn('Failed to parse A1 batch response', { error: e, content });
+              enrichedRows = [];
+            }
+          }
+          enrichedRows.forEach((enriched: Record<string, any>, batchIdx: number) => {
+            const rowIdx = i + batchIdx;
+            const row: { [key: string]: any } = outputRows[rowIdx];
+            for (const col of emptyA1Fields) {
+              const aiValue = enriched[col];
+              const confidence = typeof enriched[`${col}_confidence`] === 'number' ? enriched[`${col}_confidence`] : (typeof enriched.confidence === 'number' ? enriched.confidence : 0.5);
+              if (aiValue && confidence >= 0.7) {
+                logger.info('A1 field enrichment result', {
+                  row: rowIdx,
+                  field: col,
+                  before: row[col],
+                  after: aiValue,
+                  confidence
+                });
+                outputRows[rowIdx][col] = aiValue;
+                rowMemory[row['Product Name'] || row['SKU'] || `row${rowIdx}`][col] = aiValue;
+              } else if (rowMemory[row['Product Name'] || row['SKU'] || `row${rowIdx}`][col]) {
+                logger.info('A1 field consistency override (row memory)', {
+                  row: rowIdx,
+                  field: col,
+                  before: row[col],
+                  after: rowMemory[row['Product Name'] || row['SKU'] || `row${rowIdx}`][col],
+                  confidence: 'memory'
+                });
+                outputRows[rowIdx][col] = rowMemory[row['Product Name'] || row['SKU'] || `row${rowIdx}`][col];
+              } else {
+                logger.info('A1 field fallback to vendor data', {
+                  row: rowIdx,
+                  field: col,
+                  before: row[col],
+                  after: row[col],
+                  confidence: 'vendor'
+                });
+                // No change, preserve vendor data
+              }
+            }
+          });
+        } catch (error: unknown) {
+          logger.warn('A1 batch enrichment failed', { error: error instanceof Error ? error.message : error });
+        }
+      }
+    }
+
+    logger.info('All priority-based AI enrichment completed', { 
+      totalRows: outputRows.length, 
+      a0Fields: headerGroups.A0.length,
+      a1Fields: headerGroups.A1.length,
+      a2Fields: headerGroups.A2.length
+    });
 
     // --- Write output directly to cells, starting at row 6 ---
     // This avoids issues with merged cells, formatting, and ensures data is visible in Excel.
