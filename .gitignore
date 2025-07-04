@@ -5,3 +5,8 @@ server/public
 vite.config.ts.*
 *.tar.gz.env
 .env
+
+# Local artifacts
+outputs/
+temp_uploads/
+logs/
