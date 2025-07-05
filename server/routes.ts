@@ -5,13 +5,14 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
-import REMOVED_SECRETfrom "../supabaseClient"; // ✅ at root
 import { handleProcess } from "./utils/transformer"; // ✅ match your tree
 import Papa from 'papaparse';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
+import { feedQueue } from './queue.js';
+import REMOVED_SECRETfrom '../supabaseClient';
 
 const router = express.Router();
 
@@ -205,21 +206,21 @@ async function processFileInBackground(feedId: string, fileBuffer: Buffer, field
 }
 
 // NEW: Multer-based upload route
-router.post('/simple-upload', upload.single('file'), (req, res) => {
+router.post('/simple-upload', upload.single('file'), async (req, res) => {
   console.log('=== MULTER UPLOAD START ===');
   console.log('📄 File:', req.file ? req.file.originalname : 'NO FILE');
   console.log('📝 Fields:', req.body);
-  
+
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    
+
     // Extract fields from form data
     const platform = req.body.platform;
     const email = req.body.email;
     const category = req.body.category;
-    
+
     console.log('📋 Extracted data:', {
       platform,
       email,
@@ -228,7 +229,7 @@ router.post('/simple-upload', upload.single('file'), (req, res) => {
       fileName: req.file.originalname,
       fileSize: req.file.size
     });
-    
+
     // Validation
     if (!platform) {
       return res.status(400).json({ error: 'Platform is required' });
@@ -236,21 +237,32 @@ router.post('/simple-upload', upload.single('file'), (req, res) => {
     if (!email) {
       return res.status(400).json({ error: 'Email is required' });
     }
-    
+
     const feedId = `feed_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-    
+
     console.log('✅ Upload successful:', {
       feedId,
       filename: req.file.originalname,
       size: req.file.size,
       platform: platform
     });
-    
+
+    // Enqueue BullMQ job for async processing
+    await feedQueue.add('feed-transform', {
+      feedId,
+      fileBuffer: req.file.buffer,
+      fields: req.body,
+      fileName: req.file.originalname,
+      platform,
+      email,
+      category
+    });
+
     // Return immediate response
     res.json({
       feed_id: feedId,
-      status: 'processing',
-      message: 'File uploaded successfully',
+      status: 'queued',
+      message: 'File uploaded and job enqueued',
       file_info: {
         name: req.file.originalname,
         size: req.file.size,
@@ -259,10 +271,6 @@ router.post('/simple-upload', upload.single('file'), (req, res) => {
       platform: platform,
       category: category || 'auto-detect'
     });
-    
-    // Start background processing
-    processFileInBackground(feedId, req.file.buffer, req.body);
-    
   } catch (error) {
     console.error('💥 Upload error:', error);
     res.status(500).json({ error: 'Upload failed', details: error instanceof Error ? error.message : String(error) });
@@ -355,6 +363,63 @@ router.get('/feeds/:feedId/ready', async (req, res) => {
     }
   } catch (err) {
     return res.json({ ready: false, url: data.output_path });
+  }
+});
+
+// Job status endpoint for BullMQ jobs
+router.get('/jobs/:feedId/status', async (req, res) => {
+  const { feedId } = req.params;
+  
+  try {
+    // Get all jobs for this feed
+    const jobs = await feedQueue.getJobs(['active', 'waiting', 'completed', 'failed']);
+    const job = jobs.find((j: any) => j.data.feedId === feedId);
+    
+    if (!job) {
+      return res.status(404).json({ 
+        status: 'not_found', 
+        message: 'Job not found' 
+      });
+    }
+    
+    const jobData: any = {
+      jobId: job.id,
+      feedId: job.data.feedId,
+      status: job.finishedOn ? 'completed' : job.failedReason ? 'failed' : 'processing',
+      progress: job.progress || 0,
+      createdAt: job.timestamp,
+      finishedAt: job.finishedOn,
+      failedReason: job.failedReason,
+      returnvalue: job.returnvalue,
+      platform: job.data.platform,
+      fileName: job.data.fileName
+    };
+    
+    // If completed, also get the feed data from Supabase
+    if (job.finishedOn && !job.failedReason) {
+      try {
+        const { data: feedData, error } = await supabase
+          .from('feeds')
+          .select('*')
+          .eq('id', feedId)
+          .single();
+        
+        if (!error && feedData) {
+          jobData.feed = feedData;
+        }
+      } catch (dbError) {
+        console.warn(`Could not fetch feed data for ${feedId}:`, dbError);
+      }
+    }
+    
+    res.json(jobData);
+    
+  } catch (error) {
+    console.error('Error fetching job status:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch job status',
+      details: error instanceof Error ? error.message : String(error)
+    });
   }
 });
 

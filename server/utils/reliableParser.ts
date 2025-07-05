@@ -206,11 +206,10 @@ async function transformToMarketplace(
   }
 }
 
-export {
+const reliableParser = {
   countCSVRows,
   transformCSV,
-  transformToMarketplace,
-  type ParseResult,
-  type TransformResult,
-  type TransformFunction
+  transformToMarketplace
 };
+
+export default reliableParser;

@@ -4,7 +4,7 @@ import routes from "server/routes"; // 👈 match your folder
 import fileUpload from "express-fileupload";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 // ===== COMPREHENSIVE CORS CONFIGURATION (FIRST!) =====
 app.use((req, res, next) => {
@@ -72,6 +72,20 @@ app.get('/api/cors-test', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Server running at http://localhost:${port}`);
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:', err);
+  process.exit(1);
 });
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('UNHANDLED REJECTION:', reason);
+  process.exit(1);
+});
+
+try {
+  app.listen(port, () => {
+    console.log(`🚀 Server running at http://localhost:${port}`);
+  });
+} catch (err) {
+  console.error('FATAL ERROR DURING SERVER STARTUP:', err);
+  process.exit(1);
+}

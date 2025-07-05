@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
+import exactParser from './utils/exactParser';
 
 // Configure file uploads
 const uploadDir = path.join(process.cwd(), 'temp_uploads');
@@ -139,9 +140,6 @@ export function setupDirectRoutes(app: express.Express) {
   // Direct transformation API endpoint
   app.post('/api/transform-direct', upload.single('file'), async (req: Request, res: Response) => {
     try {
-      // Import our exact parser that guarantees accurate row counts
-      const exactParser = require('./utils/exactParser');
-      
       // Validate the request
       if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });

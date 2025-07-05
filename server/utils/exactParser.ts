@@ -162,10 +162,9 @@ async function transformWithExactMapping(
   }
 }
 
-export {
+const exactParser = {
   countExactRows,
-  transformWithExactMapping,
-  type RowCountResult,
-  type TransformResult,
-  type TransformFunction
+  transformWithExactMapping
 };
+
+export default exactParser;
