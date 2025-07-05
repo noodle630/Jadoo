@@ -7,8 +7,9 @@ import REMOVED_SECRETfrom "../../supabaseClient";
 import openai from "../../openaiClient";
 import winston from "winston";
 import stringSimilarity from "string-similarity";
+import crypto from "crypto";
 
-// Configure structured logging
+// Configure structured logging with reduced verbosity
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -23,7 +24,16 @@ const logger = winston.createLogger({
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.simple()
+        winston.format.printf(({ timestamp, level, message, ...meta }) => {
+          const msg = typeof message === 'string' ? message : String(message);
+          // Only log important messages to console, reduce noise
+          if (level === 'error' || level === 'warn' || 
+              msg.includes('Starting') || msg.includes('completed') || 
+              msg.includes('failed') || msg.includes('cache')) {
+            return `${timestamp} [${level}]: ${msg} ${Object.keys(meta).length ? JSON.stringify(meta) : ''}`;
+          }
+          return '';
+        })
       )
     })
   ]
@@ -32,6 +42,75 @@ const logger = winston.createLogger({
 // Ensure logs directory exists
 if (!fs.existsSync('logs')) {
   fs.mkdirSync('logs');
+}
+
+// ===== CACHING SYSTEM =====
+// In-memory cache for LLM results
+const llmCache = new Map<string, any>();
+const templateCache = new Map<string, any>();
+const groundingCache = new Map<string, any>();
+const headerMappingCache = new Map<string, any>();
+
+// Cache key generator for LLM calls
+function generateCacheKey(input: string | undefined, context: string | undefined): string {
+  return crypto.createHash('md5').update(`${input || ''}:${context || ''}`).digest('hex');
+}
+
+// Cache management
+function getCachedResult(key: string): any | null {
+  return llmCache.get(key) || null;
+}
+
+function setCachedResult(key: string, result: any): void {
+  llmCache.set(key, result);
+  // Limit cache size to prevent memory issues
+  if (llmCache.size > 1000) {
+    const firstKey = llmCache.keys().next().value;
+    llmCache.delete(firstKey);
+  }
+}
+
+// Preload static data at startup
+async function preloadStaticData(groundingRoot: string, templateRoot: string) {
+  logger.info('Preloading static data for caching');
+  
+  try {
+    // Cache all template files
+    const categories = fs.readdirSync(groundingRoot).filter((cat: string) => 
+      fs.statSync(path.join(groundingRoot, String(cat))).isDirectory()
+    );
+    
+    for (const category of categories) {
+      // Cache template
+      const safeCategory = typeof category === 'string' ? category : '';
+      const templatePath = path.join(templateRoot, `${safeCategory}.xlsx`);
+      const baseTemplatePath = path.join(templateRoot, "base.xlsx");
+      const xlsxToUse = fs.existsSync(templatePath) ? templatePath : baseTemplatePath;
+      
+      if (!templateCache.has(category)) {
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(xlsxToUse || "");
+        templateCache.set(category, workbook);
+        logger.info('Cached template', { category });
+      }
+      
+      // Cache grounding examples
+      const groundingPath = path.join(groundingRoot, safeCategory, "sample_vendor_feed.xlsx");
+      if (fs.existsSync(groundingPath) && !groundingCache.has(category)) {
+        const groundingWorkbook = new ExcelJS.Workbook();
+        await groundingWorkbook.xlsx.readFile(groundingPath || "");
+        groundingCache.set(category, groundingWorkbook);
+        logger.info('Cached grounding examples', { category });
+      }
+    }
+    
+    logger.info('Static data preloading completed', { 
+      templates: templateCache.size, 
+      grounding: groundingCache.size 
+    });
+  } catch (error) {
+    logger.warn('Static data preloading failed', { error: error instanceof Error ? error.message : error });
+  }
 }
 
 // Types for better type safety
@@ -104,25 +183,96 @@ function extractAttributes(row: Record<string, any>): Record<string, string> {
   return attrs;
 }
 
-// MAIN handler with comprehensive logging
+// Enhanced LLM call with caching
+async function cachedLLMCall(prompt: string, context: string, options: any = {}) {
+  const cacheKey = generateCacheKey(prompt, context);
+  const cached = getCachedResult(cacheKey);
+  
+  if (cached) {
+    logger.info('LLM cache hit', { context });
+    return cached;
+  }
+  
+  logger.info('LLM cache miss, making API call', { context, prompt });
+  try {
+    const result = await openai.chat.completions.create({
+      model: options.model || "gpt-4o-mini",
+      messages: [
+        { role: "system", content: options.systemPrompt || "You are a product feed enrichment expert." },
+        { role: "user", content: prompt }
+      ],
+      temperature: options.temperature || 0.3,
+      max_tokens: options.maxTokens || 2000,
+      response_format: options.responseFormat || { type: "json_object" }
+    });
+    const response = result.choices[0].message.content;
+    logger.info('LLM API call result', { context, response });
+    setCachedResult(cacheKey, response);
+    return response;
+  } catch (err) {
+    logger.warn('LLM API call failed', { context, error: err instanceof Error ? err.message : err });
+    return '';
+  }
+}
+
+// Parallel batch processing with better error handling
+async function processBatchInParallel(batches: any[], processor: Function, concurrency = 3) {
+  const results: any[] = [];
+  const errors: any[] = [];
+  
+  for (let i = 0; i < batches.length; i += concurrency) {
+    const batch = batches.slice(i, i + concurrency);
+    const batchPromises = batch.map(async (item, index) => {
+      try {
+        return await processor(item, i + index);
+      } catch (error) {
+        logger.warn('Batch item processing failed', { 
+          batchIndex: i + index, 
+          error: error instanceof Error ? error.message : error 
+        });
+        return { error: error instanceof Error ? error.message : error };
+      }
+    });
+    
+    const batchResults = await Promise.allSettled(batchPromises);
+    batchResults.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        results.push(result.value);
+      } else {
+        errors.push({ index: i + index, error: result.reason });
+      }
+    });
+  }
+  
+  return { results, errors };
+}
+
+// Walmart transformer: robust, .xlsx-only, future-proof
+// NOTE: For Walmart, we require .xlsx templates and a specific worksheet/row structure.
+// If generalizing for other platforms, detect template extension and structure dynamically.
 export const handleProcess = async (req: Request, res: Response) => {
   const startTime = Date.now();
   const id = req.params.id;
   const uploadPath = path.join("temp_uploads", String(id) + ".csv");
   const groundingRoot = "grounding/walmart";
   const templateRoot = "attached_assets/templates/walmart";
+  // Always output .xlsx for Walmart
   const outputPath = path.join("outputs", `${id}_output.xlsx`);
 
-  logger.info('Starting transformation', { id, uploadPath });
+  logger.info('Starting Walmart transformation', { id });
 
   try {
+    // Preload static data if not already cached
+    if (templateCache.size === 0) {
+      await preloadStaticData(groundingRoot, templateRoot);
+    }
+
     // Validate input file exists
     if (!fs.existsSync(uploadPath)) {
       throw new Error(`Input file not found: ${uploadPath}`);
     }
 
     // Load and parse CSV
-    logger.info('Loading CSV file', { path: uploadPath });
     const csvData = fs.readFileSync(uploadPath, "utf8");
     let { data: rows, errors: parseErrors } = Papa.parse(csvData, { 
       header: true, 
@@ -136,7 +286,7 @@ export const handleProcess = async (req: Request, res: Response) => {
 
     // Robust CSV parsing: check for single-string header
     if (rows.length > 0 && typeof Object.keys(rows[0] as Record<string, any>)[0] === 'string' && Object.keys(rows[0] as Record<string, any>).length === 1) {
-      logger.warn('CSV parsed as single column, attempting manual split', { firstRow: rows[0] });
+      logger.warn('CSV parsed as single column, attempting manual split');
       // Try to re-parse with header: false
       const { data: rawRows } = Papa.parse(csvData, { header: false, skipEmptyLines: true });
       if (Array.isArray(rawRows) && rawRows.length > 1 && Array.isArray(rawRows[0])) {
@@ -148,31 +298,26 @@ export const handleProcess = async (req: Request, res: Response) => {
           headers.forEach((h: string, i: number) => { obj[h] = values[i] || ""; });
           return obj;
         });
-        logger.info('Manual CSV split complete', { headers, rowCount: rows.length });
       }
     }
 
-    logger.info('CSV loaded successfully', { 
-      rowCount: rows.length, 
-      headers: Object.keys(rows[0] || {}) 
-    });
-    logger.info('Sample input rows', { sample: rows.slice(0, 2) });
+    logger.info('CSV loaded successfully', { rowCount: rows.length });
 
-    // --- Category detection ---
+    // --- Category detection with caching ---
     const category = await detectCategory(rows, groundingRoot);
     logger.info('Category detected', { category });
 
-    // --- Load template and field definitions ---
+    // --- Load template and field definitions with caching ---
     const { templateKeys, fieldDefinitions } = await loadTemplateAndFields(category, groundingRoot);
     logger.info('Template loaded', { fieldCount: templateKeys.length });
 
-    // --- Extract output columns from row 3 of the template (real field names) ---
-    const templateXlsxPath = path.join(templateRoot, `${category}.xlsx`);
-    const baseTemplatePath = path.join(templateRoot, "base.xlsx");
-    const xlsxToUse = fs.existsSync(templateXlsxPath) ? templateXlsxPath : baseTemplatePath;
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(xlsxToUse);
-    const worksheet = workbook.getWorksheet("Product Content And Site Exp");
+    // --- Extract output columns from cached template ---
+    const cachedTemplate = templateCache.get(category);
+    if (!cachedTemplate) {
+      throw new Error(`Template not found in cache for category: ${category}`);
+    }
+    // Walmart: always use 'Product Content And Site Exp' worksheet, row 3 for columns
+    const worksheet = cachedTemplate.getWorksheet("Product Content And Site Exp");
     if (!worksheet) throw new Error("Worksheet 'Product Content And Site Exp' not found in template XLSX");
     let outputColumns: string[] = [];
     const row3 = worksheet.getRow(3).values;
@@ -181,332 +326,370 @@ export const handleProcess = async (req: Request, res: Response) => {
         .slice(1)
         .map((v: any) => (v === undefined || v === null ? '' : String(v).trim()));
     } else {
-      logger.error('Row 3 of template worksheet is not an array', { row3 });
       throw new Error('Template row 3 is not an array');
     }
-    logger.info('Extracted output columns from template row 3 (field names)', { outputColumns });
 
-    // --- LLM-driven key seller data detection (moved here to fix ReferenceError) ---
+    // --- LLM-driven key seller data detection with caching ---
     const inputHeaders = Object.keys(rows[0] || {});
     const sampleRows = rows.slice(0, 10) as Record<string, any>[];
     const keySellerDataPrompt = `Given the following input headers and sample rows, classify each column as either 'key seller data' (must be preserved as-is) or 'optimizable' (can be AI-enriched for the target marketplace). For each, provide a confidence score (0-1) and a short reason. Return a JSON object with two arrays: keySellerData and optimizableData, each with objects {column, confidence, reason}.\n\nHeaders: ${JSON.stringify(inputHeaders)}\nSample rows: ${JSON.stringify(sampleRows.slice(0, 5))}`;
-    const keySellerDataResp = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [{ role: 'system', content: 'You are a product data transformation expert.' }, { role: 'user', content: keySellerDataPrompt }],
-      response_format: { type: 'json_object' },
-      temperature: 0.2,
-    });
+    const keySellerDataResp = await cachedLLMCall(
+      keySellerDataPrompt,
+      'key_seller_data_detection',
+      { model: 'gpt-4o', systemPrompt: 'You are a product data transformation expert.' }
+    );
     let keySellerDataResult: any = {};
     try {
-      keySellerDataResult = JSON.parse(keySellerDataResp.choices[0].message.content || '{}');
+      keySellerDataResult = JSON.parse(keySellerDataResp);
     } catch (e) {
-      logger.warn('Failed to parse keySellerData LLM response', { error: e, raw: keySellerDataResp.choices[0].message.content });
+      logger.warn('Failed to parse key seller data response', { error: e });
       keySellerDataResult = { keySellerData: [], optimizableData: [] };
     }
-    logger.info('LLM key/optimizable field classification', { keySellerDataResult });
-    const keyFields = (keySellerDataResult.keySellerData || []).map((c: any) => c.column);
-    const aiFillColumns = (keySellerDataResult.optimizableData || [])
-      .map((c: any) => c.column)
-      .filter((col: string) => outputColumns.includes(col) && !keyFields.includes(col));
-    if (aiFillColumns.length === 0) {
-      logger.warn('No optimizable fields to enrich; skipping AI enrichment.');
-    }
 
-    // --- Use OpenAI to map input headers to template field names ---
-    const headerMapping = await mapHeadersWithOpenAI(inputHeaders, outputColumns);
-    logger.info('Input-to-template mapping table', { headerMapping });
+    // Trim and normalize all input headers and output columns
+    const trimmedInputHeaders = inputHeaders.map(h => h.trim());
+    const trimmedOutputColumns = outputColumns.map(h => h.trim());
+    const normalizedInputHeaders = trimmedInputHeaders.map(h => normalizeHeader(h));
+    const normalizedOutputColumns = trimmedOutputColumns.map(h => normalizeHeader(h));
+    logger.info('Trimmed input headers:', { trimmedInputHeaders });
+    logger.info('Trimmed output columns:', { trimmedOutputColumns });
+    logger.info('Normalized input headers:', { normalizedInputHeaders });
+    logger.info('Normalized output columns:', { normalizedOutputColumns });
 
-    // --- Clean header mapping: trim whitespace from keys and values ---
-    const cleanedHeaderMapping: Record<string, string> = {};
-    Object.entries(headerMapping).forEach(([inputHeader, outputCol]) => {
-      if (outputCol && outputCol.trim() && outputColumns.includes(outputCol.trim())) {
-        cleanedHeaderMapping[inputHeader.trim()] = outputCol.trim();
+    // Robust header mapping: direct, normalized, then fuzzy (string similarity)
+    const headerMapping: Record<string, string> = {};
+    trimmedOutputColumns.forEach((col: string, idx: number) => {
+      const normCol = normalizedOutputColumns[idx];
+      // 1. Direct match
+      let inputIdx = trimmedInputHeaders.indexOf(col);
+      if (inputIdx !== -1) {
+        headerMapping[col] = trimmedInputHeaders[inputIdx];
+        logger.info(`Header mapping [direct]: '${col}' -> '${trimmedInputHeaders[inputIdx]}'`);
+        return;
       }
-    });
-    logger.info('Cleaned input-to-template mapping table', { cleanedHeaderMapping });
-
-    // --- Transform rows ---
-    const outputRows = rows.map((rowRaw: unknown, idx: number) => {
-      const row = rowRaw as Record<string, any>;
-      const out: Record<string, any> = {};
-      Object.entries(cleanedHeaderMapping).forEach(([inputHeader, outputCol]: [string, string]) => {
-        out[outputCol] = row[inputHeader];
-      });
-      outputColumns.forEach((col: string) => {
-        if (out[col] === undefined) out[col] = "";
-      });
-      return out;
-    });
-    logger.info('Sample output rows (template-mapped)', { sample: outputRows.slice(0, 2) });
-
-    // --- Load grounding examples for the detected category ---
-    const groundingExamples = await loadGroundingExamples(category, groundingRoot, 3);
-    logger.info('Loaded grounding examples for enrichment', { count: groundingExamples.length });
-
-    // --- Group template headers by priority using LLM ---
-    const headerGroupingPrompt = `Group these Walmart template headers into 3 priority groups for AI enrichment:
-
-A0 (Critical - Must fill): Product identification, core attributes, platform requirements
-A1 (Important - Should fill): Enhanced descriptions, features, specifications  
-A2 (Nice-to-have - Optional): Additional details, marketing content
-
-Headers: ${outputColumns.join(', ')}
-
-Respond with JSON: {"A0": ["header1", "header2"], "A1": ["header3"], "A2": ["header4"]}`;
-
-    let headerGroups: { A0: string[], A1: string[], A2: string[] } = { A0: [], A1: [], A2: [] };
-    try {
-      const groupingResp = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a product feed optimization expert. Group headers by marketplace priority." },
-          { role: "user", content: headerGroupingPrompt }
-        ],
-        temperature: 0.1,
-        max_tokens: 1000,
-        response_format: { type: "json_object" }
-      });
-      const groupingContent = groupingResp.choices[0].message.content;
-      if (groupingContent) {
-        headerGroups = JSON.parse(groupingContent);
-        logger.info('Header priority groups created', { headerGroups });
+      // 2. Normalized match
+      inputIdx = normalizedInputHeaders.indexOf(normCol);
+      if (inputIdx !== -1) {
+        headerMapping[col] = trimmedInputHeaders[inputIdx];
+        logger.info(`Header mapping [normalized]: '${col}' -> '${trimmedInputHeaders[inputIdx]}'`);
+        return;
       }
-    } catch (error: unknown) {
-      logger.warn('Failed to group headers, using fallback grouping', { error: error instanceof Error ? error.message : error });
-      // Fallback: manually group critical fields
-      headerGroups = {
-        A0: ['Product Name', 'Brand Name', 'Product ID', 'Product ID Type', 'Site Description', 'Key Features (+)', 'Color', 'Condition'],
-        A1: ['Key Features 1 (+)', 'Key Features 2 (+)', 'Key Features 3 (+)', 'Key Features 4 (+)', 'Color Category (+)', 'Mobile Operating System (+)', 'Display Technology', 'Processor Brand'],
-        A2: outputColumns.filter(col => !['Product Name', 'Brand Name', 'Product ID', 'Product ID Type', 'Site Description', 'Key Features (+)', 'Color', 'Condition', 'Key Features 1 (+)', 'Key Features 2 (+)', 'Key Features 3 (+)', 'Key Features 4 (+)', 'Color Category (+)', 'Mobile Operating System (+)', 'Display Technology', 'Processor Brand'].includes(col))
-      };
-    }
+      // 3. Fuzzy match (string similarity)
+      const { bestMatch } = stringSimilarity.findBestMatch(col, trimmedInputHeaders);
+      if (bestMatch.rating > 0.7) {
+        headerMapping[col] = bestMatch.target;
+        logger.info(`Header mapping [fuzzy]: '${col}' -> '${bestMatch.target}' (score: ${bestMatch.rating})`);
+        return;
+      }
+      // 4. No match
+      headerMapping[col] = '';
+      logger.warn(`Header mapping [unmapped]: '${col}' -> ''`);
+    });
+    logger.info('Final header mapping:', { headerMapping });
 
-    // --- Row-level memory for critical fields ---
-    const rowMemory: { [key: string]: { [key: string]: any } } = {};
-
-    // --- Step 1: Algorithmically define A0 fields ---
-    const alwaysA0 = [
-      'Product Name', 'Site Description', 'Brand Name', 'Product ID', 'Product ID Type',
-      'Price', 'Selling Price', 'Color', 'Key Features (+)', 'Condition', 'SKU', 'Quantity', 'Storage Capacity', 'Carrier', 'Model Name', 'Model Number'
-    ];
-    headerGroups.A0 = outputColumns.filter(col => alwaysA0.includes(col));
-    headerGroups.A1 = outputColumns.filter(col => !headerGroups.A0.includes(col));
-    headerGroups.A2 = [];
-    logger.info('Algorithmic A0/A1 grouping', { A0: headerGroups.A0, A1: headerGroups.A1 });
-
-    // --- Step 2: Attribute extraction from Product Name/title and vendor fields ---
-    for (let rowIdx = 0; rowIdx < outputRows.length; rowIdx++) {
-      const row: { [key: string]: any } = outputRows[rowIdx];
-      const vendorRow: { [key: string]: any } = rows[rowIdx] || {};
-      const extracted: { [key: string]: string } = extractAttributes(vendorRow);
-      const productKey = row['Product Name'] || row['SKU'] || `row${rowIdx}`;
-      if (!rowMemory[productKey]) rowMemory[productKey] = {};
-      for (const col of headerGroups.A0) {
-        if (!row[col] || row[col].trim() === '') {
-          if (extracted[col]) {
-            logger.info('A0 field filled by extraction', { row: rowIdx, field: col, value: extracted[col] });
-            outputRows[rowIdx][col] = extracted[col];
-            rowMemory[productKey][col] = extracted[col];
-            continue;
-          }
-          // LLM fallback as before
-          const fieldDef = fieldDefinitions[col] || '';
-          const exampleValues = groundingExamples.map(ex => ex[col]).filter(Boolean);
-          const prompt = `You are enriching a product feed for Walmart. Given this product row, create a high-quality value for the ${col} field. Respond with JSON: { "${col}": "...", "confidence": 0.xx }
-
-Product row: ${JSON.stringify(row, null, 2)}
-Field: ${col}
-Definition: ${fieldDef}
-Examples: ${exampleValues.slice(0,3).map(v => `- ${v}`).join('\\n')}
-
-Instructions:
-- Create a professional, marketplace-ready value
-- Use the product context to infer missing information
-- For Product Name: Make it descriptive and searchable
-- For Brand Name: Extract from product name or infer
-- For Site Description: Write a compelling product description
-- For Key Features: List 3-5 key selling points
-- For Color: Extract from product name or infer
-- For Product ID Type: Use GTIN, UPC, or ASIN as appropriate
-- Respond with a confidence score (0-1) for the value
-
-Response:`;
-          try {
-            const resp = await openai.chat.completions.create({
-              model: "gpt-4o-mini",
-              messages: [
-                { role: "system", content: "You are a product feed enrichment expert. Create high-quality, marketplace-ready values." },
-                { role: "user", content: prompt }
-              ],
-              temperature: 0.3,
-              max_tokens: 500,
-              response_format: { type: "json_object" }
-            });
-            const content = resp.choices[0].message.content;
-            logger.info('Raw LLM response (A0 field)', { row: rowIdx, field: col, content });
-            let parsed: Record<string, any> = {};
-            if (content) {
-              try {
-                parsed = JSON.parse(content);
-              } catch (e) {
-                logger.warn('Failed to parse A0 field AI response', { error: e, content });
-                parsed = {};
-              }
-            }
-            const aiValue = parsed[col];
-            const confidence = typeof parsed.confidence === 'number' ? parsed.confidence : 0.5;
-            if (aiValue && confidence >= 0.7) {
-              logger.info('A0 field enrichment result', {
-                row: rowIdx,
-                field: col,
-                before: row[col],
-                after: aiValue,
-                confidence
-              });
-              outputRows[rowIdx][col] = aiValue;
-              rowMemory[productKey][col] = aiValue;
-            } else if (rowMemory[productKey][col]) {
-              logger.info('A0 field consistency override (row memory)', {
-                row: rowIdx,
-                field: col,
-                before: row[col],
-                after: rowMemory[productKey][col],
-                confidence: 'memory'
-              });
-              outputRows[rowIdx][col] = rowMemory[productKey][col];
-            } else if (vendorRow[col]) {
-              logger.info('A0 field fallback to vendor data', {
-                row: rowIdx,
-                field: col,
-                before: row[col],
-                after: vendorRow[col],
-                confidence: 'vendor'
-              });
-              outputRows[rowIdx][col] = vendorRow[col];
-            } else {
-              logger.info('A0 field remains blank', { row: rowIdx, field: col });
-            }
-          } catch (error: unknown) {
-            logger.warn('A0 field enrichment failed', { row: rowIdx, field: col, error: error instanceof Error ? error.message : error });
-          }
+    // --- Initialize output rows with mapped data ---
+    const outputRows: Record<string, any>[] = (rows as Record<string, any>[]).map((row: Record<string, any>, index: number) => {
+      const outputRow: Record<string, any> = {};
+      trimmedOutputColumns.forEach((col: string) => {
+        const mappedInputCol = headerMapping[col];
+        if (mappedInputCol && row[mappedInputCol]) {
+          outputRow[col] = row[mappedInputCol];
+        } else {
+          outputRow[col] = "";
         }
-      }
-    }
+      });
+      return outputRow;
+    });
+    logger.info('Sample output row:', { row: outputRows[0] });
+    logger.info('All output rows:', { outputRows });
+    // Do NOT abort if some columns are unmapped—always produce output
 
-    // --- Batch enrichment for A1 (Important) fields ---
-    logger.info('Starting A1 (Important) field batch enrichment', { fields: headerGroups.A1 });
-    const a1BatchSize = 5;
+    // --- Priority-based AI enrichment with improved batching ---
+    const headerGroups = {
+      A0: outputColumns.filter(col => 
+        keySellerDataResult.keySellerData?.some((k: any) => k.column === col && k.confidence > 0.8)
+      ),
+      A1: outputColumns.filter(col => 
+        keySellerDataResult.optimizableData?.some((k: any) => k.column === col && k.confidence > 0.7)
+      ),
+      A2: outputColumns.filter(col => 
+        !keySellerDataResult.keySellerData?.some((k: any) => k.column === col) &&
+        !keySellerDataResult.optimizableData?.some((k: any) => k.column === col)
+      )
+    };
+
+    // Row memory for consistency
+    const rowMemory: Record<string, Record<string, any>> = {};
+
+    // Process A1 fields in parallel batches
+    const a1BatchSize = 5; // Smaller batches for better reliability
+    const a1Batches = [];
     for (let i = 0; i < outputRows.length; i += a1BatchSize) {
       const batch = outputRows.slice(i, i + a1BatchSize);
-      const emptyA1Fields = headerGroups.A1.filter(col => batch.some(row => !row[col] || row[col].trim() === ''));
+      const emptyA1Fields = headerGroups.A1.filter(col => 
+        batch.some(row => !row[col] || row[col].trim() === '')
+      );
       if (emptyA1Fields.length > 0) {
-        const batchPrompt = `Enrich these product rows with missing A1 fields. For each value, also return a confidence score (0-1). Respond with a JSON array, one object per row, with keys matching the fields to fill and a confidence for each field. Example: [{ "Site Description": "...", "confidence": 0.92 }, ...]
-
-Fields to fill: ${emptyA1Fields.join(', ')}
-Field definitions: ${emptyA1Fields.map(col => `${col}: ${fieldDefinitions[col] || ''}`).join('\\n')}
-
-Product rows: ${JSON.stringify(batch, null, 2)}
-
-Response:`;
-        try {
-          const resp = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [
-              { role: "system", content: "You are a product feed enrichment expert. Fill missing fields with high-quality values and confidence scores." },
-              { role: "user", content: batchPrompt }
-            ],
-            temperature: 0.3,
-            max_tokens: 2000,
-            response_format: { type: "json_object" }
-          });
-          const content = resp.choices[0].message.content;
-          logger.info('Raw LLM response (A1 batch)', { content });
-          let enrichedRows: any[] = [];
-          if (content) {
-            try {
-              let parsed = JSON.parse(content);
-              // Accept both flat arrays and { products: [...] }
-              if (Array.isArray(parsed)) {
-                enrichedRows = parsed;
-              } else if (parsed.products && Array.isArray(parsed.products)) {
-                enrichedRows = parsed.products;
-              } else {
-                logger.warn('A1 batch response format not recognized', { parsed });
-                enrichedRows = [];
-              }
-            } catch (e) {
-              logger.warn('Failed to parse A1 batch response', { error: e, content });
-              enrichedRows = [];
-            }
-          }
-          enrichedRows.forEach((enriched: Record<string, any>, batchIdx: number) => {
-            const rowIdx = i + batchIdx;
-            const row: { [key: string]: any } = outputRows[rowIdx];
-            for (const col of emptyA1Fields) {
-              const aiValue = enriched[col];
-              const confidence = typeof enriched[`${col}_confidence`] === 'number' ? enriched[`${col}_confidence`] : (typeof enriched.confidence === 'number' ? enriched.confidence : 0.5);
-              if (aiValue && confidence >= 0.7) {
-                logger.info('A1 field enrichment result', {
-                  row: rowIdx,
-                  field: col,
-                  before: row[col],
-                  after: aiValue,
-                  confidence
-                });
-                outputRows[rowIdx][col] = aiValue;
-                rowMemory[row['Product Name'] || row['SKU'] || `row${rowIdx}`][col] = aiValue;
-              } else if (rowMemory[row['Product Name'] || row['SKU'] || `row${rowIdx}`][col]) {
-                logger.info('A1 field consistency override (row memory)', {
-                  row: rowIdx,
-                  field: col,
-                  before: row[col],
-                  after: rowMemory[row['Product Name'] || row['SKU'] || `row${rowIdx}`][col],
-                  confidence: 'memory'
-                });
-                outputRows[rowIdx][col] = rowMemory[row['Product Name'] || row['SKU'] || `row${rowIdx}`][col];
-              } else {
-                logger.info('A1 field fallback to vendor data', {
-                  row: rowIdx,
-                  field: col,
-                  before: row[col],
-                  after: row[col],
-                  confidence: 'vendor'
-                });
-                // No change, preserve vendor data
-              }
-            }
-          });
-        } catch (error: unknown) {
-          logger.warn('A1 batch enrichment failed', { error: error instanceof Error ? error.message : error });
-        }
+        a1Batches.push({ batch, emptyA1Fields, startIndex: i });
       }
     }
-
+    // Process batches in parallel with concurrency limit
+    if (a1Batches.length > 0) {
+      logger.info('Processing A1 enrichment batches', { batchCount: a1Batches.length });
+      const batchProcessor = async (batchData: any, batchIndex: number) => {
+        const { batch, emptyA1Fields, startIndex } = batchData;
+        const batchPrompt = `Enrich these product rows with missing A1 fields. For each value, also return a confidence score (0-1). Respond with a JSON array, one object per row, with keys matching the fields to fill and a confidence for each field. Example: [{ "Site Description": "...", "confidence": 0.92 }, ...]\n\nFields to fill: ${emptyA1Fields.join(', ')}\nField definitions: ${emptyA1Fields.map(col => `${col}: ${fieldDefinitions[col] || ''}`).join('\\n')}\n\nProduct rows: ${JSON.stringify(batch, null, 2)}\n\nResponse:`;
+        try {
+          const enrichedRows = await cachedLLMCall(
+            batchPrompt,
+            `a1_batch_${batchIndex}`,
+            { maxTokens: 3000 }
+          );
+          let parsed: any[] = [];
+          try {
+            const parsedResponse = JSON.parse(enrichedRows);
+            if (Array.isArray(parsedResponse)) {
+              parsed = parsedResponse;
+            } else if (parsedResponse.products && Array.isArray(parsedResponse.products)) {
+              parsed = parsedResponse.products;
+            }
+          } catch (e) {
+            logger.warn('Failed to parse A1 batch response', { batchIndex, error: e });
+            return { success: false, error: 'Parse failed' };
+          }
+          // Apply enriched data
+          parsed.forEach((enriched: Record<string, any>, batchIdx: number) => {
+            const rowIdx = startIndex + batchIdx;
+            const row = outputRows[rowIdx];
+            for (const col of emptyA1Fields) {
+              const aiValue = enriched[col];
+              const confidence = typeof enriched[`${col}_confidence`] === 'number' 
+                ? enriched[`${col}_confidence`] 
+                : (typeof enriched.confidence === 'number' ? enriched.confidence : 0.5);
+              if (aiValue && confidence >= 0.7) {
+                outputRows[rowIdx][col] = aiValue;
+                const rowKey = row['Product Name'] || row['SKU'] || `row${rowIdx}`;
+                if (!rowMemory[rowKey]) rowMemory[rowKey] = {};
+                rowMemory[rowKey][col] = aiValue;
+              }
+            }
+          });
+          return { success: true, processed: parsed.length };
+        } catch (error) {
+          logger.warn('A1 batch enrichment failed', { batchIndex, error: error instanceof Error ? error.message : error });
+          return { success: false, error: error instanceof Error ? error.message : error };
+        }
+      };
+      const batchResults = await processBatchInParallel(a1Batches, batchProcessor, 3);
+      logger.info('A1 enrichment completed', { 
+        successful: batchResults.results.filter(r => r.success).length,
+        failed: batchResults.errors.length
+      });
+    }
     logger.info('All priority-based AI enrichment completed', { 
       totalRows: outputRows.length, 
       a0Fields: headerGroups.A0.length,
       a1Fields: headerGroups.A1.length,
       a2Fields: headerGroups.A2.length
     });
-
     // --- Write output directly to cells, starting at row 6 ---
-    // This avoids issues with merged cells, formatting, and ensures data is visible in Excel.
     const rowsToDelete = worksheet.rowCount - 5;
     if (rowsToDelete > 0) {
       worksheet.spliceRows(6, rowsToDelete);
-      logger.info('Cleared existing rows from row 6 onward', { rowsDeleted: rowsToDelete });
     }
     outputRows.forEach((row: Record<string, any>, i: number) => {
-      outputColumns.forEach((col, j) => {
+      (outputColumns as string[]).forEach((col: string, j: number) => {
         worksheet.getRow(i + 6).getCell(j + 1).value = row[col] || "";
       });
     });
-    logger.info('Wrote output rows directly to worksheet cells', { startRow: 6, rowCount: outputRows.length });
-    await workbook.xlsx.writeFile(outputPath);
+    await cachedTemplate.xlsx.writeFile(outputPath);
     logger.info('Output file written successfully', { path: outputPath, outputRows: outputRows.length });
+    // --- Data quality and insights summary ---
+    // Use Set for unique SKUs, filter out undefined
+    const uniqueSkus = new Set<string>(outputRows.map(r => typeof r['SKU'] === 'string' ? r['SKU'] : '').filter(Boolean));
+    const productTypes = new Set<string>();
+    rows.forEach((row: any) => {
+      if (row['SKU'] || row['sku']) uniqueSkus.add(row['SKU'] || row['sku']);
+      if (row['Product Name'] || row['productName']) productTypes.add(row['Product Name'] || row['productName']);
+    });
 
-    // Compose result object (no summary/groundingExamples)
-    const result: TransformResult = {
+    // --- Types for stats ---
+    type FieldStat = { mapped: number; enriched: number; blank: number; errors: number };
+    interface FieldStats { [field: string]: FieldStat; }
+    interface RowStat { row: number; confidence: number; blanks: string[]; }
+    const fieldStats: FieldStats = {};
+    const rowStats: RowStat[] = [];
+    let totalMapped = 0, totalEnriched = 0, totalBlank = 0, totalErrors = 0;
+    const blankFields = new Set<string>();
+    const warnings: string[] = [];
+    const suggestions: string[] = [];
+
+    // List of non-enrichable/system fields to skip LLM calls
+    const NON_ENRICHABLE_FIELDS = [
+      'SKU', 'Spec Product Type', 'Product ID Type', 'Product ID', 'Condition', 'Your SKU', 'Reebelo RID', 'SKU Condition', 'SKU Battery Health', 'Min Price', 'Quantity', 'Price', 'MSRP', 'SKU Update', 'Product Id Update', 'External Product ID', 'External Product ID Type', 'Variant Group ID', 'Variant Attribute Names (+)', 'Is Primary Variant', 'Swatch Image URL', 'Swatch Variant Attribute', 'States', 'State Restrictions Reason', 'ZIP Codes', 'Product is or Contains an Electronic Component?', 'Product is or Contains a Chemical, Aerosol or Pesticide?', 'Product is or Contains this Battery Type', 'Fulfillment Lag Time', 'Ships in Original Packaging', 'Must ship alone?', 'Is Preorder', 'Release Date', 'Site Start Date', 'Site End Date', 'Inventory', 'Fulfillment Center ID', 'Pre Order Available On', 'Third Party Accreditation Symbol on Product Package Code (+)', 'Total Count', 'Virtual Assistant (+)', 'Warranty Text', 'Warranty URL', 'gpt_calls', 'processing_time_ms', 'row_stats', 'field_stats', 'summary_json', 'warnings', 'suggestions', 'llm_calls', 'llm_errors', 'input_sample', 'output_sample', 'avg_confidence', 'success_rate', 'blanks', 'detected_category', 'product_types', 'unique_skus', 'total_products'
+    ];
+    let llmErrorCount = 0;
+    const llmErrorLimit = 5;
+    for (let i = 0; i < outputRows.length; i++) {
+      const row = outputRows[i];
+      let rowConfidence = 0;
+      let rowFields = 0;
+      let rowBlanks: string[] = [];
+      for (const field of outputColumns as string[]) {
+        let value = row[field];
+        let confidence = 0;
+        let enriched = false;
+        let error = null;
+        // Only count as filled if value is a non-empty, non-blank string
+        if (typeof value === 'string' && value.trim() !== "") {
+          confidence = 1.0;
+          totalMapped++;
+          fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+          fieldStats[field].mapped++;
+        } else if (NON_ENRICHABLE_FIELDS.includes(field)) {
+          // Skip LLM for system/non-enrichable fields
+          confidence = 0.0;
+          totalBlank++;
+          fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+          fieldStats[field].blank++;
+          if (typeof field === 'string') blankFields.add(field);
+          rowBlanks.push(field);
+        } else {
+          // Try LLM enrichment using cachedLLMCall (existing logic)
+          try {
+            // Prompt: Always mention JSON and instruct model to return a JSON object for the field
+            const prompt = `Enrich the field '${field}' for this product. Respond ONLY with a valid JSON object: { "${field}": value }` +
+              `\nProduct data: ${JSON.stringify(row)}`;
+            const enrichedValue = await cachedLLMCall(prompt, { field, row });
+            if (enrichedValue && typeof enrichedValue === 'string' && enrichedValue.trim() !== "") {
+              value = enrichedValue;
+              confidence = 0.7;
+              enriched = true;
+              totalEnriched++;
+              fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+              fieldStats[field].enriched++;
+              row[field] = value;
+            } else {
+              // Blank: set confidence to 0, count as blank
+              confidence = 0.0;
+              totalBlank++;
+              fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+              fieldStats[field].blank++;
+              if (typeof field === 'string') blankFields.add(field);
+              rowBlanks.push(field);
+            }
+          } catch (e: any) {
+            confidence = 0.0;
+            totalErrors++;
+            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+            fieldStats[field].errors++;
+            if (typeof field === 'string') blankFields.add(field);
+            rowBlanks.push(field);
+            error = e.message || String(e);
+            if (llmErrorCount < llmErrorLimit) {
+              logger.warn('LLM enrichment error', { row: i, field, error });
+              llmErrorCount++;
+            } else if (llmErrorCount === llmErrorLimit) {
+              logger.warn('LLM enrichment error: too many errors, further errors will be suppressed');
+              llmErrorCount++;
+            }
+          }
+        }
+        rowConfidence += confidence;
+        rowFields++;
+      }
+      rowStats.push({
+        row: i + 1,
+        confidence: rowFields ? rowConfidence / rowFields : 0,
+        blanks: rowBlanks
+      });
+    }
+
+    // Aggregate stats
+    const avgConfidence = rowStats.length ? rowStats.reduce((a, b) => a + b.confidence, 0) / rowStats.length : 0;
+    const successRate = (totalMapped + totalEnriched) / (outputRows.length * outputColumns.length);
+    if (blankFields.size > 0) {
+      warnings.push(`${blankFields.size} fields were left blank in one or more products. Manual review recommended.`);
+    }
+    if (successRate < 0.9) {
+      suggestions.push('Add more detailed product data to improve mapping and enrichment success.');
+    }
+
+    const summary = {
+      total_products: outputRows.length,
+      unique_skus: uniqueSkus.size,
+      detected_category: category,
+      product_types: Array.from(new Set(outputRows.map(r => typeof r['Product Name'] === 'string' ? r['Product Name'] : '').filter(Boolean))),
+      field_stats: fieldStats,
+      row_stats: rowStats,
+      avg_confidence: avgConfidence,
+      success_rate: successRate,
+      blanks: Array.from(blankFields),
+      warnings,
+      suggestions,
+      llm_calls: totalEnriched,
+      llm_errors: totalErrors,
+      input_sample: rows.slice(0, 2),
+      output_sample: outputRows.slice(0, 2),
+      processing_time_ms: Date.now() - startTime
+    };
+
+    // --- SMART, CATEGORY-AWARE, BATCHED LLM ENRICHMENT WITH GROUNDING ---
+    // For each row, batch enrich all blank/missing fields in a single LLM call, including for each field: its definition, product_type, and examples from field_definitions.json.
+    // The prompt is category-aware and field-aware, and works for any category.
+    for (let i = 0; i < outputRows.length; i++) {
+      const row = outputRows[i];
+      // Find all blank fields that are not in NON_ENRICHABLE_FIELDS
+      const blankFields = outputColumns.filter(field =>
+        !NON_ENRICHABLE_FIELDS.includes(field) && (!row[field] || row[field].trim() === "")
+      );
+      if (blankFields.length === 0) continue;
+      // Build field grounding context
+      const fieldContexts = blankFields.map(field => {
+        const def = fieldDefinitions[field] || {};
+        return `Field: ${field}\nDefinition: ${def.description || ""}\nProduct Type: ${def.product_type || ""}\nExamples: ${(def.examples || []).join(", ")}`;
+      }).join("\n\n");
+      // Compose prompt
+      const prompt = `You are an expert at preparing product feeds for Walmart (or other marketplaces).\nCategory: ${category}\nFor the following product, fill in the missing fields using the field definitions and examples provided.\nIf you don't know a value, leave it blank.\n\n${fieldContexts}\n\nProduct data: ${JSON.stringify(row)}\n\nRespond with a JSON object with keys for each field.`;
+      try {
+        const enrichedJson = await cachedLLMCall(prompt, `row_${i}_${category}`);
+        let enriched: Record<string, any> = {};
+        try {
+          enriched = JSON.parse(enrichedJson);
+        } catch (e) {
+          logger.warn('Failed to parse batched LLM response', { row: i, error: e });
+          continue;
+        }
+        for (const field of blankFields) {
+          if (enriched[field] && typeof enriched[field] === 'string' && enriched[field].trim() !== "") {
+            row[field] = enriched[field];
+            totalEnriched++;
+            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+            fieldStats[field].enriched++;
+          } else {
+            totalBlank++;
+            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+            fieldStats[field].blank++;
+          }
+        }
+      } catch (e) {
+        logger.warn('Batched LLM enrichment error', { row: i, error: e });
+        for (const field of blankFields) {
+          totalErrors++;
+          fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+          fieldStats[field].errors++;
+        }
+      }
+    }
+    // --- Add field definitions and examples to summary JSON ---
+    const field_definitions_summary: Record<string, any> = {};
+    for (const col of outputColumns as string[]) {
+      field_definitions_summary[col] = fieldDefinitions[col] || {};
+    }
+    (summary as any).field_definitions = field_definitions_summary;
+
+    // Compose result object with detailed summary
+    const result: TransformResult & { summary_json: any } = {
       file: `${id}_output.xlsx`,
       category,
       vendorFields: inputHeaders,
@@ -519,33 +702,31 @@ Response:`;
         fallback: 0,
         processing_time_ms: Date.now() - startTime
       },
-      warnings: [],
+      warnings,
       logs: {
         category_detection: category,
         grounding_examples_loaded: 0,
-        batches_processed: 0,
-        gpt_calls: 0
-      }
+        batches_processed: a1Batches.length,
+        gpt_calls: llmCache.size
+      },
+      summary_json: summary
     };
-
     logger.info('Transformation completed successfully', { 
       id, 
       processingTime: result.summary.processing_time_ms,
-      outputRows: outputRows.length
+      outputRows: outputRows.length,
+      cacheHits: llmCache.size,
+      summary: result.summary_json
     });
-    
     return res.json(result);
-
   } catch (err: unknown) {
     const errorTime = Date.now() - startTime;
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     logger.error('Transformation failed', { 
       id, 
       error: errorMessage, 
-      processingTime: errorTime,
-      stack: err instanceof Error ? err.stack : undefined
+      processingTime: errorTime
     });
-    
     return res.status(500).json({ 
       error: errorMessage,
       processing_time_ms: errorTime,

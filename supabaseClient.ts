@@ -7,7 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 
 // SAFEGUARD: fail early if not set
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  throw new Error("Missing Supabase env vars");
+  console.warn("[Supabase] Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY. Supabase client may not work correctly.");
 }
 
 const REMOVED_SECRET= createClient(

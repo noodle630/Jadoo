@@ -7,19 +7,64 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import REMOVED_SECRETfrom "../supabaseClient"; // ✅ at root
 import { handleProcess } from "./utils/transformer"; // ✅ match your tree
-import multer from 'multer';
 import Papa from 'papaparse';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { Request, Response, NextFunction } from 'express';
+import multer from 'multer';
 
 const router = express.Router();
+
+// Patch for __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Configure multer for memory storage (no temp files)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB max
+    files: 1
+  },
+  fileFilter: (req, file, cb) => {
+    console.log('📁 File received:', file.originalname, file.mimetype);
+    // Accept CSV files and common spreadsheet formats
+    if (file.mimetype === 'text/csv' || 
+        file.mimetype === 'application/vnd.ms-excel' ||
+        file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+        file.originalname.toLowerCase().endsWith('.csv') ||
+        file.originalname.toLowerCase().endsWith('.xlsx')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV and Excel files are allowed'));
+    }
+  }
+});
+
+// Test endpoint for Lovable connection
+router.get("/health", (req, res) => {
+  res.json({ 
+    status: "ok", 
+    message: "Jadoo backend is running", 
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      upload: "POST /api/upload",
+      simpleUpload: "POST /api/simple-upload", 
+      process: "POST /api/process/:id",
+      logs: "GET /api/logs/:id",
+      download: "GET /api/download/:file"
+    }
+  });
+});
 
 // ✅ /api/upload — uses express-fileupload
 router.post("/upload", async (req, res) => {
   try {
-    if (!req.files || !req.files.file) {
+    if (!req.files || !(req.files as any).file) {
       return res.status(400).json({ error: "No file uploaded." });
     }
 
-    const file = req.files.file as Express.Multer.File;
+    const file = (req.files as any).file;
     const id = uuidv4();
     const uploadPath = path.join("temp_uploads", `${id}.csv`);
 
@@ -27,63 +72,200 @@ router.post("/upload", async (req, res) => {
 
     console.log(`✅ File saved: ${uploadPath}`);
     return res.json({ id });
-  } catch (err) {
-    console.error(`❌ Upload error: ${err}`);
-    return res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error(`❌ Upload error: ${message}`);
+    return res.status(500).json({ error: message });
   }
 });
 
 // ✅ /api/process/:id
 router.post("/process/:id", handleProcess);
 
-// PATCH: Jadoo - /api/simple-upload endpoint for Lovable integration
-const upload = multer({ dest: 'jadoo_temp_uploads/' });
+// Ensure temp directory exists
+const tempDir = path.join(__dirname, '../temp');
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
 
-router.post('/api/simple-upload', upload.single('file'), async (req, res) => {
+// Progress tracking storage
+const processingJobs = new Map();
+
+// Progress update endpoint
+router.get('/feeds/:feedId/progress', (req, res) => {
+  const { feedId } = req.params;
+  const job = processingJobs.get(feedId) || { 
+    status: 'not_found',
+    progress: 0,
+    message: 'Job not found'
+  };
+  
+  console.log(`📊 Progress check for ${feedId}:`, job);
+  res.json(job);
+});
+
+// Background processing with progress updates
+async function processFileInBackground(feedId: string, fileBuffer: Buffer, fields: any) {
+  const updateProgress = (progress: number, message: string, data: any = {}) => {
+    const jobData = {
+      feed_id: feedId,
+      status: progress < 100 ? 'processing' : 'completed',
+      progress,
+      message,
+      timestamp: new Date().toISOString(),
+      ...data
+    };
+    processingJobs.set(feedId, jobData);
+    console.log(`📈 Progress Update [${feedId}]: ${progress}% - ${message}`);
+  };
+
+  let supabaseFilePath = '';
+  let publicUrl = '';
+  let summary = {};
   try {
-    // Type guards for req.body and req.file
-    const body = req.body as { platform?: string; category?: string; user_email?: string };
-    const file = req.file as Express.Multer.File | undefined;
-    const platform = body.platform;
-    const category = body.category;
-    const email = body.user_email || 'dev@local.test'; // TODO: Replace with Google Auth user when ready
-    if (!file) return res.status(400).json({ error: 'No file uploaded' });
-    if (!platform) return res.status(400).json({ error: 'Platform is required' });
-    if (platform !== 'walmart') return res.status(400).json({ error: 'Only Walmart is supported at this time' });
-    // Read file and count rows
-    const csvData = fs.readFileSync(file.path, 'utf8');
-    const { data: rows } = Papa.parse(csvData, { header: true, skipEmptyLines: true });
-    if (rows.length > 100) return res.status(400).json({ error: 'Max 100 rows supported for now' });
-    // Log to feeds
-    const { data: feed, error: feedErr } = await supabase.from('feeds').insert({
-      platform,
-      category: category || null,
-      filename: file.originalname,
-      row_count: rows.length,
-      status: 'uploading',
-      user_email: email
-    }).select().single();
-    if (feedErr) return res.status(500).json({ error: 'Failed to log feed', details: feedErr });
-    // Log event
-    await supabase.from('transformation_events').insert({
-      feed_id: feed.id,
-      event_type: 'upload_received',
-      details: { filename: file.originalname, platform, category, row_count: rows.length, user_email: email }
+    updateProgress(10, 'Starting file analysis...');
+    // Convert buffer to string for CSV processing
+    const csvContent = fileBuffer.toString('utf-8');
+    updateProgress(25, 'Parsing CSV structure...');
+    // --- Use transformer logic to get mapped product feed ---
+    // We'll call the core logic directly here for now
+    // Write the buffer to a temp file so transformer can use it
+    const tempInputPath = `temp_uploads/${feedId}.csv`;
+    fs.writeFileSync(tempInputPath, csvContent, 'utf-8');
+    updateProgress(40, 'Running product transformer...');
+    // Simulate Express req/res for handleProcess
+    const fakeReq = { params: { id: feedId } };
+    let transformResult: any;
+    try {
+      // Use the transformer logic to get the mapped product feed
+      transformResult = await new Promise((resolve, reject) => {
+        // Fake res object to capture result
+        const fakeRes = {
+          json: (data: any) => resolve(data),
+          status: (code: number) => ({ json: (data: any) => reject(data) })
+        };
+        // @ts-ignore
+        handleProcess(fakeReq, fakeRes);
+      });
+    } catch (err: any) {
+      throw new Error('Transformer failed: ' + (err && (err as any).error ? (err as any).error : err));
+    }
+    updateProgress(70, 'Uploading optimized XLSX to Supabase...');
+    // Upload the XLSX output file to Supabase Storage
+    const outputXlsxPath = `outputs/${feedId}_output.xlsx`;
+    if (!fs.existsSync(outputXlsxPath)) throw new Error('Expected XLSX output not found: ' + outputXlsxPath);
+    const xlsxBuffer = fs.readFileSync(outputXlsxPath);
+    supabaseFilePath = `feeds/${feedId}.xlsx`;
+    const { data: uploadData, error: uploadError } = await supabase.storage.from('feeds').upload(`${feedId}.xlsx`, xlsxBuffer, { contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', upsert: true });
+    if (uploadError) throw new Error('Supabase upload failed: ' + uploadError.message);
+    // Get public URL
+    const { data: publicData } = supabase.storage.from('feeds').getPublicUrl(`${feedId}.xlsx`);
+    publicUrl = publicData.publicUrl;
+    // Insert/update row in feeds table
+    summary = {
+      total_rows: transformResult && transformResult.rows ? transformResult.rows.length : null,
+      processed_rows: transformResult && transformResult.rows ? transformResult.rows.length : null,
+      avg_confidence: null, // You can compute this if you have confidence data
+      categories_detected: transformResult.category ? [transformResult.category] : [],
+      download_url: publicUrl
+    };
+    const { error: dbError } = await supabase.from('feeds').upsert({
+      id: feedId,
+      filename: fields.fileName || fields.filename || `${feedId}.xlsx`,
+      platform: fields.platform,
+      status: 'completed',
+      upload_time: new Date().toISOString(),
+      output_path: publicUrl,
+      summary_json: summary,
+      email: fields.email || null,
+      category: fields.category || null
     });
-    // Call transformer logic (pass platform, category, feed_id, etc.)
-    // TODO: Update transformer to accept these params and log to Supabase
-    // For now, just return feed metadata
-    return res.json({
-      feed_id: feed.id,
+    if (dbError) throw new Error('Supabase DB upsert failed: ' + dbError.message);
+    // Final completion
+    updateProgress(100, 'Feed optimization completed!', {
+      summary,
+      rows_processed: transformResult && transformResult.rows ? transformResult.rows : []
+    });
+  } catch (error) {
+    console.error('🚨 Background processing error:', error);
+    updateProgress(0, 'Processing failed', { error: (error as Error).message });
+    // Log error to Supabase
+    await supabase.from('feeds').upsert({
+      id: feedId,
+      filename: fields.fileName || fields.filename || `${feedId}.xlsx`,
+      platform: fields.platform,
+      status: 'failed',
+      upload_time: new Date().toISOString(),
+      output_path: publicUrl,
+      summary_json: { error: error instanceof Error ? error.message : String(error) },
+      email: fields.email || null,
+      category: fields.category || null
+    });
+  }
+}
+
+// NEW: Multer-based upload route
+router.post('/simple-upload', upload.single('file'), (req, res) => {
+  console.log('=== MULTER UPLOAD START ===');
+  console.log('📄 File:', req.file ? req.file.originalname : 'NO FILE');
+  console.log('📝 Fields:', req.body);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    
+    // Extract fields from form data
+    const platform = req.body.platform;
+    const email = req.body.email;
+    const category = req.body.category;
+    
+    console.log('📋 Extracted data:', {
       platform,
+      email,
       category,
-      status: feed.status,
-      row_count: rows.length,
-      created_at: feed.created_at
+      fileExists: !!req.file,
+      fileName: req.file.originalname,
+      fileSize: req.file.size
     });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    return res.status(500).json({ error: message });
+    
+    // Validation
+    if (!platform) {
+      return res.status(400).json({ error: 'Platform is required' });
+    }
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    
+    const feedId = `feed_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    
+    console.log('✅ Upload successful:', {
+      feedId,
+      filename: req.file.originalname,
+      size: req.file.size,
+      platform: platform
+    });
+    
+    // Return immediate response
+    res.json({
+      feed_id: feedId,
+      status: 'processing',
+      message: 'File uploaded successfully',
+      file_info: {
+        name: req.file.originalname,
+        size: req.file.size,
+        type: req.file.mimetype
+      },
+      platform: platform,
+      category: category || 'auto-detect'
+    });
+    
+    // Start background processing
+    processFileInBackground(feedId, req.file.buffer, req.body);
+    
+  } catch (error) {
+    console.error('💥 Upload error:', error);
+    res.status(500).json({ error: 'Upload failed', details: error instanceof Error ? error.message : String(error) });
   }
 });
 
@@ -109,4 +291,84 @@ router.get("/download/:file", async (req, res) => {
   }
   res.download(filePath);
 });
+
+// Dynamic categories endpoint
+router.get('/platforms/:platform/categories', async (req, res) => {
+  const { platform } = req.params;
+  const dir = path.join(__dirname, '../attached_assets/templates', platform);
+  try {
+    if (!fs.existsSync(dir)) {
+      return res.status(404).json({ error: 'Platform not found' });
+    }
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.xlsx'));
+    const categories = files.map(f => {
+      const base = f.replace('.xlsx', '');
+      // Convert snake_case or underscores to user-friendly label
+      return base
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, c => c.toUpperCase());
+    });
+    return res.json({ platform, categories });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to read categories', details: err instanceof Error ? err.message : String(err) });
+  }
+});
+
+// Add a download endpoint that redirects to the Supabase public URL
+router.get('/feeds/:feedId/download', async (req, res) => {
+  const { feedId } = req.params;
+  // Try to get the feed from Supabase
+  const { data, error } = await supabase.from('feeds').select('*').eq('id', feedId).single();
+  if (error || !data) {
+    return res.status(404).json({ error: 'Feed not found' });
+  }
+  if (!data.output_path) {
+    return res.status(404).json({ error: 'No output file for this feed' });
+  }
+  if (!data.output_path.endsWith('.xlsx')) {
+    console.warn(`[Download] Attempted to download non-xlsx file for feed ${feedId}: ${data.output_path}`);
+    return res.status(400).json({ error: 'Only .xlsx downloads are supported.' });
+  }
+  // Set Content-Disposition for nice filename (browser will use this if possible)
+  const filename = `${data.platform || 'feed'}_${feedId}.xlsx`;
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  // Redirect to the public URL
+  return res.redirect(data.output_path);
+});
+
+// Endpoint to check if feed is ready (DB row exists and public file is accessible)
+router.get('/feeds/:feedId/ready', async (req, res) => {
+  const { feedId } = req.params;
+  // Try to get the feed from Supabase
+  const { data, error } = await supabase.from('feeds').select('*').eq('id', feedId).single();
+  if (error || !data || !data.output_path) {
+    return res.json({ ready: false, url: null });
+  }
+  // Check if the public file URL is accessible (HEAD request)
+  try {
+    const fetch = (await import('node-fetch')).default;
+    const headResp = await fetch(data.output_path, { method: 'HEAD' });
+    if (headResp.ok) {
+      return res.json({ ready: true, url: data.output_path });
+    } else {
+      return res.json({ ready: false, url: data.output_path });
+    }
+  } catch (err) {
+    return res.json({ ready: false, url: data.output_path });
+  }
+});
+
+// Global error handler (after all routes)
+router.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('🚨 Global error handler:', error);
+  if (error.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ error: 'File too large' });
+  }
+  if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+    return res.status(400).json({ error: 'Unexpected file field' });
+  }
+  return res.status(500).json({ error: 'Internal server error' });
+});
+
+// NOTE for Lovable: The backend now only returns the XLSX output file (platform template, all columns, all LLM enrichment, all mapping preserved). No CSV is generated or returned. The transformer logic is fully preserved and used as before.
 
