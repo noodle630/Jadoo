@@ -83,13 +83,14 @@ async function preloadStaticData(groundingRoot: string, templateRoot: string) {
     for (const category of categories) {
       // Cache template
       const safeCategory = typeof category === 'string' ? category : '';
-      const templatePath = path.join(templateRoot, `${safeCategory}.xlsx`);
-      const baseTemplatePath = path.join(templateRoot, "base.xlsx");
+      const safeTemplateRoot = templateRoot || "attached_assets/templates/walmart";
+      const templatePath = path.join(safeTemplateRoot, `${safeCategory}.xlsx`);
+      const baseTemplatePath = path.join(safeTemplateRoot, "base.xlsx");
       const xlsxToUse = fs.existsSync(templatePath) ? templatePath : baseTemplatePath;
       
       if (!templateCache.has(category)) {
         const workbook = new ExcelJS.Workbook();
-        await workbook.xlsx.readFile(xlsxToUse || "");
+        await workbook.xlsx.readFile(xlsxToUse);
         templateCache.set(category, workbook);
         logger.info('Cached template', { category });
       }
@@ -98,7 +99,7 @@ async function preloadStaticData(groundingRoot: string, templateRoot: string) {
       const groundingPath = path.join(groundingRoot, safeCategory, "sample_vendor_feed.xlsx");
       if (fs.existsSync(groundingPath) && !groundingCache.has(category)) {
         const groundingWorkbook = new ExcelJS.Workbook();
-        await groundingWorkbook.xlsx.readFile(groundingPath || "");
+        await groundingWorkbook.xlsx.readFile(groundingPath);
         groundingCache.set(category, groundingWorkbook);
         logger.info('Cached grounding examples', { category });
       }
@@ -404,93 +405,198 @@ export const handleProcess = async (req: Request, res: Response) => {
     logger.info('All output rows:', { outputRows });
     // Do NOT abort if some columns are unmapped—always produce output
 
-    // --- Priority-based AI enrichment with improved batching ---
-    const headerGroups = {
-      A0: outputColumns.filter(col => 
-        keySellerDataResult.keySellerData?.some((k: any) => k.column === col && k.confidence > 0.8)
-      ),
-      A1: outputColumns.filter(col => 
-        keySellerDataResult.optimizableData?.some((k: any) => k.column === col && k.confidence > 0.7)
-      ),
-      A2: outputColumns.filter(col => 
-        !keySellerDataResult.keySellerData?.some((k: any) => k.column === col) &&
-        !keySellerDataResult.optimizableData?.some((k: any) => k.column === col)
-      )
-    };
+    // --- OPTIMIZED: Single Batch LLM Call Per Row ---
+    // This replaces the old per-field and batch enrichment with ONE call per row
+    // Reduces LLM calls from 1000+ to 20 for a 20-row file with 50 fields
+    
+    logger.info('Starting optimized batch LLM enrichment', { 
+      totalRows: outputRows.length,
+      totalFields: outputColumns.length
+    });
 
-    // Row memory for consistency
-    const rowMemory: Record<string, Record<string, any>> = {};
+    // List of non-enrichable/system fields to skip LLM calls
+    const NON_ENRICHABLE_FIELDS = [
+      'SKU', 'Spec Product Type', 'Product ID Type', 'Product ID', 'Condition', 'Your SKU', 
+      'Reebelo RID', 'SKU Condition', 'SKU Battery Health', 'Min Price', 'Quantity', 'Price', 
+      'MSRP', 'SKU Update', 'Product Id Update', 'External Product ID', 'External Product ID Type', 
+      'Variant Group ID', 'Variant Attribute Names (+)', 'Is Primary Variant', 'Swatch Image URL', 
+      'Swatch Variant Attribute', 'States', 'State Restrictions Reason', 'ZIP Codes', 
+      'Product is or Contains an Electronic Component?', 'Product is or Contains a Chemical, Aerosol or Pesticide?', 
+      'Product is or Contains this Battery Type', 'Fulfillment Lag Time', 'Ships in Original Packaging', 
+      'Must ship alone?', 'Is Preorder', 'Release Date', 'Site Start Date', 'Site End Date', 
+      'Inventory', 'Fulfillment Center ID', 'Pre Order Available On', 
+      'Third Party Accreditation Symbol on Product Package Code (+)', 'Total Count', 
+      'Virtual Assistant (+)', 'Warranty Text', 'Warranty URL'
+    ];
 
-    // Process A1 fields in parallel batches
-    const a1BatchSize = 5; // Smaller batches for better reliability
-    const a1Batches = [];
-    for (let i = 0; i < outputRows.length; i += a1BatchSize) {
-      const batch = outputRows.slice(i, i + a1BatchSize);
-      const emptyA1Fields = headerGroups.A1.filter(col => 
-        batch.some(row => !row[col] || row[col].trim() === '')
+    let totalEnriched = 0;
+    let totalErrors = 0;
+    const fieldStats: Record<string, { mapped: number; enriched: number; blank: number; errors: number }> = {};
+    const rowStats: Array<{ row: number; confidence: number; blanks: string[] }> = [];
+
+    // Process each row with ONE LLM call per row
+    for (let i = 0; i < outputRows.length; i++) {
+      const row = outputRows[i];
+      const rowStartTime = Date.now();
+      
+      // Find all blank fields that need enrichment
+      const blankFields = outputColumns.filter(field =>
+        !NON_ENRICHABLE_FIELDS.includes(field) && 
+        (!row[field] || (typeof row[field] === 'string' && row[field].trim() === ""))
       );
-      if (emptyA1Fields.length > 0) {
-        a1Batches.push({ batch, emptyA1Fields, startIndex: i });
+
+      if (blankFields.length === 0) {
+        // Row is complete, just calculate stats
+        let rowConfidence = 0;
+        let rowFields = 0;
+        for (const field of outputColumns) {
+          if (row[field] && typeof row[field] === 'string' && row[field].trim() !== "") {
+            rowConfidence += 1.0;
+            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+            fieldStats[field].mapped++;
+          }
+          rowFields++;
+        }
+        rowStats.push({
+          row: i + 1,
+          confidence: rowFields ? rowConfidence / rowFields : 0,
+          blanks: []
+        });
+        continue;
+      }
+
+      // Build comprehensive field context for this row
+      const fieldContexts = blankFields.map(field => {
+        const def = fieldDefinitions[field] || {};
+        const examples = def.examples || [];
+        const exampleText = examples.length > 0 ? `Examples: ${examples.slice(0, 3).join(", ")}` : "";
+        return `Field: ${field}\nDefinition: ${def.description || "Product information field"}\nProduct Type: ${def.product_type || "General"}\n${exampleText}`;
+      }).join("\n\n");
+
+      // Create smart prompt with product context
+      const productName = row['Product Name'] || row['productName'] || row['name'] || 'Unknown Product';
+      const productType = row['Product Type'] || row['productType'] || row['type'] || 'General';
+      
+      const prompt = `You are an expert at preparing product feeds for ${category} marketplace.
+
+Category: ${category}
+Product: ${productName}
+Product Type: ${productType}
+
+Fill in the missing fields for this product using the field definitions below. 
+If you cannot determine a value with high confidence, leave it blank.
+Respond with ONLY a valid JSON object containing the field names and values.
+
+Fields to fill:
+${fieldContexts}
+
+Product data: ${JSON.stringify(row, null, 2)}
+
+Response (JSON only):`;
+
+      try {
+        const enrichedJson = await cachedLLMCall(
+          prompt, 
+          `row_${i}_${category}_${Date.now()}`,
+          { maxTokens: 2000 }
+        );
+
+        let enriched: Record<string, any> = {};
+        try {
+          enriched = JSON.parse(enrichedJson);
+        } catch (parseError) {
+          logger.warn('Failed to parse LLM response', { 
+            row: i, 
+            error: parseError instanceof Error ? parseError.message : parseError,
+            response: enrichedJson?.substring(0, 200) 
+          });
+          // Mark all fields as errors
+          for (const field of blankFields) {
+            totalErrors++;
+            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+            fieldStats[field].errors++;
+          }
+          continue;
+        }
+
+        // Apply enriched data and track stats
+        let rowConfidence = 0;
+        let rowFields = 0;
+        const rowBlanks: string[] = [];
+
+        for (const field of outputColumns) {
+          if (NON_ENRICHABLE_FIELDS.includes(field)) {
+            // Skip system fields
+            rowFields++;
+            continue;
+          }
+
+          if (row[field] && typeof row[field] === 'string' && row[field].trim() !== "") {
+            // Already has value
+            rowConfidence += 1.0;
+            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+            fieldStats[field].mapped++;
+          } else if (blankFields.includes(field) && enriched[field]) {
+            // LLM provided value
+            const enrichedValue = enriched[field];
+            if (typeof enrichedValue === 'string' && enrichedValue.trim() !== "") {
+              row[field] = enrichedValue;
+              rowConfidence += 0.8; // Slightly lower confidence for AI-generated
+              totalEnriched++;
+              fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+              fieldStats[field].enriched++;
+            } else {
+              rowBlanks.push(field);
+              fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+              fieldStats[field].blank++;
+            }
+          } else {
+            // Still blank
+            rowBlanks.push(field);
+            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+            fieldStats[field].blank++;
+          }
+          rowFields++;
+        }
+
+        rowStats.push({
+          row: i + 1,
+          confidence: rowFields ? rowConfidence / rowFields : 0,
+          blanks: rowBlanks
+        });
+
+        logger.debug('Row enrichment completed', { 
+          row: i + 1, 
+          enrichedFields: Object.keys(enriched).length,
+          processingTime: Date.now() - rowStartTime
+        });
+
+      } catch (error) {
+        logger.warn('Row LLM enrichment failed', { 
+          row: i, 
+          error: error instanceof Error ? error.message : error 
+        });
+        
+        // Mark all blank fields as errors
+        for (const field of blankFields) {
+          totalErrors++;
+          fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+          fieldStats[field].errors++;
+        }
+
+        rowStats.push({
+          row: i + 1,
+          confidence: 0,
+          blanks: blankFields
+        });
       }
     }
-    // Process batches in parallel with concurrency limit
-    if (a1Batches.length > 0) {
-      logger.info('Processing A1 enrichment batches', { batchCount: a1Batches.length });
-      const batchProcessor = async (batchData: any, batchIndex: number) => {
-        const { batch, emptyA1Fields, startIndex } = batchData;
-        const batchPrompt = `Enrich these product rows with missing A1 fields. For each value, also return a confidence score (0-1). Respond with a JSON array, one object per row, with keys matching the fields to fill and a confidence for each field. Example: [{ "Site Description": "...", "confidence": 0.92 }, ...]\n\nFields to fill: ${emptyA1Fields.join(', ')}\nField definitions: ${emptyA1Fields.map(col => `${col}: ${fieldDefinitions[col] || ''}`).join('\\n')}\n\nProduct rows: ${JSON.stringify(batch, null, 2)}\n\nResponse:`;
-        try {
-          const enrichedRows = await cachedLLMCall(
-            batchPrompt,
-            `a1_batch_${batchIndex}`,
-            { maxTokens: 3000 }
-          );
-          let parsed: any[] = [];
-          try {
-            const parsedResponse = JSON.parse(enrichedRows);
-            if (Array.isArray(parsedResponse)) {
-              parsed = parsedResponse;
-            } else if (parsedResponse.products && Array.isArray(parsedResponse.products)) {
-              parsed = parsedResponse.products;
-            }
-          } catch (e) {
-            logger.warn('Failed to parse A1 batch response', { batchIndex, error: e });
-            return { success: false, error: 'Parse failed' };
-          }
-          // Apply enriched data
-          parsed.forEach((enriched: Record<string, any>, batchIdx: number) => {
-            const rowIdx = startIndex + batchIdx;
-            const row = outputRows[rowIdx];
-            for (const col of emptyA1Fields) {
-              const aiValue = enriched[col];
-              const confidence = typeof enriched[`${col}_confidence`] === 'number' 
-                ? enriched[`${col}_confidence`] 
-                : (typeof enriched.confidence === 'number' ? enriched.confidence : 0.5);
-              if (aiValue && confidence >= 0.7) {
-                outputRows[rowIdx][col] = aiValue;
-                const rowKey = row['Product Name'] || row['SKU'] || `row${rowIdx}`;
-                if (!rowMemory[rowKey]) rowMemory[rowKey] = {};
-                rowMemory[rowKey][col] = aiValue;
-              }
-            }
-          });
-          return { success: true, processed: parsed.length };
-        } catch (error) {
-          logger.warn('A1 batch enrichment failed', { batchIndex, error: error instanceof Error ? error.message : error });
-          return { success: false, error: error instanceof Error ? error.message : error };
-        }
-      };
-      const batchResults = await processBatchInParallel(a1Batches, batchProcessor, 3);
-      logger.info('A1 enrichment completed', { 
-        successful: batchResults.results.filter(r => r.success).length,
-        failed: batchResults.errors.length
-      });
-    }
-    logger.info('All priority-based AI enrichment completed', { 
-      totalRows: outputRows.length, 
-      a0Fields: headerGroups.A0.length,
-      a1Fields: headerGroups.A1.length,
-      a2Fields: headerGroups.A2.length
+
+    logger.info('Optimized batch LLM enrichment completed', { 
+      totalRows: outputRows.length,
+      totalEnriched,
+      totalErrors,
+      avgProcessingTime: (Date.now() - startTime) / outputRows.length
     });
     // --- Write output directly to cells, starting at row 6 ---
     const rowsToDelete = worksheet.rowCount - 5;
@@ -504,6 +610,7 @@ export const handleProcess = async (req: Request, res: Response) => {
     });
     await cachedTemplate.xlsx.writeFile(outputPath);
     logger.info('Output file written successfully', { path: outputPath, outputRows: outputRows.length });
+
     // --- Data quality and insights summary ---
     // Use Set for unique SKUs, filter out undefined
     const uniqueSkus = new Set<string>(outputRows.map(r => typeof r['SKU'] === 'string' ? r['SKU'] : '').filter(Boolean));
@@ -513,103 +620,17 @@ export const handleProcess = async (req: Request, res: Response) => {
       if (row['Product Name'] || row['productName']) productTypes.add(row['Product Name'] || row['productName']);
     });
 
-    // --- Types for stats ---
-    type FieldStat = { mapped: number; enriched: number; blank: number; errors: number };
-    interface FieldStats { [field: string]: FieldStat; }
-    interface RowStat { row: number; confidence: number; blanks: string[]; }
-    const fieldStats: FieldStats = {};
-    const rowStats: RowStat[] = [];
-    let totalMapped = 0, totalEnriched = 0, totalBlank = 0, totalErrors = 0;
-    const blankFields = new Set<string>();
+    // Aggregate stats from the optimized enrichment
+    const avgConfidence = rowStats.length ? rowStats.reduce((a, b) => a + b.confidence, 0) / rowStats.length : 0;
+    const totalMapped = Object.values(fieldStats).reduce((sum, stat) => sum + stat.mapped, 0);
+    const totalBlank = Object.values(fieldStats).reduce((sum, stat) => sum + stat.blank, 0);
+    const successRate = (totalMapped + totalEnriched) / (outputRows.length * outputColumns.length);
+    
     const warnings: string[] = [];
     const suggestions: string[] = [];
-
-    // List of non-enrichable/system fields to skip LLM calls
-    const NON_ENRICHABLE_FIELDS = [
-      'SKU', 'Spec Product Type', 'Product ID Type', 'Product ID', 'Condition', 'Your SKU', 'Reebelo RID', 'SKU Condition', 'SKU Battery Health', 'Min Price', 'Quantity', 'Price', 'MSRP', 'SKU Update', 'Product Id Update', 'External Product ID', 'External Product ID Type', 'Variant Group ID', 'Variant Attribute Names (+)', 'Is Primary Variant', 'Swatch Image URL', 'Swatch Variant Attribute', 'States', 'State Restrictions Reason', 'ZIP Codes', 'Product is or Contains an Electronic Component?', 'Product is or Contains a Chemical, Aerosol or Pesticide?', 'Product is or Contains this Battery Type', 'Fulfillment Lag Time', 'Ships in Original Packaging', 'Must ship alone?', 'Is Preorder', 'Release Date', 'Site Start Date', 'Site End Date', 'Inventory', 'Fulfillment Center ID', 'Pre Order Available On', 'Third Party Accreditation Symbol on Product Package Code (+)', 'Total Count', 'Virtual Assistant (+)', 'Warranty Text', 'Warranty URL', 'gpt_calls', 'processing_time_ms', 'row_stats', 'field_stats', 'summary_json', 'warnings', 'suggestions', 'llm_calls', 'llm_errors', 'input_sample', 'output_sample', 'avg_confidence', 'success_rate', 'blanks', 'detected_category', 'product_types', 'unique_skus', 'total_products'
-    ];
-    let llmErrorCount = 0;
-    const llmErrorLimit = 5;
-    for (let i = 0; i < outputRows.length; i++) {
-      const row = outputRows[i];
-      let rowConfidence = 0;
-      let rowFields = 0;
-      let rowBlanks: string[] = [];
-      for (const field of outputColumns as string[]) {
-        let value = row[field];
-        let confidence = 0;
-        let enriched = false;
-        let error = null;
-        // Only count as filled if value is a non-empty, non-blank string
-        if (typeof value === 'string' && value.trim() !== "") {
-          confidence = 1.0;
-          totalMapped++;
-          fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-          fieldStats[field].mapped++;
-        } else if (NON_ENRICHABLE_FIELDS.includes(field)) {
-          // Skip LLM for system/non-enrichable fields
-          confidence = 0.0;
-          totalBlank++;
-          fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-          fieldStats[field].blank++;
-          if (typeof field === 'string') blankFields.add(field);
-          rowBlanks.push(field);
-        } else {
-          // Try LLM enrichment using cachedLLMCall (existing logic)
-          try {
-            // Prompt: Always mention JSON and instruct model to return a JSON object for the field
-            const prompt = `Enrich the field '${field}' for this product. Respond ONLY with a valid JSON object: { "${field}": value }` +
-              `\nProduct data: ${JSON.stringify(row)}`;
-            const enrichedValue = await cachedLLMCall(prompt, { field, row });
-            if (enrichedValue && typeof enrichedValue === 'string' && enrichedValue.trim() !== "") {
-              value = enrichedValue;
-              confidence = 0.7;
-              enriched = true;
-              totalEnriched++;
-              fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-              fieldStats[field].enriched++;
-              row[field] = value;
-            } else {
-              // Blank: set confidence to 0, count as blank
-              confidence = 0.0;
-              totalBlank++;
-              fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-              fieldStats[field].blank++;
-              if (typeof field === 'string') blankFields.add(field);
-              rowBlanks.push(field);
-            }
-          } catch (e: any) {
-            confidence = 0.0;
-            totalErrors++;
-            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-            fieldStats[field].errors++;
-            if (typeof field === 'string') blankFields.add(field);
-            rowBlanks.push(field);
-            error = e.message || String(e);
-            if (llmErrorCount < llmErrorLimit) {
-              logger.warn('LLM enrichment error', { row: i, field, error });
-              llmErrorCount++;
-            } else if (llmErrorCount === llmErrorLimit) {
-              logger.warn('LLM enrichment error: too many errors, further errors will be suppressed');
-              llmErrorCount++;
-            }
-          }
-        }
-        rowConfidence += confidence;
-        rowFields++;
-      }
-      rowStats.push({
-        row: i + 1,
-        confidence: rowFields ? rowConfidence / rowFields : 0,
-        blanks: rowBlanks
-      });
-    }
-
-    // Aggregate stats
-    const avgConfidence = rowStats.length ? rowStats.reduce((a, b) => a + b.confidence, 0) / rowStats.length : 0;
-    const successRate = (totalMapped + totalEnriched) / (outputRows.length * outputColumns.length);
-    if (blankFields.size > 0) {
-      warnings.push(`${blankFields.size} fields were left blank in one or more products. Manual review recommended.`);
+    
+    if (totalBlank > 0) {
+      warnings.push(`${totalBlank} fields were left blank in one or more products. Manual review recommended.`);
     }
     if (successRate < 0.9) {
       suggestions.push('Add more detailed product data to improve mapping and enrichment success.');
@@ -624,7 +645,7 @@ export const handleProcess = async (req: Request, res: Response) => {
       row_stats: rowStats,
       avg_confidence: avgConfidence,
       success_rate: successRate,
-      blanks: Array.from(blankFields),
+      blanks: Object.keys(fieldStats).filter(field => fieldStats[field].blank > 0),
       warnings,
       suggestions,
       llm_calls: totalEnriched,
@@ -634,53 +655,6 @@ export const handleProcess = async (req: Request, res: Response) => {
       processing_time_ms: Date.now() - startTime
     };
 
-    // --- SMART, CATEGORY-AWARE, BATCHED LLM ENRICHMENT WITH GROUNDING ---
-    // For each row, batch enrich all blank/missing fields in a single LLM call, including for each field: its definition, product_type, and examples from field_definitions.json.
-    // The prompt is category-aware and field-aware, and works for any category.
-    for (let i = 0; i < outputRows.length; i++) {
-      const row = outputRows[i];
-      // Find all blank fields that are not in NON_ENRICHABLE_FIELDS
-      const blankFields = outputColumns.filter(field =>
-        !NON_ENRICHABLE_FIELDS.includes(field) && (!row[field] || row[field].trim() === "")
-      );
-      if (blankFields.length === 0) continue;
-      // Build field grounding context
-      const fieldContexts = blankFields.map(field => {
-        const def = fieldDefinitions[field] || {};
-        return `Field: ${field}\nDefinition: ${def.description || ""}\nProduct Type: ${def.product_type || ""}\nExamples: ${(def.examples || []).join(", ")}`;
-      }).join("\n\n");
-      // Compose prompt
-      const prompt = `You are an expert at preparing product feeds for Walmart (or other marketplaces).\nCategory: ${category}\nFor the following product, fill in the missing fields using the field definitions and examples provided.\nIf you don't know a value, leave it blank.\n\n${fieldContexts}\n\nProduct data: ${JSON.stringify(row)}\n\nRespond with a JSON object with keys for each field.`;
-      try {
-        const enrichedJson = await cachedLLMCall(prompt, `row_${i}_${category}`);
-        let enriched: Record<string, any> = {};
-        try {
-          enriched = JSON.parse(enrichedJson);
-        } catch (e) {
-          logger.warn('Failed to parse batched LLM response', { row: i, error: e });
-          continue;
-        }
-        for (const field of blankFields) {
-          if (enriched[field] && typeof enriched[field] === 'string' && enriched[field].trim() !== "") {
-            row[field] = enriched[field];
-            totalEnriched++;
-            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-            fieldStats[field].enriched++;
-          } else {
-            totalBlank++;
-            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-            fieldStats[field].blank++;
-          }
-        }
-      } catch (e) {
-        logger.warn('Batched LLM enrichment error', { row: i, error: e });
-        for (const field of blankFields) {
-          totalErrors++;
-          fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-          fieldStats[field].errors++;
-        }
-      }
-    }
     // --- Add field definitions and examples to summary JSON ---
     const field_definitions_summary: Record<string, any> = {};
     for (const col of outputColumns as string[]) {
@@ -706,7 +680,7 @@ export const handleProcess = async (req: Request, res: Response) => {
       logs: {
         category_detection: category,
         grounding_examples_loaded: 0,
-        batches_processed: a1Batches.length,
+        batches_processed: 0,
         gpt_calls: llmCache.size
       },
       summary_json: summary

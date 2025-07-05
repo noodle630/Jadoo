@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { fromZodError } from 'zod-validation-error';
 import { storage } from './storage';
 import { z } from 'zod';
+import reliableParser from './utils/reliableParser';
 
 // Configure paths for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -51,9 +52,6 @@ export function createSimpleRoutes() {
       // Get form data
       let name = req.body.name || req.file.originalname.replace(/\.[^/.]+$/, "");
       let marketplace = req.body.marketplace || 'amazon';
-      
-      // Import our reliable parser
-      const reliableParser = require('./utils/reliableParser');
       
       // Count rows reliably
       const countResult = reliableParser.countCSVRows(req.file.path);
