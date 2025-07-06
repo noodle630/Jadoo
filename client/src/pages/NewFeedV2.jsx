@@ -24,7 +24,7 @@ export default function NewFeedV2() {
         formData.append("file", file);
         try {
             // ✅ Upload CSV
-            const uploadRes = yield axios.post("/api/upload", formData);
+            const uploadRes = yield axios.post("/api/simple-upload", formData);
             const { id } = uploadRes.data;
             setLog((prev) => [...prev, `✅ Uploaded: ${id}`]);
             // ✅ Process CSV

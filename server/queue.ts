@@ -49,12 +49,12 @@ const feedQueue = new Queue('feed-transform', { connection });
 const feedWorker = new Worker('feed-transform', async job => {
   const startTime = Date.now();
   const { feedId, fileBuffer, fields, fileName, platform, email, category } = job.data;
-  
-  logJobProgress(feedId, 0, 'started', `Starting job ${job.id} for feed ${feedId}`);
-  console.log(`[Worker] Starting job ${job.id} for feed ${feedId}`);
-  console.log(`[Worker] Platform: ${platform}, Rows: ~${fileBuffer.toString().split('\n').length - 1}`);
-  
+  console.log(`[Worker] ====== JOB START feedId=${feedId} jobId=${job.id} ======`);
   try {
+    logJobProgress(feedId, 0, 'started', `Starting job ${job.id} for feed ${feedId}`);
+    console.log(`[Worker] Starting job ${job.id} for feed ${feedId}`);
+    console.log(`[Worker] Platform: ${platform}, Rows: ~${fileBuffer.toString().split('\n').length - 1}`);
+    
     // Update job status to processing
     await job.updateProgress(10);
     
@@ -65,22 +65,18 @@ const feedWorker = new Worker('feed-transform', async job => {
     const bufferToWrite = Buffer.isBuffer(fileBuffer)
       ? fileBuffer
       : Buffer.from(fileBuffer.data || fileBuffer, 'utf-8');
-    console.log(`[Worker] Writing file buffer to ${tempInputPath}...`);
+    console.log(`[Worker] Writing file buffer to ${tempInputPath}`);
     fs.writeFileSync(tempInputPath, bufferToWrite);
+    console.log(`[Worker] File written: ${tempInputPath}, size=${bufferToWrite.length}`);
     fileTrace.end();
-    console.log(`[Worker] Wrote temp file: ${tempInputPath}`);
     
     await job.updateProgress(20);
     
     // Import and call transformer logic
+    console.log(`[Worker] Importing transformer...`);
     let handleProcess;
-    if (process.env.NODE_ENV === 'development') {
-      // Use .ts extension in dev (tsx)
-      ({ handleProcess } = await import('./utils/transformer.ts'));
-    } else {
-      // Use .js extension in prod
-      ({ handleProcess } = await import('./utils/transformer.js'));
-    }
+    ({ handleProcess } = await import('./utils/transformer.ts'));
+    console.log(`[Worker] Calling transformer for feedId=${feedId}`);
     
     // Create fake req/res objects for transformer
     const fakeReq = { params: { id: feedId } };
@@ -95,12 +91,20 @@ const feedWorker = new Worker('feed-transform', async job => {
     await job.updateProgress(30);
     
     // Call transformer (this is where the LLM magic happens)
-    console.log(`[Worker] Calling transformer for ${feedId}...`);
+    console.log(`[Worker] Starting transformation for feedId: ${feedId}`);
+    console.log(`[Worker] Tier: ${job.data.tier || 'free'}`);
+    
+    // Call the transformer with tier information
     const transformStartTime = Date.now();
-    const transformResult = await handleProcess(fakeReq, fakeRes);
+    const transformResult = await handleProcess(
+      { params: { id: feedId } } as any,
+      { json: (data: any) => data } as any,
+      job.data.tier || 'free'
+    );
+    
     const transformTime = Date.now() - transformStartTime;
     logPerformance('transformer_process', transformTime, { feedId, rows: fileBuffer.toString().split('\n').length - 1 });
-    console.log(`[Worker] Transformer completed in ${transformTime}ms`);
+    console.log(`[Worker] Transformer finished in ${transformTime}ms for feedId=${feedId}`);
     
     await job.updateProgress(70);
     
@@ -109,9 +113,10 @@ const feedWorker = new Worker('feed-transform', async job => {
     const outputXlsxPath = `outputs/${feedId}_output.xlsx`;
     
     if (!fs.existsSync(outputXlsxPath)) {
-      console.error(`[Worker] Expected XLSX output not found: ${outputXlsxPath}`);
+      console.error(`[Worker] ERROR: Expected XLSX output not found: ${outputXlsxPath}`);
       throw new Error(`Expected XLSX output not found: ${outputXlsxPath}`);
     }
+    console.log(`[Worker] Output XLSX exists: ${outputXlsxPath}`);
     
     const xlsxBuffer = fs.readFileSync(outputXlsxPath);
     const uploadTrace = traceSupabaseOperation('upload', 'feeds', { fileSize: xlsxBuffer.length });
@@ -132,6 +137,7 @@ const feedWorker = new Worker('feed-transform', async job => {
     const { data: publicData } = supabase.storage.from('feeds').getPublicUrl(`${feedId}.xlsx`);
     const publicUrl = publicData.publicUrl;
     console.log(`[Worker] Supabase public URL: ${publicUrl}`);
+    console.log(`[Worker] Supabase upload success: ${publicUrl}`);
     
     await job.updateProgress(90);
     
@@ -150,6 +156,7 @@ const feedWorker = new Worker('feed-transform', async job => {
       category: category || null
     });
     console.log(`[Worker] Supabase upsert response:`, { upsertData, dbError });
+    console.log(`[Worker] Feed record upserted in DB for feedId=${feedId}`);
     dbTrace.end(dbError);
     if (dbError) {
       console.error(`[Worker] Database save failed:`, dbError);
@@ -197,6 +204,7 @@ const feedWorker = new Worker('feed-transform', async job => {
       console.error(`[Worker] Failed to record analytics for ${feedId}:`, analyticsError);
     }
     
+    console.log(`[Worker] ====== JOB END feedId=${feedId} jobId=${job.id} ======`);
     return { 
       status: 'completed', 
       jobId: job.id,
@@ -204,13 +212,12 @@ const feedWorker = new Worker('feed-transform', async job => {
       processingTime,
       transformTime,
       outputUrl: publicUrl,
-      summary: transformResult.summary_json
+      summary: summary
     };
     
   } catch (error) {
     const processingTime = Date.now() - startTime;
-    logError(error, { feedId, jobId: job.id, processingTime });
-    console.error(`[Worker] Job ${job.id} failed after ${processingTime}ms:`, error);
+    console.error(`[Worker] JOB ERROR feedId=${feedId} jobId=${job.id} after ${processingTime}ms:`, error);
     if (error instanceof Error && error.stack) {
       console.error(`[Worker] Stack trace:`, error.stack);
     }

@@ -76,10 +76,8 @@ export default function FeedHistory() {
         return true;
     });
     const handleDownload = (id) => {
-        toast({
-            title: "Feed downloaded",
-            description: "Feed has been downloaded successfully.",
-        });
+        const url = `/api/simple-download/${id}`;
+        window.location.href = url;
     };
     const handleDelete = (id) => {
         toast({

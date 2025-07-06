@@ -39,7 +39,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Simple file upload endpoint
-app.post('/api/upload', (req, res) => {
+app.post('/api/simple-upload', (req, res) => {
   console.log('📁 Upload request received');
   
   // Simulate file processing
@@ -83,7 +83,7 @@ app.get('/api/test', (req, res) => {
     timestamp: new Date().toISOString(),
     endpoints: {
       health: '/api/health',
-      upload: '/api/upload',
+      upload: '/api/simple-upload',
       download: '/api/download/:feedId'
     }
   });

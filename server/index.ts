@@ -3,9 +3,10 @@ console.log('[DEBUG] REDIS_URL at index.ts:', process.env.REDIS_URL);
 import express from "express";
 import cors from "cors";
 import routes from "./routes.js"; // 👈 match your folder
-import fileUpload from "express-fileupload";
 import './queue.js';
 import IORedis from 'ioredis';
+import { createSimpleRoutes } from './simple-routes.js';
+import { setupGoogleAuth } from './googleAuth';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -58,11 +59,9 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Only use fileUpload for /api/upload legacy route
-app.use("/api/upload", fileUpload());
-
 // All API routes (including the new Multer-based upload)
 app.use("/api", routes);
+app.use('/api', createSimpleRoutes());
 
 // Add CORS test endpoint
 app.get('/api/cors-test', (req, res) => {
@@ -73,6 +72,10 @@ app.get('/api/cors-test', (req, res) => {
     headers: res.getHeaders()
   });
 });
+
+(async () => {
+  await setupGoogleAuth(app);
+})();
 
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT EXCEPTION:', err);

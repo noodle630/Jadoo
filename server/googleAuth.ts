@@ -131,138 +131,46 @@ async function upsertGoogleUser(profile: any, accessToken: string) {
 
 // Set up Google authentication and related routes
 export async function setupGoogleAuth(app: Express) {
+  console.log('[GOOGLE AUTH] setupGoogleAuth called');
+  console.log('[GOOGLE AUTH] process.env.GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
+  console.log('[GOOGLE AUTH] process.env.GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET);
+  console.log('[GOOGLE AUTH] process.env.GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL);
   app.set("trust proxy", 1);
   app.use(getSession());
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Only set up Google auth if credentials are available
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    // Set up the Google strategy with proper callback URL
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_CALLBACK_URL) {
+    console.log('[GOOGLE AUTH] Credentials found, registering GoogleStrategy and routes');
     passport.use(new GoogleStrategy({
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${APP_URL}/api/auth/google/callback`,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL,
         scope: ['profile', 'email']
       },
-      async function(accessToken, refreshToken, profile, done) {
-        try {
-          console.log(`Google login - Processing profile ID: ${profile.id}`);
-          const user = await upsertGoogleUser(profile, accessToken);
-          
-          // Add null check to fix TypeScript error
-          if (!user) {
-            console.error("Google login - Failed to create/update user");
-            return done(new Error("Failed to create or update user"));
-          }
-          
-          console.log(`Google login - User created/updated with ID: ${user.id}`);
-          done(null, user);
-        } catch (error) {
-          console.error("Google login - Error in callback:", error);
-          done(error as Error);
-        }
+      (accessToken, refreshToken, profile, done) => {
+        console.log('[GOOGLE AUTH] GoogleStrategy callback called');
+        console.log('[GOOGLE AUTH] Profile:', profile);
+        return done(null, profile);
       }
     ));
 
-    passport.serializeUser((user: any, done) => {
-      console.log(`Serializing user to session: ID=${user.id}, Email=${user.email}`);
-      done(null, user.id);
-    });
-    
-    passport.deserializeUser(async (id: number, done) => {
-      try {
-        console.log(`Deserializing user ID: ${id}`);
-        
-        // Check if ID is valid
-        if (!id) {
-          console.error("Invalid user ID during deserialization");
-          return done(new Error('Invalid user ID'), null);
-        }
-        
-        // Get user from database
-        let user;
-        try {
-          user = await storage.getUser(id);
-        } catch (err) {
-          console.error(`Error getting user from storage: ${err}`);
-        }
-        
-        if (user) {
-          // Remove sensitive information
-          const { password, googleToken, githubToken, ...userWithoutSensitiveData } = user;
-          console.log(`User successfully deserialized: ${user.email}`);
-          
-          // Return the user data without sensitive information
-          done(null, {
-            ...userWithoutSensitiveData,
-            // Add additional fields that might be needed
-            lastDeserialized: new Date()
-          });
-        } else {
-          console.error(`User not found with ID: ${id} - Cannot deserialize user`);
-          
-          // Rather than creating a fake temporary user which causes logic issues,
-          // Return an authentication failure
-          done(new Error(`User not found with ID: ${id}`), null);
-        }
-      } catch (error) {
-        console.error(`Error deserializing user: ${error}`);
-        done(error, null);
-      }
+    app.get('/api/auth/google', (req, res, next) => {
+      console.log('[GOOGLE AUTH] /api/auth/google route hit');
+      next();
+    }, passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+    app.get('/api/auth/google/callback', (req, res, next) => {
+      console.log('[GOOGLE AUTH] /api/auth/google/callback route hit');
+      next();
+    }, passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
+      console.log('[GOOGLE AUTH] Google callback success, user:', req.user);
+      res.redirect('/');
     });
 
-    // Google login route
-    app.get(
-      "/api/auth/google",
-      (req, res, next) => {
-        console.log("Starting Google authentication process");
-        console.log("Session before Google auth:", req.session);
-        next();
-      },
-      passport.authenticate("google", {
-        scope: ["profile", "email"]
-      })
-    );
-
-    // Google callback route
-    app.get(
-      "/api/auth/google/callback",
-      passport.authenticate("google", { failureRedirect: "/login?error=google_auth_failed" }),
-      (req, res) => {
-        console.log("Google callback successful");
-        
-        // Log the user object to aid debugging
-        console.log("User in session:", req.user);
-        console.log("Session ID:", req.sessionID);
-        console.log("Session cookie:", req.session?.cookie);
-        
-        // Instead of regenerating the session which can cause issues,
-        // directly save the current session to ensure data persistence
-        // Type assertion because passport.authenticate ensures req.user exists
-        // This fixes the TypeScript error
-        const userData = req.user as Express.User;
-        
-        console.log("Authenticated user data:", userData);
-        
-        // Force session save to ensure user is stored before redirect
-        req.session.save(saveErr => {
-          if (saveErr) {
-            console.error("Error saving session:", saveErr);
-            return res.redirect("/?auth=session_error");
-          }
-          
-          console.log("Session saved successfully");
-          console.log("Session ID:", req.sessionID);
-          
-          // Redirect to dashboard after successful login
-          // Client-side JavaScript will use localStorage to restore the original navigation target
-          res.redirect("/?auth=success");
-        });
-      }
-    );
-
-    console.log("Google authentication routes configured");
+    console.log('[GOOGLE AUTH] Google authentication routes configured');
+  } else {
+    console.log('[GOOGLE AUTH] GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, or GOOGLE_CALLBACK_URL not set, skipping Google auth route registration');
   }
 
   // User info route - returns current user data

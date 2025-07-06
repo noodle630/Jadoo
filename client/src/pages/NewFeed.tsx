@@ -80,7 +80,7 @@ export default function NewFeed() {
       formData.append('file', values.file);
       
       // API request to upload file and create feed
-      const response = await fetch('/api/feeds/upload', {
+      const response = await fetch('/api/simple-upload', {
         method: 'POST',
         body: formData,
       })

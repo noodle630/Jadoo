@@ -55,7 +55,6 @@ router.get("/health", (req, res) => {
         message: "Jadoo backend is running",
         timestamp: new Date().toISOString(),
         endpoints: {
-            upload: "POST /api/upload",
             simpleUpload: "POST /api/simple-upload",
             process: "POST /api/process/:id",
             logs: "GET /api/logs/:id",
@@ -63,25 +62,6 @@ router.get("/health", (req, res) => {
         }
     });
 });
-// ✅ /api/upload — uses express-fileupload
-router.post("/upload", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        if (!req.files || !req.files.file) {
-            return res.status(400).json({ error: "No file uploaded." });
-        }
-        const file = req.files.file;
-        const id = uuidv4();
-        const uploadPath = path.join("temp_uploads", `${id}.csv`);
-        yield file.mv(uploadPath);
-        console.log(`✅ File saved: ${uploadPath}`);
-        return res.json({ id });
-    }
-    catch (err) {
-        const message = err instanceof Error ? err.message : 'Unknown error';
-        console.error(`❌ Upload error: ${message}`);
-        return res.status(500).json({ error: message });
-    }
-}));
 // ✅ /api/process/:id
 router.post("/process/:id", handleProcess);
 // Ensure temp directory exists
@@ -151,6 +131,7 @@ function processFileInBackground(feedId, fileBuffer, fields) {
             updateProgress(40, 'Running product transformer...');
             // Simulate Express req/res for handleProcess
             const fakeReq = { params: { id: feedId } };
+            const tier = fields.tier || 'free'; // Extract tier from fields
             let transformResult;
             try {
                 // Use the transformer logic to get the mapped product feed
@@ -161,7 +142,7 @@ function processFileInBackground(feedId, fileBuffer, fields) {
                         status: (code) => ({ json: (data) => reject(data) })
                     };
                     // @ts-ignore
-                    handleProcess(fakeReq, fakeRes);
+                    handleProcess(fakeReq, fakeRes, tier); // Pass tier parameter
                 });
             }
             catch (err) {
@@ -239,10 +220,12 @@ router.post('/simple-upload', upload.single('file'), (req, res) => __awaiter(voi
         const platform = req.body.platform;
         const email = req.body.email;
         const category = req.body.category;
+        const tier = req.body.tier || 'free';
         console.log('[simple-upload] Extracted data:', {
             platform,
             email,
             category,
+            tier,
             fileExists: !!req.file,
             fileName: req.file.originalname,
             fileSize: req.file.size
@@ -273,7 +256,8 @@ router.post('/simple-upload', upload.single('file'), (req, res) => __awaiter(voi
             fileName: req.file.originalname,
             platform,
             email,
-            category
+            category,
+            tier
         });
         console.log('[simple-upload] Job added to queue for feedId:', feedId);
         // Return immediate response
@@ -292,11 +276,8 @@ router.post('/simple-upload', upload.single('file'), (req, res) => __awaiter(voi
         console.log('[simple-upload] Response sent for feedId:', feedId);
     }
     catch (error) {
-        console.error('[simple-upload] Upload error:', error);
-        if (error instanceof Error && error.stack) {
-            console.error('[simple-upload] Stack trace:', error.stack);
-        }
-        res.status(500).json({ error: 'Upload failed', details: error instanceof Error ? error.message : String(error) });
+        console.error('Upload error:', error);
+        res.status(500).json({ error: error.message || 'Internal server error' });
     }
 }));
 export default router;
@@ -435,16 +416,10 @@ router.get('/jobs/:feedId/status', (req, res) => __awaiter(void 0, void 0, void 
         });
     }
 }));
-// Global error handler (after all routes)
-router.use((error, req, res, next) => {
-    console.error('🚨 Global error handler:', error);
-    if (error.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({ error: 'File too large' });
-    }
-    if (error.code === 'LIMIT_UNEXPECTED_FILE') {
-        return res.status(400).json({ error: 'Unexpected file field' });
-    }
-    return res.status(500).json({ error: 'Internal server error' });
+// Catch-all error handler (must be last)
+router.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ error: err.message || 'Internal server error' });
 });
 // NOTE for Lovable: The backend now only returns the XLSX output file (platform template, all columns, all LLM enrichment, all mapping preserved). No CSV is generated or returned. The transformer logic is fully preserved and used as before.
 // Analytics endpoints

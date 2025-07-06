@@ -52,35 +52,12 @@ router.get("/health", (req, res) => {
     message: "Jadoo backend is running", 
     timestamp: new Date().toISOString(),
     endpoints: {
-      upload: "POST /api/upload",
       simpleUpload: "POST /api/simple-upload", 
       process: "POST /api/process/:id",
       logs: "GET /api/logs/:id",
       download: "GET /api/download/:file"
     }
   });
-});
-
-// ✅ /api/upload — uses express-fileupload
-router.post("/upload", async (req, res) => {
-  try {
-    if (!req.files || !(req.files as any).file) {
-      return res.status(400).json({ error: "No file uploaded." });
-    }
-
-    const file = (req.files as any).file;
-    const id = uuidv4();
-    const uploadPath = path.join("temp_uploads", `${id}.csv`);
-
-    await file.mv(uploadPath);
-
-    console.log(`✅ File saved: ${uploadPath}`);
-    return res.json({ id });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error(`❌ Upload error: ${message}`);
-    return res.status(500).json({ error: message });
-  }
 });
 
 // ✅ /api/process/:id

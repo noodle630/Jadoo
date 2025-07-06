@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
@@ -61,19 +61,30 @@ export default function NewFeed() {
     });
     // Setup mutation for form submission
     const createFeedMutation = useMutation({
-        mutationFn: (values) => __awaiter(this, void 0, void 0, function* () {
+        mutationFn: async (values) => {
             const formData = new FormData();
             formData.append('name', values.name);
             formData.append('marketplace', values.marketplace);
             formData.append('file', values.file);
             // API request to upload file and create feed
-            const response = yield fetch('/api/feeds/upload', {
+            const response = await fetch('/api/simple-upload', {
                 method: 'POST',
                 body: formData,
-            })
-                .then(res => res.json());
-            return response;
-        }),
+            });
+            let result;
+            try {
+              result = await response.json();
+            } catch (e) {
+              // If not JSON, show a friendly error
+              toast({
+                title: 'Upload failed',
+                description: 'Server error or invalid response. Please try again or contact support.',
+                variant: 'destructive',
+              });
+              return { error: true };
+            }
+            return result;
+        },
         onSuccess: (data) => {
             // Invalidate queries to refresh feed list
             queryClient.invalidateQueries({ queryKey: ['/api/feeds'] });
@@ -110,6 +121,15 @@ export default function NewFeed() {
             loading: false,
         });
     };
+    // Handle category/config load failure
+    const [categories, setCategories] = useState([]);
+    const [categoriesError, setCategoriesError] = useState(false);
+    useEffect(() => {
+      fetch('/api/categories')
+        .then(res => res.json())
+        .then(data => setCategories(data))
+        .catch(() => setCategoriesError(true));
+    }, []);
     return (<div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center mb-8 text-sm text-slate-500 dark:text-slate-400">
         <span className="hover:text-slate-800 dark:hover:text-slate-200" onClick={() => navigate('/')}>

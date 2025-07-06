@@ -38,7 +38,7 @@ export default function History() {
 
   const handleDownload = async (feedId: number) => {
     try {
-      window.location.href = `/api/feeds/${feedId}/download`;
+      window.location.href = `/api/simple-download/${feedId}`;
       
       toast({
         title: "Download started",

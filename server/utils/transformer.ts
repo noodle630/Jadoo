@@ -306,10 +306,135 @@ async function processRowsInParallel(rows: any[], processor: Function, concurren
   return results;
 }
 
+// List of non-enrichable/system fields to skip LLM calls
+const NON_ENRICHABLE_FIELDS = [
+  'SKU', 'Spec Product Type', 'Product ID Type', 'Product ID', 'Condition', 'Your SKU', 
+  'Reebelo RID', 'SKU Condition', 'SKU Battery Health', 'Min Price', 'Quantity', 'Price', 
+  'MSRP', 'SKU Update', 'Product Id Update', 'External Product ID', 'External Product ID Type', 
+  'Variant Group ID', 'Variant Attribute Names (+)', 'Is Primary Variant', 'Swatch Image URL', 
+  'Swatch Variant Attribute', 'States', 'State Restrictions Reason', 'ZIP Codes', 
+  'Product is or Contains an Electronic Component?', 'Product is or Contains a Chemical, Aerosol or Pesticide?', 
+  'Product is or Contains this Battery Type', 'Fulfillment Lag Time', 'Ships in Original Packaging', 
+  'Must ship alone?', 'Is Preorder', 'Release Date', 'Site Start Date', 'Site End Date', 
+  'Inventory', 'Fulfillment Center ID', 'Pre Order Available On', 
+  'Third Party Accreditation Symbol on Product Package Code (+)', 'Total Count', 
+  'Virtual Assistant (+)', 'Warranty Text', 'Warranty URL'
+];
+
+const PARALLEL_LLM_CONCURRENCY = 5; // Configurable concurrency
+const KEY_FIELDS = ['SKU', 'Price', 'Brand Name', 'Product Name', 'Manufacturer Name'];
+
+// --- OPTIMIZED LLM CONCURRENCY ---
+const LLM_CONCURRENCY = 10; // Increased concurrency for faster processing
+
+// --- AGGRESSIVE CACHING ---
+const enrichmentCache = new Map<string, any>();
+
+// Placeholder for callLLM if not defined
+async function callLLM(prompt: string, row: Record<string, any>, tier: string): Promise<any> {
+  // Implement or import your LLM call logic here
+  return {};
+}
+
+async function enrichRowWithLLM(row: Record<string, any>, prompt: string, tier: string): Promise<any> {
+  const cacheKey = JSON.stringify({ row, prompt, tier });
+  if (enrichmentCache.has(cacheKey)) {
+    return enrichmentCache.get(cacheKey);
+  }
+  let result: any, confidence = 0;
+  let retries = 0;
+  while (retries < 2) {
+    try {
+      result = await callLLM(prompt, row, tier);
+      confidence = result.confidence || 0;
+      if (confidence > 0.5) break;
+    } catch (e) {
+      retries++;
+      if (retries >= 2) throw e;
+    }
+  }
+  enrichmentCache.set(cacheKey, result);
+  return result;
+}
+
+// --- FIELD-LEVEL FALLBACK ---
+async function enrichKeyField(row: Record<string, any>, field: string, prompt: string, tier: string): Promise<string> {
+  let value = row[field];
+  if (!value) {
+    const fallbackPrompt = `${prompt}\nFocus on filling the ${field} field with high accuracy.`;
+    const result = await enrichRowWithLLM(row, fallbackPrompt, tier);
+    value = result[field] || '';
+  }
+  return value;
+}
+
+// --- TIER-BASED ENRICHMENT CONFIGURATION ---
+const TIER_CONFIG = {
+  free: {
+    maxRows: 10,
+    fillPercentage: 0.3, // 30% of fields filled
+    model: "gpt-4o-mini",
+    dataQuality: "basic", // Basic product info only
+    features: ["Product Name", "Brand Name", "Price", "SKU"]
+  },
+  basic: {
+    maxRows: 100,
+    fillPercentage: 0.6, // 60% of fields filled
+    model: "gpt-4o-mini",
+    dataQuality: "standard", // Standard marketplace optimization
+    features: ["Product Name", "Brand Name", "Price", "SKU", "Description", "Key Features", "Color", "Size"]
+  },
+  premium: {
+    maxRows: 1000,
+    fillPercentage: 0.9, // 90% of fields filled
+    model: "gpt-4o",
+    dataQuality: "premium", // SEO optimized, branded, search-friendly
+    features: ["Product Name", "Brand Name", "Price", "SKU", "Description", "Key Features", "Color", "Size", "Specifications", "SEO Keywords", "Category Optimization"]
+  }
+};
+
+// --- Tier-based, template-aware column fill and color coding ---
+// Add to the main enrichment/output logic:
+
+// 1. Define tier rules
+const TIER_RULES = {
+  essential: {
+    always: ["Product Name", "Brand Name", "SKU", "Price"],
+    ai: ["Description"],
+    skip: ["Image URL", "SEO Title", "Key Features", "Color", "Size", "Condition", "Category"],
+    min_confidence: 0.9,
+  },
+  pro: {
+    always: ["Product Name", "Brand Name", "SKU", "Price", "SEO Title", "Key Features", "Main Image URL", "Color", "Size", "Condition", "Category"],
+    ai: ["Description", "SEO Title", "Key Features", "Color", "Size", "Condition", "Category"],
+    skip: ["All Image URLs", "Bullet Points", "Compliance", "Shipping Weight", "MSRP", "Material", "Gender"],
+    min_confidence: 0.6,
+  },
+  enterprise: {
+    always: "*", // All fields
+    ai: "*", // All fields
+    skip: [],
+    min_confidence: 0.0,
+  },
+};
+
+// 2. In the row enrichment loop, for each column:
+// - If tier is essential, only fill if in always/ai and confidence >= min_confidence
+// - If pro, fill if in always/ai and confidence >= min_confidence
+// - If enterprise, fill all, log confidence
+// - Color code cell: green >90%, yellow 60-89%, red <60%
+
+// 3. When writing to Excel, use ExcelJS to set cell fill color based on confidence
+// Example:
+// cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00FF00' } } // green
+// ... yellow: 'FFFFFF00', red: 'FFFF0000'
+
+// 4. Do NOT add summary sheets or extra text. Only color code cells.
+
 // Walmart transformer: robust, .xlsx-only, future-proof
 // NOTE: For Walmart, we require .xlsx templates and a specific worksheet/row structure.
 // If generalizing for other platforms, detect template extension and structure dynamically.
-export const handleProcess = async (req: Request, res: Response) => {
+export const handleProcess = async (req: Request, res: Response, tier: string = 'free') => {
   const startTime = Date.now();
   const id = req.params.id;
   const uploadPath = path.join("temp_uploads", String(id) + ".csv");
@@ -421,28 +546,72 @@ export const handleProcess = async (req: Request, res: Response) => {
     const headerMapping: Record<string, string> = {};
     trimmedOutputColumns.forEach((col: string, idx: number) => {
       const normCol = normalizedOutputColumns[idx];
-      // 1. Direct match
-      let inputIdx = trimmedInputHeaders.indexOf(col);
+      
+      // Enhanced mapping strategies
+      let inputIdx = -1;
+      
+      // 1. Direct match (case-insensitive)
+      inputIdx = trimmedInputHeaders.findIndex(h => h.toLowerCase() === col.toLowerCase());
       if (inputIdx !== -1) {
         headerMapping[col] = trimmedInputHeaders[inputIdx];
         logger.info(`Header mapping [direct]: '${col}' -> '${trimmedInputHeaders[inputIdx]}'`);
         return;
       }
+      
       // 2. Normalized match
-      inputIdx = normalizedInputHeaders.indexOf(normCol);
+      inputIdx = normalizedInputHeaders.findIndex(h => h === normCol);
       if (inputIdx !== -1) {
         headerMapping[col] = trimmedInputHeaders[inputIdx];
         logger.info(`Header mapping [normalized]: '${col}' -> '${trimmedInputHeaders[inputIdx]}'`);
         return;
       }
-      // 3. Fuzzy match (string similarity)
+      
+      // 3. Common field variations mapping
+      const commonVariations: Record<string, string[]> = {
+        'Product Name': ['name', 'product', 'title', 'product_name', 'productname', 'item_name', 'itemname'],
+        'Brand Name': ['brand', 'brand_name', 'brandname', 'manufacturer', 'make', 'company'],
+        'SKU': ['sku', 'product_id', 'productid', 'item_id', 'itemid', 'code', 'product_code', 'productcode'],
+        'Selling Price': ['price', 'cost', 'selling_price', 'sellingprice', 'retail_price', 'retailprice', 'amount'],
+        'Site Description': ['description', 'desc', 'product_description', 'productdesc', 'details', 'summary'],
+        'Color': ['color', 'colour', 'color_name', 'colorname'],
+        'Size': ['size', 'dimensions', 'measurements', 'width', 'height', 'length'],
+        'Manufacturer Name': ['manufacturer', 'manufacturer_name', 'manufacturername', 'brand', 'make'],
+        'Model Number': ['model', 'model_number', 'modelnumber', 'model_id', 'modelid'],
+        'Main Image URL': ['image', 'image_url', 'imageurl', 'photo', 'picture', 'img', 'main_image', 'mainimage']
+      };
+      
+      const variations = commonVariations[col];
+      if (variations) {
+        for (const variation of variations) {
+          inputIdx = trimmedInputHeaders.findIndex(h => h.toLowerCase().includes(variation.toLowerCase()));
+          if (inputIdx !== -1) {
+            headerMapping[col] = trimmedInputHeaders[inputIdx];
+            logger.info(`Header mapping [variation]: '${col}' -> '${trimmedInputHeaders[inputIdx]}' (via '${variation}')`);
+            return;
+          }
+        }
+      }
+      
+      // 4. Partial match (contains)
+      inputIdx = trimmedInputHeaders.findIndex(h => 
+        h.toLowerCase().includes(col.toLowerCase()) || 
+        col.toLowerCase().includes(h.toLowerCase())
+      );
+      if (inputIdx !== -1) {
+        headerMapping[col] = trimmedInputHeaders[inputIdx];
+        logger.info(`Header mapping [partial]: '${col}' -> '${trimmedInputHeaders[inputIdx]}'`);
+        return;
+      }
+      
+      // 5. Fuzzy match (string similarity) - increased threshold
       const { bestMatch } = stringSimilarity.findBestMatch(col, trimmedInputHeaders);
-      if (bestMatch.rating > 0.7) {
+      if (bestMatch.rating > 0.6) { // Lowered threshold for better matching
         headerMapping[col] = bestMatch.target;
         logger.info(`Header mapping [fuzzy]: '${col}' -> '${bestMatch.target}' (score: ${bestMatch.rating})`);
         return;
       }
-      // 4. No match
+      
+      // 6. No match found
       headerMapping[col] = '';
       logger.warn(`Header mapping [unmapped]: '${col}' -> ''`);
     });
@@ -453,7 +622,10 @@ export const handleProcess = async (req: Request, res: Response) => {
       const outputRow: Record<string, any> = {};
       trimmedOutputColumns.forEach((col: string) => {
         const mappedInputCol = headerMapping[col];
-        if (mappedInputCol && row[mappedInputCol]) {
+        // Always preserve key fields if present in input
+        if (KEY_FIELDS.includes(col) && row[col]) {
+          outputRow[col] = row[col];
+        } else if (mappedInputCol && row[mappedInputCol]) {
           outputRow[col] = row[mappedInputCol];
         } else {
           outputRow[col] = "";
@@ -465,73 +637,106 @@ export const handleProcess = async (req: Request, res: Response) => {
     logger.info('All output rows:', { outputRows });
     // Do NOT abort if some columns are unmapped—always produce output
 
-    // --- OPTIMIZED: Single Batch LLM Call Per Row ---
-    // This replaces the old per-field and batch enrichment with ONE call per row
-    // Reduces LLM calls from 1000+ to 20 for a 20-row file with 50 fields
+    // --- CORRECTED ROW COUNTING (exclude template headers) ---
+    const actualProductRows = outputRows.filter(row => {
+      // Filter out template header rows (rows with mostly empty values or template placeholders)
+      const hasProductData = row['Product Name'] && row['Product Name'].trim() !== '';
+      const hasDescription = row['Site Description'] && row['Site Description'].trim() !== '';
+      return hasProductData || hasDescription;
+    });
     
-    logger.info('Starting optimized batch LLM enrichment', { 
-      totalRows: outputRows.length,
-      totalFields: outputColumns.length
+    const actualRowCount = actualProductRows.length;
+    logger.info('Row counting corrected', { 
+      totalRows: outputRows.length, 
+      actualProductRows: actualRowCount,
+      templateHeaders: outputRows.length - actualRowCount 
     });
 
-    // List of non-enrichable/system fields to skip LLM calls
-    const NON_ENRICHABLE_FIELDS = [
-      'SKU', 'Spec Product Type', 'Product ID Type', 'Product ID', 'Condition', 'Your SKU', 
-      'Reebelo RID', 'SKU Condition', 'SKU Battery Health', 'Min Price', 'Quantity', 'Price', 
-      'MSRP', 'SKU Update', 'Product Id Update', 'External Product ID', 'External Product ID Type', 
-      'Variant Group ID', 'Variant Attribute Names (+)', 'Is Primary Variant', 'Swatch Image URL', 
-      'Swatch Variant Attribute', 'States', 'State Restrictions Reason', 'ZIP Codes', 
-      'Product is or Contains an Electronic Component?', 'Product is or Contains a Chemical, Aerosol or Pesticide?', 
-      'Product is or Contains this Battery Type', 'Fulfillment Lag Time', 'Ships in Original Packaging', 
-      'Must ship alone?', 'Is Preorder', 'Release Date', 'Site Start Date', 'Site End Date', 
-      'Inventory', 'Fulfillment Center ID', 'Pre Order Available On', 
-      'Third Party Accreditation Symbol on Product Package Code (+)', 'Total Count', 
-      'Virtual Assistant (+)', 'Warranty Text', 'Warranty URL'
-    ];
+    // --- TIER-BASED ENRICHMENT ---
+    const tierConfig = TIER_CONFIG[tier as keyof typeof TIER_CONFIG] || TIER_CONFIG.free;
+    
+    if (!tierConfig) {
+      throw new Error(`Invalid tier: ${tier}`);
+    }
 
+    // Apply tier limits
+    if (actualRowCount > tierConfig.maxRows) {
+      logger.warn(`Row count ${actualRowCount} exceeds tier limit ${tierConfig.maxRows}, truncating`);
+      outputRows.splice(tierConfig.maxRows);
+    }
+
+    logger.info('Starting tier-based parallel LLM enrichment', { 
+      tier,
+      maxRows: tierConfig.maxRows,
+      fillPercentage: tierConfig.fillPercentage,
+      model: tierConfig.model,
+      dataQuality: tierConfig.dataQuality,
+      actualProductRows: actualRowCount
+    });
+    const enrichmentStart = Date.now();
+
+    // --- Data/statistics accumulators for enrichment ---
     let totalEnriched = 0;
     let totalErrors = 0;
     const fieldStats: Record<string, { mapped: number; enriched: number; blank: number; errors: number }> = {};
-    const rowStats: Array<{ row: number; confidence: number; blanks: string[] }> = [];
+    const rowStats: Array<{ row: number; confidence: number; blanks: string[]; error?: any }> = [];
 
-    // Process each row with ONE LLM call per row
-    for (let i = 0; i < outputRows.length; i++) {
+    // --- Parallelize LLM enrichment ---
+    async function enrichRow(i: number) {
       const row = outputRows[i];
       const rowStartTime = Date.now();
-      
-      // Find all required fields (except system/non-enrichable fields)
       const enrichableFields = outputColumns.filter((field): field is string => typeof field === 'string' && !NON_ENRICHABLE_FIELDS.includes(field));
-      // Find all blank fields among enrichable fields
-      const blankFields = enrichableFields.filter(field =>
-        !row[field] || (typeof row[field] === 'string' && row[field].trim() === "")
-      );
-
-      // --- PATCH: Always attempt enrichment for all enrichable fields, not just blank ones ---
-      // If you want to always re-enrich, use enrichableFields instead of blankFields below
+      const blankFields = enrichableFields.filter(field => !row[field] || (typeof row[field] === 'string' && row[field].trim() === ""));
       const fieldsToEnrich = blankFields.length > 0 ? blankFields : enrichableFields;
-
-      // Build comprehensive field context for this row
       const fieldContexts = fieldsToEnrich.map(field => {
         const def = fieldDefinitions[field] || {};
         const examples = def.examples || [];
         const exampleText = examples.length > 0 ? `Examples: ${examples.slice(0, 3).join(", ")}` : "";
         return `Field: ${field}\nDefinition: ${def.description || "Product information field"}\nProduct Type: ${def.product_type || "General"}\n${exampleText}`;
       }).join("\n\n");
-
-      // Create smart prompt with product context
       const productName = row['Product Name'] || row['productName'] || row['name'] || 'Unknown Product';
       const productType = row['Product Type'] || row['productType'] || row['type'] || 'General';
       
-      // --- ENHANCED PROMPT ---
-      const prompt = `You are an expert at preparing product feeds for ${category || ''} marketplace.\n\nCategory: ${category || ''}\nProduct: ${productName}\nProduct Type: ${productType}\n\nFill in the following fields for this product using the field definitions below.\nIf you cannot determine a value with high confidence, leave it blank.\nRespond with ONLY a valid JSON object containing the field names and values.\n\nFields to fill:\n${fieldContexts}\n\nProduct data: ${JSON.stringify(row, null, 2)}\n\nResponse (JSON only, no explanation, no markdown, no code block):`;
+      // Tier-specific prompt optimization
+      const tierSpecificInstructions = {
+        free: "Fill in basic product information only. Focus on essential fields like brand name and basic description.",
+        basic: "Provide comprehensive product details with marketplace optimization. Include key features and specifications.",
+        premium: "Create SEO-optimized, branded content that maximizes discoverability and conversion. Include detailed specifications, SEO keywords, and category-specific optimizations."
+      };
+      
+      const tierInstruction = tierSpecificInstructions[tierConfig.dataQuality as keyof typeof tierSpecificInstructions] || tierSpecificInstructions.basic;
+      
+      const prompt = `You are an expert at preparing product feeds for ${category || ''} marketplace with ${tierConfig.dataQuality} quality standards.
 
+${tierInstruction}
+
+Category: ${category || ''}
+Product: ${productName}
+Product Type: ${productType}
+Quality Level: ${tierConfig.dataQuality}
+Target Fill Rate: ${Math.round(tierConfig.fillPercentage * 100)}%
+
+Fill in the following fields for this product using the field definitions below.
+IMPORTANT: 
+- For ${tierConfig.dataQuality} tier, ensure ${Math.round(tierConfig.fillPercentage * 100)}% of fields are completed
+- Use specific, accurate information when possible
+- For brand names, use the exact brand name (not generic terms)
+- For prices, use numeric values only
+- For descriptions, make them compelling and searchable
+- If you cannot determine a value with high confidence, leave it blank
+
+Fields to fill:
+${fieldContexts}
+
+Product data: ${JSON.stringify(row, null, 2)}
+
+Response (JSON only, no explanation, no markdown, no code block):`;
       let enrichedJson = '';
       let enriched: Record<string, any> = {};
       let llmError = null;
       try {
-        // --- PATCH: Use only valid OpenAI parameters ---
         enrichedJson = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+          model: tierConfig.model,
           messages: [
             { role: "system", content: "You are a product feed enrichment expert. Respond with ONLY a valid JSON object for the requested fields." },
             { role: "user", content: prompt }
@@ -543,16 +748,12 @@ export const handleProcess = async (req: Request, res: Response) => {
           const cleanedResponse = stripMarkdownCodeBlocks(enrichedJson);
           enriched = JSON.parse(cleanedResponse);
         } catch (parseError) {
-          logger.warn('Failed to parse LLM response', { 
-            row: i, 
-            error: parseError instanceof Error ? parseError.message : parseError,
-            response: enrichedJson?.substring(0, 200) 
-          });
-          // --- PATCH: Fallback to a simpler prompt if parse fails ---
+          logger.warn('Failed to parse LLM response', { row: i, error: parseError instanceof Error ? parseError.message : parseError, response: enrichedJson?.substring(0, 200) });
+          // Fallback prompt
           const fallbackPrompt = `Fill in the following fields for a product. If unsure, leave blank. Respond with ONLY a valid JSON object.\nFields: ${fieldsToEnrich.join(", ")}\nProduct data: ${JSON.stringify(row, null, 2)}\nResponse (JSON only):`;
           try {
             enrichedJson = await openai.chat.completions.create({
-              model: "gpt-4o-mini",
+              model: tierConfig.model,
               messages: [
                 { role: "system", content: "You are a product feed enrichment expert. Respond with ONLY a valid JSON object for the requested fields." },
                 { role: "user", content: fallbackPrompt }
@@ -563,50 +764,29 @@ export const handleProcess = async (req: Request, res: Response) => {
             const cleanedFallbackResponse = stripMarkdownCodeBlocks(enrichedJson);
             enriched = JSON.parse(cleanedFallbackResponse);
           } catch (fallbackError) {
-            logger.error('Fallback LLM call failed', {
-              row: i,
-              error: fallbackError instanceof Error ? fallbackError.message : fallbackError,
-              response: enrichedJson?.substring(0, 200)
-            });
+            logger.error('Fallback LLM call failed', { row: i, error: fallbackError instanceof Error ? fallbackError.message : fallbackError, response: enrichedJson?.substring(0, 200) });
             llmError = fallbackError;
-            // Mark all fields as errors
-            for (const field of fieldsToEnrich) {
-              totalErrors++;
-              fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-              fieldStats[field].errors++;
-            }
-            rowStats.push({
-              row: i + 1,
-              confidence: 0,
-              blanks: fieldsToEnrich
-            });
-            continue;
+            return { row: i + 1, confidence: 0, blanks: fieldsToEnrich, error: fallbackError };
           }
         }
-
         // Apply enriched data and track stats
         let rowConfidence = 0;
         let rowFields = 0;
         const rowBlanks: string[] = [];
-
         for (const field of outputColumns.filter(f => typeof f === 'string')) {
           if (NON_ENRICHABLE_FIELDS.includes(field)) {
-            // Skip system fields
             rowFields++;
             continue;
           }
-
           if (row[field] && typeof row[field] === 'string' && row[field].trim() !== "") {
-            // Already has value
             rowConfidence += 1.0;
             fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
             fieldStats[field].mapped++;
           } else if (fieldsToEnrich.includes(field) && enriched[field]) {
-            // LLM provided value
             const enrichedValue = enriched[field];
             if (typeof enrichedValue === 'string' && enrichedValue.trim() !== "") {
               row[field] = enrichedValue;
-              rowConfidence += 0.8; // Slightly lower confidence for AI-generated
+              rowConfidence += 0.8;
               totalEnriched++;
               fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
               fieldStats[field].enriched++;
@@ -616,54 +796,33 @@ export const handleProcess = async (req: Request, res: Response) => {
               fieldStats[field].blank++;
             }
           } else {
-            // Still blank
             rowBlanks.push(field);
             fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
             fieldStats[field].blank++;
           }
           rowFields++;
         }
-
-        rowStats.push({
-          row: i + 1,
-          confidence: rowFields ? rowConfidence / rowFields : 0,
-          blanks: rowBlanks
-        });
-
-        logger.info('Row enrichment completed', { 
-          row: i + 1, 
-          enrichedFields: Object.keys(enriched).length,
-          processingTime: Date.now() - rowStartTime
-        });
-
+        logger.info('Row enrichment completed', { row: i + 1, enrichedFields: Object.keys(enriched).length, processingTime: Date.now() - rowStartTime });
+        return { row: i + 1, confidence: rowFields ? rowConfidence / rowFields : 0, blanks: rowBlanks };
       } catch (error) {
-        logger.error('Row LLM enrichment failed', { 
-          row: i, 
-          error: error instanceof Error ? error.message : error,
-          prompt,
-          fieldsToEnrich,
-          rowData: row
-        });
-        // Mark all fields as errors
+        logger.error('Row LLM enrichment failed', { row: i, error: error instanceof Error ? error.message : error, prompt, fieldsToEnrich, rowData: row });
         for (const field of fieldsToEnrich) {
           totalErrors++;
           fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
           fieldStats[field].errors++;
         }
-        rowStats.push({
-          row: i + 1,
-          confidence: 0,
-          blanks: fieldsToEnrich
-        });
+        return { row: i + 1, confidence: 0, blanks: fieldsToEnrich, error };
       }
     }
 
-    logger.info('Optimized batch LLM enrichment completed', { 
-      totalRows: outputRows.length,
-      totalEnriched,
-      totalErrors,
-      avgProcessingTime: (Date.now() - startTime) / outputRows.length
-    });
+    // Run enrichRow in parallel batches
+    const rowIndices = Array.from({ length: outputRows.length }, (_, i) => i);
+    const rowChunks = chunkArray(rowIndices, PARALLEL_LLM_CONCURRENCY);
+    for (const chunk of rowChunks) {
+      await Promise.all(chunk.map(enrichRow));
+    }
+    logger.info('Parallel batch LLM enrichment completed', { totalRows: outputRows.length, totalEnriched, totalErrors, totalTime: Date.now() - enrichmentStart });
+
     // --- Write output directly to cells, starting at row 6 ---
     const rowsToDelete = worksheet.rowCount - 5;
     if (rowsToDelete > 0) {
@@ -1010,11 +1169,11 @@ async function loadGroundingExamples(category: string | undefined, groundingRoot
 
 // Utility functions
 function chunkArray<T>(arr: T[], size: number): T[][] {
-  const chunks: T[][] = [];
+  const result: T[][] = [];
   for (let i = 0; i < arr.length; i += size) {
-    chunks.push(arr.slice(i, i + size));
+    result.push(arr.slice(i, i + size));
   }
-  return chunks;
+  return result;
 }
 
 // Use OpenAI to map input headers to template field names
@@ -1071,5 +1230,15 @@ Mapping:`;
       error: error instanceof Error ? error.message : 'Unknown error' 
     });
     return {};
+  }
+}
+
+// --- TIER-AWARE PROMPTS ---
+const premiumPrompt = `SEO-optimize, use branded language, maximize discoverability, and ensure all key fields are filled for Walmart marketplace.`;
+
+// --- CONFIDENCE SCORING & LOGGING ---
+function logLowConfidence(row: Record<string, any>, confidence: number): void {
+  if (confidence < 0.5) {
+    logger.warn(`Low confidence enrichment: ${confidence}`, { row });
   }
 }

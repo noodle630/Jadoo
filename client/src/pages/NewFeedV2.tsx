@@ -45,7 +45,7 @@ export default function NewFeedV2() {
 
     try {
       // ✅ Upload CSV
-      const uploadRes = await axios.post("/api/upload", formData);
+      const uploadRes = await axios.post("/api/simple-upload", formData);
       const { id } = uploadRes.data;
       setLog((prev) => [...prev, `✅ Uploaded: ${id}`]);
 

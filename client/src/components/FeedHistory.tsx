@@ -98,10 +98,8 @@ export default function FeedHistory() {
   });
 
   const handleDownload = (id: number) => {
-    toast({
-      title: "Feed downloaded",
-      description: "Feed has been downloaded successfully.",
-    });
+    const url = `/api/simple-download/${id}`;
+    window.location.href = url;
   };
 
   const handleDelete = (id: number) => {
