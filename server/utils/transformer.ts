@@ -1,13 +1,17 @@
-import fs from "fs";
-import path from "path";
+import * as fs from "fs";
+import * as path from "path";
 import Papa from "papaparse";
 import ExcelJS from "exceljs";
 import { Request, Response } from "express";
-import REMOVED_SECRETfrom "../../supabaseClient";
-import openai from "../../openaiClient";
-import winston from "winston";
+import REMOVED_SECRETfrom "../../supabaseClient.js";
+import openai from "../../openaiClient.js";
+import * as winston from "winston";
 import stringSimilarity from "string-similarity";
-import crypto from "crypto";
+import * as crypto from "crypto";
+// @ts-ignore
+import llmCache from "./llm-cache.js";
+// @ts-ignore
+import { logPerformance, logLLMCall, logError } from "../logger.js";
 
 // Configure structured logging with reduced verbosity
 const logger = winston.createLogger({
@@ -46,7 +50,7 @@ if (!fs.existsSync('logs')) {
 
 // ===== CACHING SYSTEM =====
 // In-memory cache for LLM results
-const llmCache = new Map<string, any>();
+const llmCacheMemory = new Map<string, any>();
 const templateCache = new Map<string, any>();
 const groundingCache = new Map<string, any>();
 const headerMappingCache = new Map<string, any>();
@@ -58,23 +62,34 @@ function generateCacheKey(input: string | undefined, context: string | undefined
 
 // Cache management
 function getCachedResult(key: string): any | null {
-  return llmCache.get(key) || null;
+  return llmCacheMemory.get(key) || null;
 }
 
 function setCachedResult(key: string, result: any): void {
-  llmCache.set(key, result);
+  llmCacheMemory.set(key, result);
   // Limit cache size to prevent memory issues
-  if (llmCache.size > 1000) {
-    const firstKey = llmCache.keys().next().value;
-    llmCache.delete(firstKey);
+  if (llmCacheMemory.size > 1000) {
+    const firstKey = llmCacheMemory.keys().next().value;
+    llmCacheMemory.delete(firstKey || '');
   }
 }
 
 // Preload static data at startup
-async function preloadStaticData(groundingRoot: string, templateRoot: string) {
+async function preloadStaticData(groundingRoot: string, templateRoot?: string) {
   logger.info('Preloading static data for caching');
   
   try {
+    // Always cache the base template first
+    const safeTemplateRoot = templateRoot || "attached_assets/templates/walmart";
+    const baseTemplatePath = path.join(safeTemplateRoot, "base.xlsx");
+    
+    if (!templateCache.has('base') && fs.existsSync(baseTemplatePath)) {
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(baseTemplatePath);
+      templateCache.set('base', workbook);
+      logger.info('Cached base template');
+    }
+    
     // Cache all template files
     const categories = fs.readdirSync(groundingRoot).filter((cat: string) => 
       fs.statSync(path.join(groundingRoot, String(cat))).isDirectory()
@@ -82,10 +97,8 @@ async function preloadStaticData(groundingRoot: string, templateRoot: string) {
     
     for (const category of categories) {
       // Cache template
-      const safeCategory = typeof category === 'string' ? category : '';
-      const safeTemplateRoot = templateRoot || "attached_assets/templates/walmart";
+      const safeCategory = typeof category === 'string' ? category : 'unknown';
       const templatePath = path.join(safeTemplateRoot, `${safeCategory}.xlsx`);
-      const baseTemplatePath = path.join(safeTemplateRoot, "base.xlsx");
       const xlsxToUse = fs.existsSync(templatePath) ? templatePath : baseTemplatePath;
       
       if (!templateCache.has(category)) {
@@ -184,9 +197,25 @@ function extractAttributes(row: Record<string, any>): Record<string, string> {
   return attrs;
 }
 
-// Enhanced LLM call with caching
+// Function to strip markdown code blocks from LLM responses
+function stripMarkdownCodeBlocks(response: string | undefined): string {
+  if (!response) return '';
+  // Remove ```json ... ``` or ``` ... ``` wrappers
+  let cleaned = response.trim();
+  if (cleaned.startsWith('```json')) {
+    cleaned = cleaned.substring(7);
+  } else if (cleaned.startsWith('```')) {
+    cleaned = cleaned.substring(3);
+  }
+  if (cleaned.endsWith('```')) {
+    cleaned = cleaned.substring(0, cleaned.length - 3);
+  }
+  return cleaned.trim();
+}
+
+// Enhanced LLM call with caching and retry
 async function cachedLLMCall(prompt: string, context: string, options: any = {}) {
-  const cacheKey = generateCacheKey(prompt, context);
+  const cacheKey = generateCacheKey(prompt || '', context || '');
   const cached = getCachedResult(cacheKey);
   
   if (cached) {
@@ -196,56 +225,85 @@ async function cachedLLMCall(prompt: string, context: string, options: any = {})
   
   logger.info('LLM cache miss, making API call', { context, prompt });
   try {
-    const result = await openai.chat.completions.create({
+    // Use the new LLM cache system with retry logic
+    const result = await llmCache.callWithCache(openai, prompt, {
       model: options.model || "gpt-4o-mini",
-      messages: [
-        { role: "system", content: options.systemPrompt || "You are a product feed enrichment expert." },
-        { role: "user", content: prompt }
-      ],
-      temperature: options.temperature || 0.3,
-      max_tokens: options.maxTokens || 2000,
-      response_format: options.responseFormat || { type: "json_object" }
+      temperature: options.temperature || 0.1,
+      max_tokens: options.max_tokens || 1000,
+      ...options
     });
-    const response = result.choices[0].message.content;
-    logger.info('LLM API call result', { context, response });
-    setCachedResult(cacheKey, response);
-    return response;
-  } catch (err) {
-    logger.warn('LLM API call failed', { context, error: err instanceof Error ? err.message : err });
-    return '';
+    
+    setCachedResult(cacheKey, result);
+    return result;
+  } catch (error) {
+    logError(error, { context: 'cachedLLMCall', prompt: prompt.substring(0, 100) });
+    throw error;
   }
 }
 
-// Parallel batch processing with better error handling
-async function processBatchInParallel(batches: any[], processor: Function, concurrency = 3) {
+// Process rows in parallel with controlled concurrency
+async function processRowsInParallel(rows: any[], processor: Function, concurrency = 4): Promise<any[]> {
   const results: any[] = [];
-  const errors: any[] = [];
+  const chunks = chunkArray(rows, concurrency);
   
-  for (let i = 0; i < batches.length; i += concurrency) {
-    const batch = batches.slice(i, i + concurrency);
-    const batchPromises = batch.map(async (item, index) => {
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i];
+    const chunkStartTime = Date.now();
+    
+    // Process chunk in parallel
+    const chunkPromises = chunk.map(async (row, index) => {
+      const rowStartTime = Date.now();
       try {
-        return await processor(item, i + index);
+        const result = await processor(row, i * concurrency + index);
+        const rowTime = Date.now() - rowStartTime;
+        logPerformance('row_process', rowTime, { rowIndex: i * concurrency + index });
+        return result;
       } catch (error) {
-        logger.warn('Batch item processing failed', { 
-          batchIndex: i + index, 
-          error: error instanceof Error ? error.message : error 
-        });
-        return { error: error instanceof Error ? error.message : error };
+        logError(error, { context: 'row_process', rowIndex: i * concurrency + index });
+        return {
+          row_number: i * concurrency + index + 1,
+          status: "ERROR" as const,
+          row_confidence: "red" as const,
+          original_data: row,
+          transformed_data: {},
+          error_message: error instanceof Error ? error.message : 'Unknown error',
+          processing_time_ms: Date.now() - rowStartTime,
+          retry_count: 0
+        };
       }
     });
     
-    const batchResults = await Promise.allSettled(batchPromises);
-    batchResults.forEach((result, index) => {
+    const chunkResults = await Promise.allSettled(chunkPromises);
+    const chunkTime = Date.now() - chunkStartTime;
+    logPerformance('chunk_process', chunkTime, { chunkIndex: i, chunkSize: chunk.length });
+    
+    // Handle results
+    chunkResults.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         results.push(result.value);
       } else {
-        errors.push({ index: i + index, error: result.reason });
+        // Handle rejected promises
+        results.push({
+          row_number: i * concurrency + index + 1,
+          status: "ERROR" as const,
+          row_confidence: "red" as const,
+          original_data: chunk[index],
+          transformed_data: {},
+          error_message: result.reason?.message || 'Promise rejected',
+          processing_time_ms: 0,
+          retry_count: 0
+        });
       }
+    });
+    
+    logger.info(`Processed chunk ${i + 1}/${chunks.length}`, { 
+      chunkSize: chunk.length, 
+      chunkTime, 
+      totalProcessed: results.length 
     });
   }
   
-  return { results, errors };
+  return results;
 }
 
 // Walmart transformer: robust, .xlsx-only, future-proof
@@ -326,6 +384,7 @@ export const handleProcess = async (req: Request, res: Response) => {
       outputColumns = row3
         .slice(1)
         .map((v: any) => (v === undefined || v === null ? '' : String(v).trim()));
+      outputColumns = outputColumns.filter((v): v is string => typeof v === 'string' && v.length > 0) as string[];
     } else {
       throw new Error('Template row 3 is not an array');
     }
@@ -341,7 +400,8 @@ export const handleProcess = async (req: Request, res: Response) => {
     );
     let keySellerDataResult: any = {};
     try {
-      keySellerDataResult = JSON.parse(keySellerDataResp);
+      const cleanedResponse = stripMarkdownCodeBlocks(keySellerDataResp);
+      keySellerDataResult = JSON.parse(cleanedResponse);
     } catch (e) {
       logger.warn('Failed to parse key seller data response', { error: e });
       keySellerDataResult = { keySellerData: [], optimizableData: [] };
@@ -439,34 +499,19 @@ export const handleProcess = async (req: Request, res: Response) => {
       const row = outputRows[i];
       const rowStartTime = Date.now();
       
-      // Find all blank fields that need enrichment
-      const blankFields = outputColumns.filter(field =>
-        !NON_ENRICHABLE_FIELDS.includes(field) && 
-        (!row[field] || (typeof row[field] === 'string' && row[field].trim() === ""))
+      // Find all required fields (except system/non-enrichable fields)
+      const enrichableFields = outputColumns.filter((field): field is string => typeof field === 'string' && !NON_ENRICHABLE_FIELDS.includes(field));
+      // Find all blank fields among enrichable fields
+      const blankFields = enrichableFields.filter(field =>
+        !row[field] || (typeof row[field] === 'string' && row[field].trim() === "")
       );
 
-      if (blankFields.length === 0) {
-        // Row is complete, just calculate stats
-        let rowConfidence = 0;
-        let rowFields = 0;
-        for (const field of outputColumns) {
-          if (row[field] && typeof row[field] === 'string' && row[field].trim() !== "") {
-            rowConfidence += 1.0;
-            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-            fieldStats[field].mapped++;
-          }
-          rowFields++;
-        }
-        rowStats.push({
-          row: i + 1,
-          confidence: rowFields ? rowConfidence / rowFields : 0,
-          blanks: []
-        });
-        continue;
-      }
+      // --- PATCH: Always attempt enrichment for all enrichable fields, not just blank ones ---
+      // If you want to always re-enrich, use enrichableFields instead of blankFields below
+      const fieldsToEnrich = blankFields.length > 0 ? blankFields : enrichableFields;
 
       // Build comprehensive field context for this row
-      const fieldContexts = blankFields.map(field => {
+      const fieldContexts = fieldsToEnrich.map(field => {
         const def = fieldDefinitions[field] || {};
         const examples = def.examples || [];
         const exampleText = examples.length > 0 ? `Examples: ${examples.slice(0, 3).join(", ")}` : "";
@@ -477,46 +522,66 @@ export const handleProcess = async (req: Request, res: Response) => {
       const productName = row['Product Name'] || row['productName'] || row['name'] || 'Unknown Product';
       const productType = row['Product Type'] || row['productType'] || row['type'] || 'General';
       
-      const prompt = `You are an expert at preparing product feeds for ${category} marketplace.
+      // --- ENHANCED PROMPT ---
+      const prompt = `You are an expert at preparing product feeds for ${category || ''} marketplace.\n\nCategory: ${category || ''}\nProduct: ${productName}\nProduct Type: ${productType}\n\nFill in the following fields for this product using the field definitions below.\nIf you cannot determine a value with high confidence, leave it blank.\nRespond with ONLY a valid JSON object containing the field names and values.\n\nFields to fill:\n${fieldContexts}\n\nProduct data: ${JSON.stringify(row, null, 2)}\n\nResponse (JSON only, no explanation, no markdown, no code block):`;
 
-Category: ${category}
-Product: ${productName}
-Product Type: ${productType}
-
-Fill in the missing fields for this product using the field definitions below. 
-If you cannot determine a value with high confidence, leave it blank.
-Respond with ONLY a valid JSON object containing the field names and values.
-
-Fields to fill:
-${fieldContexts}
-
-Product data: ${JSON.stringify(row, null, 2)}
-
-Response (JSON only):`;
-
+      let enrichedJson = '';
+      let enriched: Record<string, any> = {};
+      let llmError = null;
       try {
-        const enrichedJson = await cachedLLMCall(
-          prompt, 
-          `row_${i}_${category}_${Date.now()}`,
-          { maxTokens: 2000 }
-        );
-
-        let enriched: Record<string, any> = {};
+        // --- PATCH: Use only valid OpenAI parameters ---
+        enrichedJson = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: "You are a product feed enrichment expert. Respond with ONLY a valid JSON object for the requested fields." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.1,
+          max_tokens: 2000
+        }).then(resp => resp.choices[0]?.message?.content || '');
         try {
-          enriched = JSON.parse(enrichedJson);
+          const cleanedResponse = stripMarkdownCodeBlocks(enrichedJson);
+          enriched = JSON.parse(cleanedResponse);
         } catch (parseError) {
           logger.warn('Failed to parse LLM response', { 
             row: i, 
             error: parseError instanceof Error ? parseError.message : parseError,
             response: enrichedJson?.substring(0, 200) 
           });
-          // Mark all fields as errors
-          for (const field of blankFields) {
-            totalErrors++;
-            fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
-            fieldStats[field].errors++;
+          // --- PATCH: Fallback to a simpler prompt if parse fails ---
+          const fallbackPrompt = `Fill in the following fields for a product. If unsure, leave blank. Respond with ONLY a valid JSON object.\nFields: ${fieldsToEnrich.join(", ")}\nProduct data: ${JSON.stringify(row, null, 2)}\nResponse (JSON only):`;
+          try {
+            enrichedJson = await openai.chat.completions.create({
+              model: "gpt-4o-mini",
+              messages: [
+                { role: "system", content: "You are a product feed enrichment expert. Respond with ONLY a valid JSON object for the requested fields." },
+                { role: "user", content: fallbackPrompt }
+              ],
+              temperature: 0.1,
+              max_tokens: 1000
+            }).then(resp => resp.choices[0]?.message?.content || '');
+            const cleanedFallbackResponse = stripMarkdownCodeBlocks(enrichedJson);
+            enriched = JSON.parse(cleanedFallbackResponse);
+          } catch (fallbackError) {
+            logger.error('Fallback LLM call failed', {
+              row: i,
+              error: fallbackError instanceof Error ? fallbackError.message : fallbackError,
+              response: enrichedJson?.substring(0, 200)
+            });
+            llmError = fallbackError;
+            // Mark all fields as errors
+            for (const field of fieldsToEnrich) {
+              totalErrors++;
+              fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
+              fieldStats[field].errors++;
+            }
+            rowStats.push({
+              row: i + 1,
+              confidence: 0,
+              blanks: fieldsToEnrich
+            });
+            continue;
           }
-          continue;
         }
 
         // Apply enriched data and track stats
@@ -524,7 +589,7 @@ Response (JSON only):`;
         let rowFields = 0;
         const rowBlanks: string[] = [];
 
-        for (const field of outputColumns) {
+        for (const field of outputColumns.filter(f => typeof f === 'string')) {
           if (NON_ENRICHABLE_FIELDS.includes(field)) {
             // Skip system fields
             rowFields++;
@@ -536,7 +601,7 @@ Response (JSON only):`;
             rowConfidence += 1.0;
             fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
             fieldStats[field].mapped++;
-          } else if (blankFields.includes(field) && enriched[field]) {
+          } else if (fieldsToEnrich.includes(field) && enriched[field]) {
             // LLM provided value
             const enrichedValue = enriched[field];
             if (typeof enrichedValue === 'string' && enrichedValue.trim() !== "") {
@@ -565,29 +630,30 @@ Response (JSON only):`;
           blanks: rowBlanks
         });
 
-        logger.debug('Row enrichment completed', { 
+        logger.info('Row enrichment completed', { 
           row: i + 1, 
           enrichedFields: Object.keys(enriched).length,
           processingTime: Date.now() - rowStartTime
         });
 
       } catch (error) {
-        logger.warn('Row LLM enrichment failed', { 
+        logger.error('Row LLM enrichment failed', { 
           row: i, 
-          error: error instanceof Error ? error.message : error 
+          error: error instanceof Error ? error.message : error,
+          prompt,
+          fieldsToEnrich,
+          rowData: row
         });
-        
-        // Mark all blank fields as errors
-        for (const field of blankFields) {
+        // Mark all fields as errors
+        for (const field of fieldsToEnrich) {
           totalErrors++;
           fieldStats[field] = fieldStats[field] || { mapped: 0, enriched: 0, blank: 0, errors: 0 };
           fieldStats[field].errors++;
         }
-
         rowStats.push({
           row: i + 1,
           confidence: 0,
-          blanks: blankFields
+          blanks: fieldsToEnrich
         });
       }
     }
@@ -681,7 +747,7 @@ Response (JSON only):`;
         category_detection: category,
         grounding_examples_loaded: 0,
         batches_processed: 0,
-        gpt_calls: llmCache.size
+        gpt_calls: llmCacheMemory.size
       },
       summary_json: summary
     };
@@ -689,9 +755,37 @@ Response (JSON only):`;
       id, 
       processingTime: result.summary.processing_time_ms,
       outputRows: outputRows.length,
-      cacheHits: llmCache.size,
+      cacheHits: llmCacheMemory.size,
       summary: result.summary_json
     });
+    console.log('[TRANSFORMER_OUTPUT] About to write output file:', outputPath);
+    try {
+      const { error } = await supabase.from("logs").insert(result.rows.map(row => ({
+        feed_id: id,
+        row_number: row.row_number,
+        status: row.status,
+        confidence: row.row_confidence,
+        original_data: row.original_data,
+        transformed_data: row.transformed_data,
+        error_message: row.error_message,
+        processing_time_ms: row.processing_time_ms,
+        retry_count: row.retry_count,
+        created_at: new Date().toISOString()
+      })));
+      
+      if (error) {
+        logger.warn('Failed to save logs to database', { error: error.message });
+      } else {
+        logger.info('Saved logs to database', { logCount: result.rows.length });
+      }
+    } catch (err) {
+      console.error('[SUPABASE_UPLOAD_ERROR]', {
+        filePath: outputPath,
+        error: (err && typeof err === 'object' && 'message' in err) ? (err as Error).message : String(err),
+        supabaseRole: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'service_role' : 'unknown',
+      });
+      throw new Error('Supabase upload failed: ' + ((err && typeof err === 'object' && 'message' in err) ? (err as Error).message : String(err)));
+    }
     return res.json(result);
   } catch (err: unknown) {
     const errorTime = Date.now() - startTime;
@@ -701,6 +795,7 @@ Response (JSON only):`;
       error: errorMessage, 
       processingTime: errorTime
     });
+    console.error('[TRANSFORMER_ERROR]', err);
     return res.status(500).json({ 
       error: errorMessage,
       processing_time_ms: errorTime,
@@ -910,36 +1005,6 @@ async function loadGroundingExamples(category: string | undefined, groundingRoot
       error: errorMessage 
     });
     return [];
-  }
-}
-
-// Save logs to database
-async function saveLogsToDatabase(feedId: string, transformResults: TransformRow[]) {
-  try {
-    const logs = transformResults.map(result => ({
-      feed_id: feedId,
-      row_number: result.row_number,
-      status: result.status,
-      confidence: result.row_confidence,
-      original_data: result.original_data,
-      transformed_data: result.transformed_data,
-      error_message: result.error_message,
-      processing_time_ms: result.processing_time_ms,
-      retry_count: result.retry_count,
-      created_at: new Date().toISOString()
-    }));
-
-    const { error } = await supabase.from("logs").insert(logs);
-    
-    if (error) {
-      logger.warn('Failed to save logs to database', { error: error.message });
-    } else {
-      logger.info('Saved logs to database', { logCount: logs.length });
-    }
-  } catch (error: unknown) {
-    logger.warn('Database logging failed', { 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    });
   }
 }
 

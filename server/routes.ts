@@ -11,8 +11,11 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
+// @ts-ignore
 import { feedQueue } from './queue.js';
 import REMOVED_SECRETfrom '../supabaseClient';
+// @ts-ignore
+import analyticsService from './utils/analytics.js';
 
 const router = express.Router();
 
@@ -93,14 +96,39 @@ if (!fs.existsSync(tempDir)) {
 const processingJobs = new Map();
 
 // Progress update endpoint
-router.get('/feeds/:feedId/progress', (req, res) => {
+router.get('/feeds/:feedId/progress', async (req, res) => {
   const { feedId } = req.params;
-  const job = processingJobs.get(feedId) || { 
-    status: 'not_found',
-    progress: 0,
-    message: 'Job not found'
-  };
-  
+  let job = processingJobs.get(feedId);
+
+  if (!job) {
+    // Try BullMQ
+    try {
+      const jobs = await feedQueue.getJobs(['active', 'waiting', 'completed', 'failed']);
+      const bullJob = jobs.find((j: any) => j.data.feedId === feedId);
+      if (bullJob) {
+        job = {
+          feed_id: feedId,
+          status: bullJob.finishedOn ? 'completed' : bullJob.failedReason ? 'failed' : 'processing',
+          progress: bullJob.progress || 0,
+          message: bullJob.finishedOn ? 'Completed' : bullJob.failedReason ? 'Failed' : 'Processing',
+          timestamp: new Date(bullJob.timestamp).toISOString(),
+          failedReason: bullJob.failedReason,
+          returnvalue: bullJob.returnvalue,
+        };
+      }
+    } catch (err) {
+      console.error('Error checking BullMQ for progress:', err);
+    }
+  }
+
+  if (!job) {
+    job = {
+      status: 'not_found',
+      progress: 0,
+      message: 'Job not found'
+    };
+  }
+
   console.log(`📊 Progress check for ${feedId}:`, job);
   res.json(job);
 });
@@ -213,6 +241,7 @@ router.post('/simple-upload', upload.single('file'), async (req, res) => {
 
   try {
     if (!req.file) {
+      console.error('[simple-upload] No file uploaded');
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
@@ -221,7 +250,7 @@ router.post('/simple-upload', upload.single('file'), async (req, res) => {
     const email = req.body.email;
     const category = req.body.category;
 
-    console.log('📋 Extracted data:', {
+    console.log('[simple-upload] Extracted data:', {
       platform,
       email,
       category,
@@ -232,13 +261,16 @@ router.post('/simple-upload', upload.single('file'), async (req, res) => {
 
     // Validation
     if (!platform) {
+      console.error('[simple-upload] Platform is required');
       return res.status(400).json({ error: 'Platform is required' });
     }
     if (!email) {
+      console.error('[simple-upload] Email is required');
       return res.status(400).json({ error: 'Email is required' });
     }
 
     const feedId = `feed_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    console.log('[simple-upload] Generated feedId:', feedId);
 
     console.log('✅ Upload successful:', {
       feedId,
@@ -248,6 +280,7 @@ router.post('/simple-upload', upload.single('file'), async (req, res) => {
     });
 
     // Enqueue BullMQ job for async processing
+    console.log('[simple-upload] Adding job to BullMQ queue...');
     await feedQueue.add('feed-transform', {
       feedId,
       fileBuffer: req.file.buffer,
@@ -257,6 +290,7 @@ router.post('/simple-upload', upload.single('file'), async (req, res) => {
       email,
       category
     });
+    console.log('[simple-upload] Job added to queue for feedId:', feedId);
 
     // Return immediate response
     res.json({
@@ -271,8 +305,12 @@ router.post('/simple-upload', upload.single('file'), async (req, res) => {
       platform: platform,
       category: category || 'auto-detect'
     });
+    console.log('[simple-upload] Response sent for feedId:', feedId);
   } catch (error) {
-    console.error('💥 Upload error:', error);
+    console.error('[simple-upload] Upload error:', error);
+    if (error instanceof Error && error.stack) {
+      console.error('[simple-upload] Stack trace:', error.stack);
+    }
     res.status(500).json({ error: 'Upload failed', details: error instanceof Error ? error.message : String(error) });
   }
 });
@@ -436,4 +474,87 @@ router.use((error: any, req: Request, res: Response, next: NextFunction) => {
 });
 
 // NOTE for Lovable: The backend now only returns the XLSX output file (platform template, all columns, all LLM enrichment, all mapping preserved). No CSV is generated or returned. The transformer logic is fully preserved and used as before.
+
+// Analytics endpoints
+router.get('/api/analytics/dashboard', async (req, res) => {
+  try {
+    const dashboardData = await analyticsService.getDashboardData();
+    res.json({
+      success: true,
+      data: dashboardData
+    });
+  } catch (error) {
+    console.error('Error getting dashboard data:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get dashboard data'
+    });
+  }
+});
+
+router.get('/api/analytics/jobs', async (req, res) => {
+  try {
+    const { platform, category } = req.query;
+    const jobSummary = await analyticsService.getJobPerformanceSummary(platform, category);
+    res.json({
+      success: true,
+      data: jobSummary
+    });
+  } catch (error) {
+    console.error('Error getting job analytics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get job analytics'
+    });
+  }
+});
+
+router.get('/api/analytics/fields', async (req, res) => {
+  try {
+    const fieldSummary = await analyticsService.getFieldPerformanceSummary();
+    res.json({
+      success: true,
+      data: fieldSummary
+    });
+  } catch (error) {
+    console.error('Error getting field analytics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get field analytics'
+    });
+  }
+});
+
+router.get('/api/analytics/llm', async (req, res) => {
+  try {
+    const llmSummary = await analyticsService.getLLMPerformanceSummary();
+    res.json({
+      success: true,
+      data: llmSummary
+    });
+  } catch (error) {
+    console.error('Error getting LLM analytics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get LLM analytics'
+    });
+  }
+});
+
+router.get('/api/analytics/recent', async (req, res) => {
+  try {
+    const { limit = '10' } = req.query;
+    const recentJobs = await analyticsService.getRecentJobAnalytics(parseInt(limit as string));
+    res.json({
+      success: true,
+      data: recentJobs
+    });
+  } catch (error) {
+    console.error('Error getting recent analytics:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get recent analytics'
+    });
+  }
+});
 

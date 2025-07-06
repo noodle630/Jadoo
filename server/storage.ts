@@ -2,7 +2,8 @@ import {
   users, type User, type InsertUser,
   feeds, type Feed, type InsertFeed,
   templates, type Template, type InsertTemplate
-} from "@shared/schema";
+} from "../../shared/schema";
+import * as fs from "fs";
 
 // Interface for storage operations
 export interface IStorage {
@@ -238,7 +239,7 @@ export class MemStorage implements IStorage {
   async getFeedsByUserId(userId: number): Promise<Feed[]> {
     return Array.from(this.feeds.values())
       .filter(feed => feed.userId === userId)
-      .sort((a, b) => new Date(b.processedAt).getTime() - new Date(a.processedAt).getTime());
+      .sort((a, b) => new Date(b.processedAt ?? '').getTime() - new Date(a.processedAt ?? '').getTime());
   }
 
   async createFeed(feed: InsertFeed): Promise<Feed> {
@@ -246,7 +247,7 @@ export class MemStorage implements IStorage {
     const now = new Date();
     // Make sure feed has a name if it's empty or undefined
     const feedName = feed.name && feed.name.trim() !== "" ? feed.name : `Untitled Feed ${id}`;
-    const newFeed: Feed = { ...feed, id, name: feedName, processedAt: now };
+    const newFeed: Feed = { ...feed, id, name: feedName, processedAt: now, sourceDetails: feed.sourceDetails ?? {}, aiChanges: feed.aiChanges ?? {}, outputUrl: feed.outputUrl ?? null, itemCount: feed.itemCount ?? null };
     this.feeds.set(id, newFeed);
     return newFeed;
   }
@@ -314,6 +315,7 @@ export class MemStorage implements IStorage {
     const template = this.templates.get(id);
     if (!template) return false;
     
+    if (template.usageCount == null) template.usageCount = 0;
     template.usageCount += 1;
     this.templates.set(id, template);
     return true;

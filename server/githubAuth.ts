@@ -1,4 +1,5 @@
 import passport from 'passport';
+// @ts-ignore: no type definitions for 'passport-github2'
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import { storage } from "./storage";
 import session from 'express-session';
@@ -36,7 +37,7 @@ export function setupGithubAuth(app: Express) {
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
     callbackURL: GITHUB_CALLBACK_URL
-  }, async (accessToken, refreshToken, profile, done) => {
+  }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
       // Find or create user
       let user = await storage.getUserByGithubId(profile.id);
@@ -50,7 +51,8 @@ export function setupGithubAuth(app: Express) {
           profileImageUrl: profile.photos?.[0]?.value,
           // No password needed for OAuth users
           password: '',
-          company: profile.company || null,
+          // Remove or comment out the 'company' property if not present in Feed type
+          // company: profile.company || null,
           role: 'user'
         });
       } else {

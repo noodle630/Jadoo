@@ -128,7 +128,7 @@ export const productsRelations = relations(products, ({ one }) => ({
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
+  updatedAt: true
 });
 
 // Product Category schema for organizing products
@@ -154,7 +154,7 @@ export const productCategoriesRelations = relations(productCategories, ({ one })
 
 export const insertProductCategorySchema = createInsertSchema(productCategories).omit({
   id: true,
-  createdAt: true,
+  createdAt: true
 });
 
 // Products to categories many-to-many relationship
@@ -202,7 +202,7 @@ export const feedsRelations = relations(feeds, ({ one }) => ({
 
 export const insertFeedSchema = createInsertSchema(feeds).omit({
   id: true,
-  processedAt: true,
+  processedAt: true
 });
 
 // Template schema - marketplace templates for feed generation
@@ -226,7 +226,7 @@ export const templatesRelations = relations(templates, ({ one }) => ({
 export const insertTemplateSchema = createInsertSchema(templates).omit({
   id: true,
   lastUpdated: true,
-  usageCount: true,
+  usageCount: true
 });
 
 // Logs table for tracking transformation results

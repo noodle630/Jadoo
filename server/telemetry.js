@@ -2,15 +2,10 @@
 import { trace, context, SpanStatusCode } from '@opentelemetry/api';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import Resource from '@opentelemetry/resources';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
 // Initialize OpenTelemetry
 const sdk = new NodeSDK({
-  resource: Resource.default({
-    [SemanticResourceAttributes.SERVICE_NAME]: 'jadoo-feed-transformer',
-    [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
-  }),
   traceExporter: new OTLPTraceExporter({
     url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318/v1/traces',
   }),

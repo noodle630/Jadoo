@@ -1,49 +1,51 @@
+import 'dotenv/config';
+console.log('[DEBUG] REDIS_URL at index.ts:', process.env.REDIS_URL);
 import express from "express";
 import cors from "cors";
-import routes from "server/routes"; // 👈 match your folder
+import routes from "./routes.js"; // 👈 match your folder
 import fileUpload from "express-fileupload";
+import './queue.js';
+import IORedis from 'ioredis';
 
 const app = express();
 const port = process.env.PORT || 4000;
 
-// ===== COMPREHENSIVE CORS CONFIGURATION (FIRST!) =====
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  console.log('🌐 CORS - Request from origin:', origin);
-  
-  // Dynamic CORS for Lovable domains and development
-  const allowedPatterns = [
-    /^https:\/\/.*\.lovableproject\.com$/,
-    /^https:\/\/.*\.lovable\.app$/,
-    /^https:\/\/.*\.lovable\.dev$/,
-    /^http:\/\/localhost(:\d+)?$/,
-    /^https:\/\/.*\.ngrok-free\.app$/,
-    /^https:\/\/.*\.ngrok\.io$/
-  ];
-  
-  const isAllowed = allowedPatterns.some(pattern => pattern.test(origin || ''));
-  
-  if (isAllowed) {
-    res.header('Access-Control-Allow-Origin', origin);
-    console.log('✅ CORS - Origin allowed:', origin);
-  } else {
-    console.log('❌ CORS - Origin blocked:', origin);
-  }
-  
-  // Essential CORS headers
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, ngrok-skip-browser-warning');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Max-Age', '86400'); // 24 hours
-  
-  // Handle preflight OPTIONS requests
-  if (req.method === 'OPTIONS') {
-    console.log('🔄 CORS - Preflight request handled');
-    return res.status(200).end();
-  }
-  
-  next();
-});
+const allowedOrigins = [
+  /\.lovable\.app$/, // allow all subdomains of lovable.app
+  /\.lovableproject\.com$/, // allow all subdomains of lovableproject.com
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'https://236d-135-84-144-58.ngrok-free.app', // ngrok dev
+  'https://jadoo.fly.dev', // Fly.io prod
+];
+
+const redisUrl = process.env.REDIS_URL;
+if (!redisUrl) {
+  throw new Error('[REDIS][App] REDIS_URL is not set!');
+}
+console.log('[REDIS][App] Connecting to:', redisUrl);
+const testRedis = new IORedis(redisUrl);
+testRedis.on('connect', () => console.log('[REDIS][App] Connected!'));
+testRedis.on('error', (err) => console.error('[REDIS][App] Connection error:', err));
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.some(pattern =>
+        typeof pattern === 'string'
+          ? pattern === origin
+          : pattern.test(origin)
+      )
+    ) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'), false);
+    }
+  },
+  credentials: true,
+}));
 
 // Log all requests for debugging
 app.use((req, res, next) => {
@@ -82,7 +84,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 try {
-  app.listen(port, () => {
+  app.listen(Number(port), '0.0.0.0', () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
   });
 } catch (err) {

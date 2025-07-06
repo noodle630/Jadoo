@@ -160,11 +160,11 @@ export function setupDirectRoutes(app: express.Express) {
       const outputFilePath = path.join(uploadDir, outputFileName);
       
       // Perform the transformation with guaranteed 1:1 row mapping
-      const transformationResult = exactParser.transformWithExactRowMapping(
+      const transformationResult = await exactParser.transformWithExactMapping(
         req.file.path, 
         outputFilePath,
         // Simple line by line transformation
-        (line, index, isHeader) => {
+        (line: any, index: any, isHeader: any) => {
           // Header transformation - just append marketplace identifier
           if (isHeader) {
             return line + `,marketplace_${marketplace}`;

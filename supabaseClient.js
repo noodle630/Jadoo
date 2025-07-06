@@ -1,0 +1,18 @@
+"use strict";
+import * as dotenv from "dotenv";
+import { createClient } from '@supabase/supabase-js';
+
+dotenv.config();
+console.log("Loaded .env - URL:", process.env.SUPABASE_URL?.slice(0, 30));
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl) throw new Error('supabaseUrl is required.');
+if (!supabaseKey) throw new Error('supabaseKey is required.');
+
+const REMOVED_SECRET= createClient(supabaseUrl, supabaseKey);
+
+console.log("Using Supabase key:", supabaseKey?.slice(0, 8));
+
+export default supabase;

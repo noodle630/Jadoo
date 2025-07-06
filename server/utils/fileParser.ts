@@ -3,8 +3,8 @@
  * Provides basic functions to read files and count rows without any complex logic
  */
 
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import Papa from 'papaparse';
 
 /**
@@ -81,23 +81,18 @@ export function parseCsvFile(filePath: string): {
   try {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     
-    const parseResult = Papa.parse(fileContent, {
+    const parseResult = Papa.parse<string[]>(fileContent, {
       header: true,
       skipEmptyLines: true,
-      trimHeaders: true,
-    });
+    }) as Papa.ParseResult<any>;
     
     // Log detailed parsing information
-    console.log(`CSV Parse Results: 
-      Rows: ${parseResult.data.length}
-      Fields: ${parseResult.meta.fields?.length || 0}
-      Errors: ${parseResult.errors.length}
-    `);
-    
+    console.log(`CSV Parse Results: \n  Rows: ${parseResult.data.length}\n  Fields: ${parseResult.meta.fields?.length || 0}\n  Errors: ${parseResult.errors.length}`);
+
     if (parseResult.errors.length > 0) {
       console.warn('CSV parsing errors:', parseResult.errors);
     }
-    
+
     return {
       data: parseResult.data,
       fields: parseResult.meta.fields || [],
@@ -110,63 +105,7 @@ export function parseCsvFile(filePath: string): {
       data: [],
       fields: [],
       rowCount: 0,
-      error: error instanceof Error ? error.message : 'Unknown error parsing CSV'
+      error: error instanceof Error ? error.message : 'An error occurred'
     };
   }
 }
-
-/**
- * Simple file size-based row count estimator
- * Use only as a last resort if direct counting methods fail
- * @param filePath Path to the CSV file
- * @param avgRowSizeBytes Average size of a row in bytes (default: 200)
- * @returns Estimated row count
- */
-export function estimateRowCount(filePath: string, avgRowSizeBytes = 200): number {
-  try {
-    const stats = fs.statSync(filePath);
-    const fileSize = stats.size;
-    
-    // Subtract ~500 bytes for header and file overhead
-    const dataSize = Math.max(0, fileSize - 500);
-    
-    // Estimate row count based on average row size
-    const estimatedRows = Math.ceil(dataSize / avgRowSizeBytes);
-    
-    console.log(`File size: ${fileSize} bytes, estimated rows: ${estimatedRows}`);
-    return estimatedRows;
-  } catch (error) {
-    console.error('Error estimating row count:', error);
-    return 0;
-  }
-}
-
-/**
- * Read the first N rows of a CSV file
- * @param filePath Path to the CSV file
- * @param maxRows Maximum number of rows to read (default: 10)
- * @returns Array of data rows
- */
-export function readCsvSample(filePath: string, maxRows = 10): any[] {
-  try {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    
-    const parseResult = Papa.parse(fileContent, {
-      header: true,
-      skipEmptyLines: true,
-      preview: maxRows,
-    });
-    
-    return parseResult.data;
-  } catch (error) {
-    console.error('Error reading CSV sample:', error);
-    return [];
-  }
-}
-
-export default {
-  countCsvRows,
-  parseCsvFile,
-  estimateRowCount,
-  readCsvSample
-};

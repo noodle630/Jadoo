@@ -57,3 +57,38 @@ Jadoo is a modern backend system for transforming, enriching, and optimizing pro
 ---
 
 For more details, see the codebase and `/server/` directory for backend logic, `/client/` for Lovable frontend, and Supabase/OpenTelemetry configuration files.
+
+## QA & E2E Testing Workflow
+
+### Local QA (Full E2E)
+
+1. Install dependencies:
+   ```sh
+   npm install
+   ```
+2. Start both the Express server and the worker in parallel:
+   ```sh
+   npm run qa
+   ```
+3. Run the E2E upload test:
+   ```sh
+   npm test test/e2e-upload.test.js
+   ```
+
+### Fly.io Deployment (Production/QA)
+
+1. Deploy your app as usual:
+   ```sh
+   fly deploy
+   ```
+2. Scale up the worker process:
+   ```sh
+   fly scale count 1 --process-group worker
+   ```
+3. The app process runs the API server, the worker process runs the BullMQ worker.
+4. Test uploads from the frontend or via API.
+5. Monitor logs for both processes in the Fly.io dashboard.
+
+### Troubleshooting
+- If uploads stay pending, ensure the worker process is running (locally or on Fly.io).
+- Check logs for both the app and worker for errors or progress.
