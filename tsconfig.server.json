@@ -5,7 +5,7 @@
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
     "outDir": "./dist",
-    "module": "CommonJS",
+    "module": "ESNext",
     "strict": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
