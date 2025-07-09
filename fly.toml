@@ -23,4 +23,4 @@ primary_region = 'sjc'
 
 [processes]
 app = "npm start" # or the command that starts your Express server
-worker = "node dist/worker.js"
+worker = "node dist/queue.js"
