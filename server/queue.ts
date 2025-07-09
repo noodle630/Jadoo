@@ -93,13 +93,8 @@ const feedWorker = new Worker('feed-transform', async job => {
       }
     }, JOB_TIMEOUT_MS);
 
-    // Dynamically import REMOVED_SECRETclient
-    try {
-      REMOVED_SECRET= (await import('../supabaseClient.js')).default;
-    } catch (e) {
-      console.error('[Worker] Failed to import supabaseClient.js:', e);
-      throw e;
-    }
+    // Dynamically import supabase client
+    const supabase = (await import('../supabaseClient.js')).default;
 
     console.log(`[Worker] ====== JOB START feedId=${feedId} jobId=${job.id} ======`);
     try {
