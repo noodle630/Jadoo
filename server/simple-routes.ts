@@ -7,6 +7,9 @@ import { storage } from './storage';
 import { z } from 'zod';
 import reliableParser from './utils/reliableParser';
 import { handleProcess } from './utils/transformer';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configure paths for ES modules
 

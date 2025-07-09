@@ -1,6 +1,9 @@
+import { fileURLToPath } from 'url';
+import path from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 require('dotenv').config();

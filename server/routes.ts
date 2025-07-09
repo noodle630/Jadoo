@@ -1,12 +1,9 @@
-console.log('[DEBUG] CWD:', process.cwd());
-console.log('[DEBUG] STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.slice(0,8) + '...' : undefined);
-console.log('[DEBUG] STRIPE_PRICE_ID_PREMIUM:', process.env.STRIPE_PRICE_ID_PREMIUM);
-console.log('[DEBUG] STRIPE_PRICE_ID_BASIC:', process.env.STRIPE_PRICE_ID_BASIC);
-console.log('[DEBUG] STRIPE_SUCCESS_URL:', process.env.STRIPE_SUCCESS_URL);
-console.log('[DEBUG] STRIPE_CANCEL_URL:', process.env.STRIPE_CANCEL_URL);
+import { fileURLToPath } from 'url';
+import path from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import express from "express";
-import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { handleProcess } from "./utils/transformer.js"; // ✅ match your tree

@@ -1,7 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { stringify } from 'csv-stringify/sync';
+// NOTE: This file expects the TypeScript compiler option `module` to be set to 'esnext' or 'node16' for import.meta compatibility.
 import { fileURLToPath } from 'url';
+import path from 'path';
+import * as fs from 'fs';
+import { stringify } from 'csv-stringify/sync';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

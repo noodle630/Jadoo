@@ -1,8 +1,13 @@
+// NOTE: This file expects the TypeScript compiler option `module` to be set to 'esnext' or 'node16' for import.meta compatibility.
+import { fileURLToPath } from 'url';
+import path from 'path';
 import * as fs from 'fs';
-import * as path from 'path';
 import { parse } from 'csv-parse/sync';
 import { stringify } from 'csv-stringify/sync';
 // import { transformRowWithGPT } from './transformer'; // TODO: Uncomment if implemented
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const templatePath = path.join(__dirname, '../../attached_assets/templates/amazon/base.csv');
 const testDataPath = path.join(__dirname, '../../attached_assets/test_vendor_input.csv');
