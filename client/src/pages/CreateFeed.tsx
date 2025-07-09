@@ -77,7 +77,7 @@ export default function CreateFeed() {
       formData.append("marketplace", "amazon");
       formData.append("name", data.name);
 
-      const res = await fetch("/transform", {
+      const res = await fetch("/api/simple-upload", {
         method: "POST",
         body: formData,
       });
@@ -95,7 +95,7 @@ export default function CreateFeed() {
 
       setFeedId("success");
       setProcessingStatus("completed");
-      toast({ title: "Transformation complete", variant: "success" });
+      toast({ title: "Transformation complete" });
       setActiveTab("processing");
     } catch (err) {
       toast({ title: "Something went wrong", variant: "destructive" });

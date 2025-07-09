@@ -2,7 +2,7 @@ import {
   users, type User, type InsertUser,
   feeds, type Feed, type InsertFeed,
   templates, type Template, type InsertTemplate
-} from "../../shared/schema";
+} from "../schema";
 import * as fs from "fs";
 
 // Interface for storage operations

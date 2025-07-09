@@ -24,22 +24,35 @@ export function useAuth() {
     // Handle auth errors gracefully
     queryFn: async () => {
       try {
-        const response = await fetch('/api/auth/user');
-        
+        const response = await fetch('/api/auth/user', { credentials: 'include' });
         // If we get a 401, simply return null instead of throwing
         if (response.status === 401) {
           console.log('User not authenticated');
           return null;
         }
-        
+        // If we get a 500, handle gracefully
+        if (response.status === 500) {
+          const errMsg = await response.text();
+          toast({
+            title: 'Auth Service Error',
+            description: errMsg || 'The authentication service is temporarily unavailable. Please try again later.',
+            variant: 'destructive',
+          });
+          console.error('Auth 500 error:', errMsg);
+          return null;
+        }
         if (!response.ok) {
           throw new Error(`Auth query failed: ${response.status}`);
         }
-        
         return await response.json();
       } catch (err) {
+        toast({
+          title: 'Auth Error',
+          description: err.message || 'Could not check authentication status.',
+          variant: 'destructive',
+        });
         console.error('Error fetching auth status:', err);
-        throw err;
+        return null;
       }
     }
   });

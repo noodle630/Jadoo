@@ -1,0 +1,11 @@
+WORKER CODE VERSION: 2025-07-09T02:15:00+00:00
+[WORKER_DIR_CREATE] temp_uploads directory already exists
+[WORKER_DIR_CREATE] outputs directory already exists
+[WORKER_STARTUP] ENV {
+  REDIS_URL: 'redis://localhost:6379',
+  SUPABASE_URL: 'https://ycxucauqwrfmvenkpaoz.supabase.co',
+  SUPABASE_SERVICE_ROLE_KEY: '***set***',
+  NODE_ENV: 'development'
+}
+[DEBUG] REDIS_URL at queue.js: redis://localhost:6379
+[WORKER_READY] Worker startup complete, ready to process jobs.

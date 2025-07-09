@@ -2,13 +2,10 @@ import { Express, Request, Response } from 'express';
 import multer from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 import { storage } from './storage';
 import reliableParser from './utils/reliableParser';
 
 // Configure paths for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Configure multer for file uploads
 const uploadDir = path.join(__dirname, '..', 'temp_uploads');

@@ -8,49 +8,48 @@ const tiers = [
     id: 'free',
     name: 'Free',
     price: '$0',
-    period: 'forever',
-    products: '10 products',
-    fillRate: '30% fields filled',
+    per: 'up to 100 rows',
     features: [
-      'Basic product info',
-      'Essential fields only',
-      'GPT-4o-mini model',
-      'Community support'
+      'Up to 100 products free',
+      'Basic AI optimization',
+      'Standard processing speed',
+      'Email support',
+      'CSV export'
     ],
     popular: false,
     color: 'border-gray-200'
   },
   {
-    id: 'basic',
-    name: 'Basic',
-    price: '$29',
-    period: 'per month',
-    products: '100 products',
-    fillRate: '60% fields filled',
+    id: 'pro',
+    name: 'Pro',
+    price: '$0.10',
+    per: 'per row (101-500)',
     features: [
-      'Standard optimization',
-      'Extended field coverage',
-      'SEO optimization',
-      'Email support',
-      'Priority processing'
+      'Up to 500 products',
+      'Advanced AI optimization',
+      'Priority processing',
+      'Live chat support',
+      'Advanced analytics',
+      'API access',
+      'Bulk operations'
     ],
     popular: true,
     color: 'border-blue-500'
   },
   {
-    id: 'premium',
-    name: 'Premium',
-    price: '$99',
-    period: 'per month',
-    products: '1000 products',
-    fillRate: '90% fields filled',
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: '$0.35',
+    per: 'per row (501-1000)',
     features: [
-      'Full optimization',
-      'Complete field coverage',
-      'Advanced SEO',
-      'Brand optimization',
-      'Priority support',
-      'Analytics dashboard'
+      'Up to 1000 products',
+      'Custom AI models',
+      'Dedicated processing',
+      '24/7 phone support',
+      'Advanced integrations',
+      'White-label solution',
+      'Custom workflows',
+      'SLA guarantee'
     ],
     popular: false,
     color: 'border-purple-500'
@@ -78,11 +77,7 @@ export function TierSelector({ selectedTier, onTierSelect }) {
             <CardTitle className="text-xl font-bold">{tier.name}</CardTitle>
             <div className="mt-2">
               <span className="text-3xl font-bold">{tier.price}</span>
-              <span className="text-gray-500 ml-1">{tier.period}</span>
-            </div>
-            <div className="text-sm text-gray-600 mt-2">
-              <div>{tier.products}</div>
-              <div>{tier.fillRate}</div>
+              <span className="text-gray-500 ml-1">{tier.per}</span>
             </div>
           </CardHeader>
           

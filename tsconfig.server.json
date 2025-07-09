@@ -1,0 +1,21 @@
+{
+  "include": ["server/**/*", "shared/**/*", "supabaseClient.ts"],
+  "exclude": ["node_modules", "build", "dist", "**/*.test.ts", "client/**/*"],
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
+    "outDir": "./dist",
+    "module": "CommonJS",
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "types": ["node"],
+    "target": "es2015",
+    "downlevelIteration": true,
+    "rootDir": ".",
+    "typeRoots": ["./types", "./node_modules/@types"]
+  }
+} 

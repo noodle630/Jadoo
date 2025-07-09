@@ -1,26 +1,30 @@
 {
   "include": ["client/src/**/*", "shared/**/*", "server/**/*", "supabaseClient.ts"],
   "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+  "files": [
+    "shared/schema.ts"
+  ],
   "compilerOptions": {
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
-    "noEmit": true,
-    "module": "ESNext",
+    "outDir": "./dist",
+    "module": "CommonJS",
     "strict": true,
     "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "preserve",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "baseUrl": ".",
-    "types": ["node", "vite/client"],
+    "types": ["node"],
     "paths": {
       "@/*": ["./client/src/*"],
       "@shared/*": ["./shared/*"]
     },
     "target": "es2015",
     "downlevelIteration": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "typeRoots": ["./types", "./node_modules/@types"]
   }
 }

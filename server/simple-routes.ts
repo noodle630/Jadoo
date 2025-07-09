@@ -2,15 +2,13 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 import { fromZodError } from 'zod-validation-error';
 import { storage } from './storage';
 import { z } from 'zod';
 import reliableParser from './utils/reliableParser';
+import { handleProcess } from './utils/transformer';
 
 // Configure paths for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Configure multer for file uploads
 const uploadDir = path.join(__dirname, '..', 'temp_uploads');
@@ -23,7 +21,10 @@ const storage_config = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (_req, file, cb) => {
-    cb(null, `${Date.now()}_${file.originalname}`);
+    // Use a placeholder that will be replaced with the actual feed ID
+    // The actual feed ID will be generated in the upload process
+    const timestamp = Date.now();
+    cb(null, `upload_${timestamp}_${file.originalname}`);
   }
 });
 
@@ -35,144 +36,106 @@ const upload = multer({
 });
 
 export function createSimpleRoutes() {
+  console.log('[DEBUG] createSimpleRoutes called in simple-routes.ts');
   const router = Router();
   
+  // GET endpoint for simple-upload (show upload form)
+  router.get('/simple-upload', (req: Request, res: Response) => {
+    console.log('[DEBUG] GET /simple-upload endpoint hit');
+    res.json({ 
+      message: 'Upload endpoint available',
+      method: 'POST',
+      description: 'Send multipart form data with file, platform, and email'
+    });
+  });
+  
   // Create a new feed with reliable row counting
-  router.post('/simple-upload', upload.single('file'), async (req: Request, res: Response) => {
-    console.log("File upload request received");
-    
+  router.post('/simple-upload', (req: Request, res: Response, next) => {
+    console.log('[DEBUG] Entered POST /api/simple-upload handler');
+    next();
+  }, upload.single('file'), async (req: Request, res: Response) => {
+    console.log('[DEBUG] After multer in POST /api/simple-upload');
+    console.log('[UPLOAD] Request headers:', req.headers);
+    console.log('[UPLOAD] Request body:', req.body);
     try {
       if (!req.file) {
-        console.log("No file detected in upload request");
-        return res.status(400).json({ message: 'No file uploaded' });
+        console.log('[UPLOAD] No file detected in upload request');
+        res.status(400).json({ message: 'No file uploaded' });
+        console.log('[UPLOAD] Response sent: 400 No file uploaded');
+        return;
       }
-
-      console.log(`File uploaded: ${req.file.originalname}, size: ${req.file.size}, path: ${req.file.path}`);
-      
-      // Get form data
-      let name = req.body.name || req.file.originalname.replace(/\.[^/.]+$/, "");
-      let marketplace = req.body.marketplace || 'amazon';
-      
-      // Count rows reliably
-      const countResult = reliableParser.countCSVRows(req.file.path);
-      console.log('CSV row count results:', countResult);
-      
-      const rowCount = countResult.success ? countResult.dataRows : 0;
-      console.log(`Row count: ${rowCount} data rows`);
-      
-      // Generate output file path
-      const outputFileName = `${marketplace}_${Date.now()}_${path.basename(req.file.originalname)}`;
-      const outputFilePath = path.join(uploadDir, outputFileName);
-      
-      // Transform to target format
-      console.log(`Transforming to ${marketplace} format, output path: ${outputFilePath}`);
-      const transformResult = await reliableParser.transformToMarketplace(
-        req.file.path,
-        outputFilePath,
-        marketplace
-      );
-      
-      console.log('Transformation result:', transformResult);
-      
-      if (!transformResult.success) {
-        return res.status(500).json({ 
-          message: 'Transform failed',
-          error: transformResult.error
-        });
+      // Only allow Walmart marketplace (accept both 'marketplace' and 'platform' fields)
+      const marketplace = (req.body.marketplace || req.body.platform || '').toLowerCase();
+      if (marketplace !== 'walmart') {
+        console.log(`[UPLOAD] Invalid marketplace: ${marketplace}`);
+        res.status(400).json({ message: 'Only Walmart marketplace is supported at this time.' });
+        return;
       }
-      
-      // Create feed record
-      const feed = await storage.createFeed({
-        name,
-        userId: req.user ? (req.user as any).id || 1 : 1,
-        status: 'completed',
-        source: 'upload',
-        sourceDetails: {
-          originalName: req.file.originalname,
-          originalPath: req.file.path,
-          size: req.file.size,
-          outputPath: outputFilePath
-        },
-        marketplace,
-        itemCount: transformResult.inputRows || 0,
-        aiChanges: {
-          transformed: true,
-          rowCount: transformResult.inputRows || 0
-        },
-        outputUrl: outputFilePath
+      // Generate a feedId
+      const feedId = `feed_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+      // Save the uploaded file as temp_uploads/{feedId}.csv
+      const tempInputPath = path.join(uploadDir, `${feedId}.csv`);
+      fs.writeFileSync(tempInputPath, fs.readFileSync(req.file.path));
+      const fileStats = fs.statSync(tempInputPath);
+      console.log(`[UPLOAD] File saved as: ${tempInputPath}, size: ${fileStats.size} bytes`);
+      // Enqueue BullMQ job for async processing
+      const fileBuffer = fs.readFileSync(tempInputPath);
+      const { feedQueue } = require('../server/queue.js');
+      console.log(`[ENQUEUE][SIMPLE-ROUTES] Enqueuing job for feedId: ${feedId} with data:`, {
+        feedId,
+        fileBufferLength: fileBuffer.length,
+        fields: req.body,
+        fileName: req.file.originalname,
+        platform: req.body.platform,
+        email: req.body.email,
+        category: req.body.category,
+        tier: req.body.tier || 'free'
       });
-      
-      return res.status(201).json({
-        message: 'Feed created successfully',
-        id: feed.id,
-        name,
-        marketplace,
-        rowCount: transformResult.inputRows || 0,
-        downloadUrl: `/api/simple-download/${feed.id}`
+      const job = await feedQueue.add('feed-transform', {
+        feedId,
+        fileBuffer,
+        fields: req.body,
+        fileName: req.file.originalname,
+        platform: req.body.platform,
+        email: req.body.email,
+        category: req.body.category,
+        tier: req.body.tier || 'free'
       });
+      console.log(`[ENQUEUE][SIMPLE-ROUTES] Job enqueued for feedId: ${feedId}, jobId: ${job.id}`);
+      res.json({
+        feedId,
+        status: 'queued',
+        message: 'File uploaded and job enqueued'
+      });
+      console.log(`[UPLOAD] JSON response sent for feedId: ${feedId}, job enqueued`);
     } catch (error) {
-      console.error('Error creating feed:', error);
-      return res.status(500).json({ 
+      console.error('[UPLOAD] Error creating feed:', error);
+      res.status(500).json({ 
         message: 'Error creating feed',
         error: error instanceof Error ? error.message : 'Unknown error'
       });
+      console.log('[UPLOAD] Response sent: 500 Error creating feed');
     }
   });
   
-  // Simple, reliable download route
-  router.get('/simple-download/:id', async (req: Request, res: Response) => {
-    try {
-      // Get feed ID
-      const feedId = parseInt(req.params.id);
-      if (isNaN(feedId)) {
-        return res.status(400).json({ message: 'Invalid feed ID' });
-      }
-      
-      // Get feed
-      const feed = await storage.getFeed(feedId);
-      if (!feed) {
-        return res.status(404).json({ message: 'Feed not found' });
-      }
-      
-      // Get file path from sourceDetails
-      let filePath = '';
-      
-      // Try all possible places where the path might be stored
-      if (feed.outputUrl) {
-        filePath = feed.outputUrl;
-      } else if (feed.sourceDetails && typeof feed.sourceDetails === 'object') {
-        const details = feed.sourceDetails as any;
-        if (details.outputPath) {
-          filePath = details.outputPath;
-        } else if (details.output) {
-          filePath = details.output;
-        }
-      }
-      
-      console.log(`Attempting to download file from path: ${filePath}`);
-      
-      // Check if file exists
-      if (!filePath || !fs.existsSync(filePath)) {
-        return res.status(404).json({ message: 'Output file not found' });
-      }
-      
-      // Create a friendly filename
-      const fileName = `${feed.marketplace}_${feed.name.replace(/\s+/g, '_')}.csv`;
-      
-      // Set headers for download
-      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-      res.setHeader('Content-Type', 'text/csv');
-      
-      // Stream the file directly
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      console.error('Error downloading file:', error);
-      return res.status(500).json({ 
-        message: 'Error downloading file',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
+  // Download endpoint for processed feeds
+  router.get('/simple-download/:feedId', async (req: Request, res: Response) => {
+    console.log(`[DEBUG] /api/simple-download/:feedId handler reached for feedId: ${req.params.feedId}`);
+    const { feedId } = req.params;
+    const filePath = path.join('outputs', `${feedId}_output.xlsx`);
+    console.log(`[DOWNLOAD] Attempting to download: ${filePath}`);
+    if (!fs.existsSync(filePath)) {
+      console.log(`[DOWNLOAD] File not found for feedId: ${feedId}, path: ${filePath}`);
+      return res.status(404).json({ message: 'File not found' });
     }
+    res.setHeader('Content-Disposition', `attachment; filename="${feedId}_output.xlsx"`);
+    res.download(filePath, (err) => {
+      if (err) {
+        console.log(`[DOWNLOAD] Error serving file for feedId: ${feedId}, error:`, err);
+      } else {
+        console.log(`[DOWNLOAD] File served for feedId: ${feedId}, path: ${filePath}`);
+      }
+    });
   });
   
   return router;

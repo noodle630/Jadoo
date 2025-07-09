@@ -74,7 +74,7 @@ export default function Transform() {
         });
       }, 500);
       
-      const response = await fetch('/api/transform/csv', {
+      const response = await fetch('/api/simple-upload', {
         method: 'POST',
         body: formData,
       });

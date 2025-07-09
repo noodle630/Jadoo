@@ -1,27 +1,31 @@
-import dotenv from "dotenv";
-dotenv.config(); // this MUST come before using any process.env vars
+console.log('[DEBUG] CWD:', process.cwd());
+console.log('[DEBUG] STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.slice(0,8) + '...' : undefined);
+console.log('[DEBUG] STRIPE_PRICE_ID_PREMIUM:', process.env.STRIPE_PRICE_ID_PREMIUM);
+console.log('[DEBUG] STRIPE_PRICE_ID_BASIC:', process.env.STRIPE_PRICE_ID_BASIC);
+console.log('[DEBUG] STRIPE_SUCCESS_URL:', process.env.STRIPE_SUCCESS_URL);
+console.log('[DEBUG] STRIPE_CANCEL_URL:', process.env.STRIPE_CANCEL_URL);
 
 import express from "express";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
-import { handleProcess } from "./utils/transformer"; // ✅ match your tree
+import { handleProcess } from "./utils/transformer.js"; // ✅ match your tree
 import Papa from 'papaparse';
 import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction, Router } from 'express';
 import multer from 'multer';
 // @ts-ignore
 import { feedQueue } from './queue.js';
-import REMOVED_SECRETfrom '../supabaseClient';
+import REMOVED_SECRETfrom "../supabaseClient.js";
 // @ts-ignore
 import analyticsService from './utils/analytics.js';
+import Stripe from 'stripe';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 // Patch for __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+console.log('[DEBUG] __dirname:', __dirname);
+console.log('[DEBUG] .env file should be at:', path.join(process.cwd(), '.env'));
 
 // Configure multer for memory storage (no temp files)
 const upload = multer({
@@ -45,6 +49,12 @@ const upload = multer({
   }
 });
 
+// Top-level logging middleware
+router.use((req, res, next) => {
+  console.log(`[REQ] ${req.method} ${req.originalUrl} | query:`, req.query, '| body:', req.body);
+  next();
+});
+
 // Test endpoint for Lovable connection
 router.get("/health", (req, res) => {
   res.json({ 
@@ -52,12 +62,98 @@ router.get("/health", (req, res) => {
     message: "Jadoo backend is running", 
     timestamp: new Date().toISOString(),
     endpoints: {
-      simpleUpload: "POST /api/simple-upload", 
+      // simpleUpload: "POST /api/simple-upload", // REMOVED - now handled by simple-routes.ts 
       process: "POST /api/process/:id",
       logs: "GET /api/logs/:id",
       download: "GET /api/download/:file"
     }
   });
+});
+
+// GET /feeds - List all feeds (for history, dashboard, etc.)
+router.get('/feeds', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('feeds').select('*').order('id', { ascending: false });
+    if (error) {
+      return res.status(500).json({ error: 'Failed to fetch feeds', details: error.message });
+    }
+    res.json(data || []);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch feeds', details: err instanceof Error ? err.message : String(err) });
+  }
+});
+
+// POST /api/transform/csv - Alias for /api/simple-upload (backward compatibility)
+router.post('/transform/csv', upload.single('file'), async (req, res) => {
+  console.log('=== TRANSFORM CSV ALIAS START ===');
+  console.log('📄 File:', req.file ? req.file.originalname : 'NO FILE');
+  console.log('📝 Fields:', req.body);
+
+  try {
+    if (!req.file) {
+      console.error('[transform/csv] No file uploaded');
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Extract fields from form data
+    const platform = req.body.platform || req.body.marketplace || 'walmart';
+    const email = req.body.email || 'anonymous@example.com';
+    const category = req.body.category;
+
+    console.log('[transform/csv] Extracted data:', {
+      platform,
+      email,
+      category,
+      fileExists: !!req.file,
+      fileName: req.file.originalname,
+      fileSize: req.file.size
+    });
+
+    const feedId = `feed_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    console.log('[transform/csv] Generated feedId:', feedId);
+
+    // Enqueue BullMQ job for async processing
+    console.log('[ENQUEUE][ROUTES] Adding job to BullMQ queue with data:', {
+      feedId,
+      fileBufferLength: req.file.buffer.length,
+      fields: { ...req.body, platform, email, category },
+      fileName: req.file.originalname,
+      platform,
+      email,
+      category
+    });
+    const job = await feedQueue.add('feed-transform', {
+      feedId,
+      fileBuffer: req.file.buffer,
+      fields: { ...req.body, platform, email, category },
+      fileName: req.file.originalname,
+      platform,
+      email,
+      category
+    });
+    console.log('[ENQUEUE][ROUTES] Job added to queue for feedId:', feedId, 'jobId:', job.id);
+
+    // Return immediate response
+    res.json({
+      feed_id: feedId,
+      status: 'queued',
+      message: 'File uploaded and job enqueued',
+      file_info: {
+        name: req.file.originalname,
+        size: req.file.size,
+        type: req.file.mimetype
+      },
+      platform: platform,
+      category: category || 'auto-detect'
+    });
+    console.log('[transform/csv] Response sent for feedId:', feedId);
+  } catch (error) {
+    console.error('[transform/csv] Upload error:', error);
+    if (error instanceof Error && error.stack) {
+      console.error('[transform/csv] Stack trace:', error.stack);
+    }
+    res.status(500).json({ error: 'Upload failed', details: error instanceof Error ? error.message : String(error) });
+  }
 });
 
 // ✅ /api/process/:id
@@ -134,8 +230,7 @@ async function processFileInBackground(feedId: string, fileBuffer: Buffer, field
     const csvContent = fileBuffer.toString('utf-8');
     updateProgress(25, 'Parsing CSV structure...');
     // --- Use transformer logic to get mapped product feed ---
-    // We'll call the core logic directly here for now
-    // Write the buffer to a temp file so transformer can use it
+    // Write the buffer to a temp file with the feed ID as filename
     const tempInputPath = `temp_uploads/${feedId}.csv`;
     fs.writeFileSync(tempInputPath, csvContent, 'utf-8');
     updateProgress(40, 'Running product transformer...');
@@ -157,7 +252,7 @@ async function processFileInBackground(feedId: string, fileBuffer: Buffer, field
       throw new Error('Transformer failed: ' + (err && (err as any).error ? (err as any).error : err));
     }
     updateProgress(70, 'Uploading optimized XLSX to Supabase...');
-    // Upload the XLSX output file to Supabase Storage
+    // Upload the XLSX output file to Supabase Storage with consistent naming
     const outputXlsxPath = `outputs/${feedId}_output.xlsx`;
     if (!fs.existsSync(outputXlsxPath)) throw new Error('Expected XLSX output not found: ' + outputXlsxPath);
     const xlsxBuffer = fs.readFileSync(outputXlsxPath);
@@ -210,101 +305,83 @@ async function processFileInBackground(feedId: string, fileBuffer: Buffer, field
   }
 }
 
-// NEW: Multer-based upload route
-router.post('/simple-upload', upload.single('file'), async (req, res) => {
-  console.log('=== MULTER UPLOAD START ===');
-  console.log('📄 File:', req.file ? req.file.originalname : 'NO FILE');
-  console.log('📝 Fields:', req.body);
+// REMOVED: Duplicate simple-upload route - now handled by simple-routes.ts
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const TIER_CONFIG = {
+  free: {
+    maxRows: 10,
+    priceId: null, // No payment for free tier
+  },
+  basic: {
+    maxRows: 1000,
+    priceId: process.env.STRIPE_PRICE_ID_BASIC,
+  },
+  premium: {
+    maxRows: 10000,
+    priceId: process.env.STRIPE_PRICE_ID_PREMIUM,
+  },
+};
+
+router.post('/stripe/create-checkout-session', async (req, res) => {
   try {
-    if (!req.file) {
-      console.error('[simple-upload] No file uploaded');
-      return res.status(400).json({ error: 'No file uploaded' });
+    console.log('[STRIPE] Creating checkout session with data:', req.body);
+    
+    const { email, plan, rowCount } = req.body as { email: string; plan: keyof typeof TIER_CONFIG; rowCount: number };
+    
+    if (!plan || !(plan in TIER_CONFIG)) {
+      console.log('[STRIPE] Invalid plan:', plan);
+      return res.status(400).json({ error: 'Invalid plan selected' });
     }
-
-    // Extract fields from form data
-    const platform = req.body.platform;
-    const email = req.body.email;
-    const category = req.body.category;
-
-    console.log('[simple-upload] Extracted data:', {
-      platform,
-      email,
-      category,
-      fileExists: !!req.file,
-      fileName: req.file.originalname,
-      fileSize: req.file.size
-    });
-
-    // Validation
-    if (!platform) {
-      console.error('[simple-upload] Platform is required');
-      return res.status(400).json({ error: 'Platform is required' });
+    
+    const tier = TIER_CONFIG[plan];
+    console.log('[STRIPE] Tier config:', tier);
+    
+    if (plan === 'free') {
+      if (rowCount > tier.maxRows) {
+        return res.status(400).json({ error: 'Free tier only supports up to 10 rows' });
+      }
+      return res.json({ url: null, free: true });
     }
-    if (!email) {
-      console.error('[simple-upload] Email is required');
-      return res.status(400).json({ error: 'Email is required' });
+    
+    if (!tier.priceId) {
+      console.error('[STRIPE] No price ID configured for tier:', plan);
+      return res.status(500).json({ error: 'No Stripe price ID configured for this tier' });
     }
-
-    const feedId = `feed_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
-    console.log('[simple-upload] Generated feedId:', feedId);
-
-    console.log('✅ Upload successful:', {
-      feedId,
-      filename: req.file.originalname,
-      size: req.file.size,
-      platform: platform
+    
+    console.log('[STRIPE] Creating session with price ID:', tier.priceId);
+    console.log('[STRIPE] Success URL:', process.env.STRIPE_SUCCESS_URL);
+    console.log('[STRIPE] Cancel URL:', process.env.STRIPE_CANCEL_URL);
+    
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      customer_email: email,
+      line_items: [
+        {
+          price: tier.priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: process.env.STRIPE_SUCCESS_URL,
+      cancel_url: process.env.STRIPE_CANCEL_URL,
     });
-
-    // Enqueue BullMQ job for async processing
-    console.log('[simple-upload] Adding job to BullMQ queue...');
-    await feedQueue.add('feed-transform', {
-      feedId,
-      fileBuffer: req.file.buffer,
-      fields: req.body,
-      fileName: req.file.originalname,
-      platform,
-      email,
-      category
-    });
-    console.log('[simple-upload] Job added to queue for feedId:', feedId);
-
-    // Return immediate response
-    res.json({
-      feed_id: feedId,
-      status: 'queued',
-      message: 'File uploaded and job enqueued',
-      file_info: {
-        name: req.file.originalname,
-        size: req.file.size,
-        type: req.file.mimetype
-      },
-      platform: platform,
-      category: category || 'auto-detect'
-    });
-    console.log('[simple-upload] Response sent for feedId:', feedId);
-  } catch (error) {
-    console.error('[simple-upload] Upload error:', error);
-    if (error instanceof Error && error.stack) {
-      console.error('[simple-upload] Stack trace:', error.stack);
+    
+    console.log('[STRIPE] Session created successfully:', session.id);
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('[STRIPE] Checkout session error:', err);
+    if (err instanceof Error) {
+      console.error('[STRIPE] Error details:', err.message);
+      console.error('[STRIPE] Error stack:', err.stack);
     }
-    res.status(500).json({ error: 'Upload failed', details: error instanceof Error ? error.message : String(error) });
+    res.status(500).json({ error: 'Stripe session creation failed' });
   }
 });
-
-export default router;
 
 // Add below your POST routes
-router.get("/logs/:id", async (req, res) => {
-  const { id } = req.params;
-  const { data, error } = await supabase.from("logs").select("*").eq("feed_id", id).order("row_number");
-  if (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
-  }
-  return res.json(data);
-});
-
+// Removed /api/logs/:id route - logs table doesn't exist in database
 
 router.get("/download/:file", async (req, res) => {
   const file = req.params.file;
@@ -438,22 +515,21 @@ router.get('/jobs/:feedId/status', async (req, res) => {
   }
 });
 
-// Global error handler (after all routes)
-router.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('🚨 Global error handler:', error);
-  if (error.code === 'LIMIT_FILE_SIZE') {
-    return res.status(400).json({ error: 'File too large' });
-  }
-  if (error.code === 'LIMIT_UNEXPECTED_FILE') {
-    return res.status(400).json({ error: 'Unexpected file field' });
-  }
-  return res.status(500).json({ error: 'Internal server error' });
+// Global error handler
+router.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('[GLOBAL ERROR]', err);
+  res.status(500).json({ error: 'Internal server error', details: err instanceof Error ? err.message : String(err) });
+});
+// Catch-all 404 route
+router.use((req: Request, res: Response) => {
+  console.log('[404] Unmatched route:', req.method, req.originalUrl, '| query:', req.query, '| body:', req.body);
+  res.status(404).json({ error: 'Not found' });
 });
 
 // NOTE for Lovable: The backend now only returns the XLSX output file (platform template, all columns, all LLM enrichment, all mapping preserved). No CSV is generated or returned. The transformer logic is fully preserved and used as before.
 
 // Analytics endpoints
-router.get('/api/analytics/dashboard', async (req, res) => {
+router.get('/analytics/dashboard', async (req, res) => {
   try {
     const dashboardData = await analyticsService.getDashboardData();
     res.json({
@@ -469,7 +545,7 @@ router.get('/api/analytics/dashboard', async (req, res) => {
   }
 });
 
-router.get('/api/analytics/jobs', async (req, res) => {
+router.get('/analytics/jobs', async (req, res) => {
   try {
     const { platform, category } = req.query;
     const jobSummary = await analyticsService.getJobPerformanceSummary(platform, category);
@@ -486,7 +562,7 @@ router.get('/api/analytics/jobs', async (req, res) => {
   }
 });
 
-router.get('/api/analytics/fields', async (req, res) => {
+router.get('/analytics/fields', async (req, res) => {
   try {
     const fieldSummary = await analyticsService.getFieldPerformanceSummary();
     res.json({
@@ -502,7 +578,7 @@ router.get('/api/analytics/fields', async (req, res) => {
   }
 });
 
-router.get('/api/analytics/llm', async (req, res) => {
+router.get('/analytics/llm', async (req, res) => {
   try {
     const llmSummary = await analyticsService.getLLMPerformanceSummary();
     res.json({
@@ -518,7 +594,7 @@ router.get('/api/analytics/llm', async (req, res) => {
   }
 });
 
-router.get('/api/analytics/recent', async (req, res) => {
+router.get('/analytics/recent', async (req, res) => {
   try {
     const { limit = '10' } = req.query;
     const recentJobs = await analyticsService.getRecentJobAnalytics(parseInt(limit as string));
@@ -534,4 +610,76 @@ router.get('/api/analytics/recent', async (req, res) => {
     });
   }
 });
+
+// Simple download endpoint moved to simple-routes.ts to avoid conflicts
+
+// --- PATCH WALLET ENDPOINTS ---
+// Robust wallet balance endpoint (UUID only)
+router.get('/wallet/balance', async (req, res) => {
+  const user_id = req.query.user_id;
+  console.log(`[WALLET] /wallet/balance called with user_id: ${user_id}`);
+  if (!user_id) {
+    console.error('[WALLET] Missing user_id parameter');
+    return res.status(400).json({ error: 'Missing user_id' });
+  }
+  let wallet, error;
+  try {
+    let result = await supabase.from('wallets').select('*').eq('user_id', user_id).single();
+    wallet = result.data;
+    error = result.error;
+  } catch (err) {
+    console.error('[WALLET] Supabase query error:', err);
+    return res.status(500).json({ error: 'Supabase query failed', details: err instanceof Error ? err.message : String(err) });
+  }
+  if (error && error.code === 'PGRST116') {
+    // Create wallet row in 'wallets' table if not found
+    try {
+      let insertResult = await supabase.from('wallets').insert({ user_id, balance: 0 }).single();
+      wallet = insertResult.data;
+      error = insertResult.error;
+      if (error) {
+        console.error('[WALLET] Error creating wallet row:', error);
+        return res.status(500).json({ error: error.message });
+      }
+    } catch (err) {
+      console.error('[WALLET] Error creating wallet row:', err);
+      return res.status(500).json({ error: 'Wallet row creation failed', details: err instanceof Error ? err.message : String(err) });
+    }
+  } else if (error) {
+    console.error('[WALLET] Supabase error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+  if (!wallet || typeof wallet.balance !== 'number') {
+    console.error('[WALLET] Wallet row missing or balance column missing:', wallet);
+    return res.status(500).json({ error: 'Wallet row missing or balance column missing' });
+  }
+  res.json({ balance: wallet.balance });
+});
+// Wallet: add funds (UUID only)
+router.post('/wallet/add', async (req, res) => {
+  const { user_id, amount } = req.body;
+  if (!user_id || typeof amount !== 'number') {
+    console.error('[WALLET] Missing user_id or amount');
+    return res.status(400).json({ error: 'Missing user_id or amount' });
+  }
+  const { data: wallet, error } = await supabase.from('wallets').select('*').eq('user_id', user_id).single();
+  if (error) return res.status(500).json({ error: error.message });
+  const newBalance = (wallet?.balance || 0) + amount;
+  const { error: updateError } = await supabase.from('wallets').update({ balance: newBalance }).eq('user_id', user_id);
+  if (updateError) return res.status(500).json({ error: updateError.message });
+  res.json({ balance: newBalance });
+});
+// Wallet: admin set balance (UUID only)
+router.post('/wallet/admin/set-balance', async (req, res) => {
+  const { user_id, balance } = req.body;
+  if (!user_id || typeof balance !== 'number') {
+    console.error('[WALLET] Missing user_id or balance');
+    return res.status(400).json({ error: 'Missing user_id or balance' });
+  }
+  const { error } = await supabase.from('wallets').update({ balance }).eq('user_id', user_id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ balance });
+});
+
+export default router;
 

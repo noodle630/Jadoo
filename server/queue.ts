@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+console.log('WORKER CODE VERSION: 2025-07-09T02:15:00+00:00');
 // Directory creation and logging at the absolute top
 const tempUploadsDir = 'temp_uploads';
 if (!fs.existsSync(tempUploadsDir)) {
@@ -30,7 +31,7 @@ import 'dotenv/config';
 // BullMQ queue and worker setup for LLM enrichment
 import { Queue, Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
-import { traceLLMCall, traceFileOperation, traceDatabaseOperation, traceSupabaseOperation } from './telemetry.js';
+// import { traceLLMCall, traceFileOperation, traceDatabaseOperation, traceSupabaseOperation } from './telemetry.js';
 import { logJobProgress, logPerformance, logError, logLLMCall } from './logger.js';
 // @ts-ignore
 import analyticsService from './utils/analytics.js';
@@ -38,210 +39,275 @@ import analyticsService from './utils/analytics.js';
 console.log('[DEBUG] REDIS_URL at queue.js:', process.env.REDIS_URL);
 
 // Redis connection (default to localhost for dev)
-const connection = new IORedis(process.env.REDIS_URL || 'redis://127.0.0.1:6379', {
+const connection = new (IORedis as any)(process.env.REDIS_URL || 'redis://127.0.0.1:6379', {
   maxRetriesPerRequest: null
 });
 
 // Create the queue
 const feedQueue = new Queue('feed-transform', { connection });
 
+// Add global error handlers for robustness
+process.on('unhandledRejection', async (reason: any) => {
+  console.error('[WORKER][FATAL] Unhandled Rejection:', reason);
+  try {
+    const jobs = await feedQueue.getJobs(['active']);
+    for (const job of jobs) {
+      await job.moveToFailed(new Error('Unhandled Rejection: ' + (reason?.message || reason)), true);
+    }
+  } catch (e) {
+    console.error('[WORKER][FATAL] Failed to mark active jobs as failed after unhandledRejection:', e);
+  }
+  process.exit(1);
+});
+
+process.on('uncaughtException', async (err: any) => {
+  console.error('[WORKER][FATAL] Uncaught Exception:', err);
+  try {
+    const jobs = await feedQueue.getJobs(['active']);
+    for (const job of jobs) {
+      await job.moveToFailed(new Error('Uncaught Exception: ' + (err?.message || err)), true);
+    }
+  } catch (e) {
+    console.error('[WORKER][FATAL] Failed to mark active jobs as failed after uncaughtException:', e);
+  }
+  process.exit(1);
+});
+
+// Add a job timeout to auto-fail long-running jobs (e.g., 30 minutes)
+const JOB_TIMEOUT_MS = 30 * 60 * 1000;
+
 // Worker process for feed transformation with increased concurrency
 const feedWorker = new Worker('feed-transform', async job => {
   const startTime = Date.now();
   const { feedId, fileBuffer, fields, fileName, platform, email, category } = job.data;
-  console.log(`[Worker] ====== JOB START feedId=${feedId} jobId=${job.id} ======`);
+  let timeoutHandle: NodeJS.Timeout | null = null;
+  let supabase: any;
   try {
-    logJobProgress(feedId, 0, 'started', `Starting job ${job.id} for feed ${feedId}`);
-    console.log(`[Worker] Starting job ${job.id} for feed ${feedId}`);
-    console.log(`[Worker] Platform: ${platform}, Rows: ~${fileBuffer.toString().split('\n').length - 1}`);
-    
-    // Update job status to processing
-    await job.updateProgress(10);
-    
-    // Write file buffer to temp location for transformer
-    const tempInputPath = `temp_uploads/${feedId}.csv`;
-    const fileTrace = traceFileOperation('write', tempInputPath, { size: fileBuffer.length });
-    // Ensure fileBuffer is a Buffer (handle { type: 'Buffer', data: [...] } case)
-    const bufferToWrite = Buffer.isBuffer(fileBuffer)
-      ? fileBuffer
-      : Buffer.from(fileBuffer.data || fileBuffer, 'utf-8');
-    console.log(`[Worker] Writing file buffer to ${tempInputPath}`);
-    fs.writeFileSync(tempInputPath, bufferToWrite);
-    console.log(`[Worker] File written: ${tempInputPath}, size=${bufferToWrite.length}`);
-    fileTrace.end();
-    
-    await job.updateProgress(20);
-    
-    // Import and call transformer logic
-    console.log(`[Worker] Importing transformer...`);
-    let handleProcess;
-    ({ handleProcess } = await import('./utils/transformer.ts'));
-    console.log(`[Worker] Calling transformer for feedId=${feedId}`);
-    
-    // Create fake req/res objects for transformer
-    const fakeReq = { params: { id: feedId } };
-    const fakeRes = {
-      json: (data) => {
-        console.log(`[Worker] Transformer completed successfully`);
-        return data;
-      },
-      status: (code) => ({ json: (data) => { throw new Error(`Transformer failed: ${JSON.stringify(data)}`); } })
-    };
-    
-    await job.updateProgress(30);
-    
-    // Call transformer (this is where the LLM magic happens)
-    console.log(`[Worker] Starting transformation for feedId: ${feedId}`);
-    console.log(`[Worker] Tier: ${job.data.tier || 'free'}`);
-    
-    // Call the transformer with tier information
-    const transformStartTime = Date.now();
-    const transformResult = await handleProcess(
-      { params: { id: feedId } } as any,
-      { json: (data: any) => data } as any,
-      job.data.tier || 'free'
-    );
-    
-    const transformTime = Date.now() - transformStartTime;
-    logPerformance('transformer_process', transformTime, { feedId, rows: fileBuffer.toString().split('\n').length - 1 });
-    console.log(`[Worker] Transformer finished in ${transformTime}ms for feedId=${feedId}`);
-    
-    await job.updateProgress(70);
-    
-    // Upload result to Supabase
-    console.log(`[Worker] Preparing to upload XLSX to Supabase Storage: feeds/${feedId}.xlsx`);
-    const outputXlsxPath = `outputs/${feedId}_output.xlsx`;
-    
-    if (!fs.existsSync(outputXlsxPath)) {
-      console.error(`[Worker] ERROR: Expected XLSX output not found: ${outputXlsxPath}`);
-      throw new Error(`Expected XLSX output not found: ${outputXlsxPath}`);
-    }
-    console.log(`[Worker] Output XLSX exists: ${outputXlsxPath}`);
-    
-    const xlsxBuffer = fs.readFileSync(outputXlsxPath);
-    const uploadTrace = traceSupabaseOperation('upload', 'feeds', { fileSize: xlsxBuffer.length });
-    console.log(`[Worker] Uploading XLSX to Supabase Storage: feeds/${feedId}.xlsx`);
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('feeds')
-      .upload(`${feedId}.xlsx`, xlsxBuffer, { 
-        contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
-        upsert: true 
-      });
-    console.log(`[Worker] Supabase upload response:`, { uploadData, uploadError });
-    if (uploadError) {
-      console.error(`[Worker] Supabase upload failed:`, uploadError);
-      throw new Error(`Supabase upload failed: ${uploadError.message}`);
-    }
-    
-    // Get public URL
-    const { data: publicData } = supabase.storage.from('feeds').getPublicUrl(`${feedId}.xlsx`);
-    const publicUrl = publicData.publicUrl;
-    console.log(`[Worker] Supabase public URL: ${publicUrl}`);
-    console.log(`[Worker] Supabase upload success: ${publicUrl}`);
-    
-    await job.updateProgress(90);
-    
-    // Save to database
-    const dbTrace = traceDatabaseOperation('upsert', 'feeds', { feedId });
-    console.log(`[Worker] Upserting feed record in Supabase for feedId: ${feedId}`);
-    const { data: upsertData, error: dbError } = await supabase.from('feeds').upsert({
-      id: feedId,
-      filename: fileName || `${feedId}.xlsx`,
-      platform: platform,
-      status: 'completed',
-      upload_time: new Date().toISOString(),
-      output_path: publicUrl,
-      summary_json: transformResult.summary_json || {},
-      email: email || null,
-      category: category || null
-    });
-    console.log(`[Worker] Supabase upsert response:`, { upsertData, dbError });
-    console.log(`[Worker] Feed record upserted in DB for feedId=${feedId}`);
-    dbTrace.end(dbError);
-    if (dbError) {
-      console.error(`[Worker] Database save failed:`, dbError);
-      throw new Error(`Database save failed: ${dbError.message}`);
-    }
-    
-    await job.updateProgress(100);
-    
-    const processingTime = Date.now() - startTime;
-    logJobProgress(feedId, 100, 'completed', `Job completed in ${processingTime}ms`);
-    logPerformance('job_total', processingTime, { feedId, transformTime });
-    console.log(`[Worker] Job ${job.id} completed successfully in ${processingTime}ms`);
-    console.log(`[Worker] Breakdown: Transform=${transformTime}ms, Total=${processingTime}ms`);
-    
-    // Record analytics
+    // Set up timeout
+    timeoutHandle = setTimeout(async () => {
+      console.error(`[Worker][TIMEOUT] Job ${job.id} feedId=${feedId} exceeded timeout of ${JOB_TIMEOUT_MS / 60000} minutes.`);
+      try {
+        await job.moveToFailed(new Error('Job timed out after 30 minutes'), true as any);
+      } catch (e) {
+        console.error('[Worker][TIMEOUT] Failed to mark job as failed after timeout:', e);
+      }
+    }, JOB_TIMEOUT_MS);
+
+    // Dynamically import REMOVED_SECRETclient
     try {
-      const summary = transformResult.summary_json || {};
-      console.log(`[Worker] Recording analytics for ${feedId}`);
-      await analyticsService.recordJobAnalytics({
-        feedId,
-        jobId: job.id,
-        platform,
-        category,
-        totalRows: fileBuffer.toString().split('\n').length - 1,
-        processingTime,
-        transformTime,
-        llmCalls: summary.llm_calls || 0,
-        llmErrors: summary.llm_errors || 0,
-        cacheHits: summary.cache_hits || 0,
-        successRate: summary.success_rate || 0,
-        avgConfidence: summary.avg_confidence || 0,
-        blankFieldsCount: summary.blanks?.length || 0,
-        warnings: summary.warnings || [],
-        suggestions: summary.suggestions || []
-      });
+      REMOVED_SECRET= (await import('../supabaseClient.js')).default;
+    } catch (e) {
+      console.error('[Worker] Failed to import supabaseClient.js:', e);
+      throw e;
+    }
+
+    console.log(`[Worker] ====== JOB START feedId=${feedId} jobId=${job.id} ======`);
+    try {
+      logJobProgress(feedId, 0, 'uploading', `Uploading file for job ${job.id}`);
+      await job.updateProgress(10);
       
-      // Record field analytics if available
-      if (summary.field_stats) {
-        console.log(`[Worker] Recording field analytics for ${feedId}`);
-        await analyticsService.recordFieldAnalytics(feedId, summary.field_stats);
+      // Write file buffer to temp location for transformer
+      const tempInputPath = `temp_uploads/${feedId}.csv`;
+      // const fileTrace = traceFileOperation('write', tempInputPath, { size: fileBuffer.length });
+      // Ensure fileBuffer is a Buffer (handle { type: 'Buffer', data: [...] } case)
+      const bufferToWrite = Buffer.isBuffer(fileBuffer)
+        ? fileBuffer
+        : Buffer.from(fileBuffer.data || fileBuffer, 'utf-8');
+      console.log(`[Worker] Writing file buffer to ${tempInputPath}`);
+      fs.writeFileSync(tempInputPath, bufferToWrite);
+      console.log(`[Worker] File written: ${tempInputPath}, size=${bufferToWrite.length}`);
+      // fileTrace.end();
+      
+      logJobProgress(feedId, 10, 'ai_analysis', `Starting AI analysis for job ${job.id}`);
+      await job.updateProgress(30);
+      
+      // Import and call transformer logic
+      console.log(`[Worker] Importing transformer...`);
+      let handleProcess;
+      ({ handleProcess } = await import('./utils/transformer.js'));
+      console.log(`[Worker] Calling transformer for feedId=${feedId}`);
+      
+      // Create fake req/res objects for transformer
+      const fakeReq = { params: { id: feedId } };
+      const fakeRes = {
+        json: (data: any) => {
+          console.log(`[Worker] Transformer completed successfully`);
+          return data;
+        },
+        status: (code: any) => ({ json: (data: any) => { throw new Error(`Transformer failed: ${JSON.stringify(data)}`); } })
+      };
+      
+      // Call transformer (this is where the LLM magic happens)
+      console.log(`[Worker] Starting transformation for feedId: ${feedId}`);
+      console.log(`[Worker] Tier: ${job.data.tier || 'free'}`);
+      
+      // Call the transformer with tier information
+      const transformStartTime = Date.now();
+      const transformResult = await handleProcess(
+        { params: { id: feedId } } as any
+      );
+      console.log('[WORKER][DEBUG] transformResult:', JSON.stringify(transformResult));
+      console.log('[WORKER][DEBUG] transformResult.rowCount:', transformResult.rowCount, 'type:', typeof transformResult.rowCount);
+      const transformTime = Date.now() - transformStartTime;
+      logPerformance('transformer_process', transformTime, { feedId, rowCount: transformResult.rowCount });
+      console.log(`[Worker] Transformer finished in ${transformTime}ms for feedId=${feedId}`);
+      
+      // PATCH: If no output rows, mark job as failed and log error
+      if (!transformResult || !transformResult.rowCount || transformResult.rowCount === 0) {
+        const processingTime = Date.now() - startTime;
+        const errorMsg = `[Worker] No output rows produced for feedId=${feedId}. Marking job as failed.`;
+        console.error(errorMsg);
+        logJobProgress(feedId, 100, 'failed', errorMsg);
+        await supabase.from('feeds').upsert({
+          id: feedId,
+          filename: fileName || `${feedId}.xlsx`,
+          platform: platform,
+          status: 'failed',
+          upload_time: new Date().toISOString(),
+          summary_json: (transformResult && typeof transformResult === 'object' && 'summary' in transformResult && transformResult.summary)
+            ? transformResult.summary
+            : { error: errorMsg, processingTime },
+          email: email || null,
+          category: category || null
+        });
+        throw new Error(errorMsg);
       }
       
-      console.log(`[Worker] Analytics recorded for ${feedId}`);
-    } catch (analyticsError) {
-      console.error(`[Worker] Failed to record analytics for ${feedId}:`, analyticsError);
+      logJobProgress(feedId, 70, 'optimization', `Optimizing and uploading output for job ${job.id}`);
+      await job.updateProgress(70);
+      
+      // Upload result to Supabase
+      console.log(`[Worker] Preparing to upload XLSX to Supabase Storage: feeds/${feedId}.xlsx`);
+      const outputXlsxPath = `outputs/${feedId}_output.xlsx`;
+      
+      if (!fs.existsSync(outputXlsxPath)) {
+        console.error(`[Worker] ERROR: Expected XLSX output not found: ${outputXlsxPath}`);
+        throw new Error(`Expected XLSX output not found: ${outputXlsxPath}`);
+      }
+      console.log(`[Worker] Output XLSX exists: ${outputXlsxPath}`);
+      
+      const xlsxBuffer = fs.readFileSync(outputXlsxPath);
+      // const uploadTrace = traceSupabaseOperation('upload', 'feeds', { fileSize: xlsxBuffer.length });
+      console.log(`[Worker] Uploading XLSX to Supabase Storage: feeds/${feedId}.xlsx`);
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('feeds')
+        .upload(`${feedId}.xlsx`, xlsxBuffer, { 
+          contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
+          upsert: true 
+        });
+      console.log(`[Worker] Supabase upload response:`, { uploadData, uploadError });
+      if (uploadError) {
+        console.error(`[Worker] Supabase upload failed:`, uploadError);
+        throw new Error(`Supabase upload failed: ${uploadError.message}`);
+      }
+      
+      // Get public URL
+      const { data: publicData } = supabase.storage.from('feeds').getPublicUrl(`${feedId}.xlsx`);
+      const publicUrl = publicData.publicUrl;
+      console.log(`[Worker] Supabase public URL: ${publicUrl}`);
+      console.log(`[Worker] Supabase upload success: ${publicUrl}`);
+      
+      logJobProgress(feedId, 90, 'optimization', `Finalizing job ${job.id}`);
+      await job.updateProgress(90);
+      
+      // Save to database
+      // const dbTrace = traceDatabaseOperation('upsert', 'feeds', { feedId });
+      console.log(`[Worker] Upserting feed record in Supabase for feedId: ${feedId}`);
+      const { data: upsertData, error: dbError } =         await supabase.from('feeds').upsert({
+          id: feedId,
+          filename: fileName || `${feedId}.xlsx`,
+          platform: platform,
+          status: 'completed',
+          upload_time: new Date().toISOString(),
+          output_path: publicUrl,
+          summary_json: (transformResult && typeof transformResult === 'object' && 'summary' in transformResult && transformResult.summary)
+            ? transformResult.summary
+            : { rowCount: transformResult && typeof transformResult === 'object' && 'rowCount' in transformResult ? transformResult.rowCount : 0 },
+          email: email || null,
+          category: category || null
+        });
+      console.log(`[Worker] Supabase upsert response:`, { upsertData, dbError });
+      console.log(`[Worker] Feed record upserted in DB for feedId=${feedId}`);
+      // dbTrace.end(dbError);
+      if (dbError) {
+        console.error(`[Worker] Database save failed:`, dbError);
+        throw new Error(`Database save failed: ${dbError.message}`);
+      }
+      
+      await job.updateProgress(100);
+      
+      const processingTime = Date.now() - startTime;
+      logJobProgress(feedId, 100, 'completed', `Job completed in ${processingTime}ms`);
+      logPerformance('job_total', processingTime, { feedId, transformTime });
+      console.log(`[Worker] Job ${job.id} completed successfully in ${processingTime}ms`);
+      console.log(`[Worker] Breakdown: Transform=${transformTime}ms, Total=${processingTime}ms`);
+      
+              // Record analytics
+        try {
+          console.log(`[Worker] Recording analytics for ${feedId}`);
+          await analyticsService.recordJobAnalytics({
+            feedId,
+            jobId: job.id,
+            platform,
+            category,
+            totalRows: fileBuffer.toString().split('\n').length - 1,
+            processingTime,
+            transformTime,
+            llmCalls: 0,
+            llmErrors: 0,
+            cacheHits: 0,
+            successRate: 100,
+            avgConfidence: 100,
+            blankFieldsCount: 0,
+            warnings: [],
+            suggestions: []
+          });
+        
+        console.log(`[Worker] Analytics recorded for ${feedId}`);
+      } catch (analyticsError) {
+        console.error(`[Worker] Failed to record analytics for ${feedId}:`, analyticsError);
+      }
+      
+      console.log(`[Worker] ====== JOB END feedId=${feedId} jobId=${job.id} ======`);
+      return { 
+        status: 'completed', 
+        jobId: job.id,
+        feedId,
+        processingTime,
+        transformTime,
+        outputUrl: publicUrl
+      };
+      
+    } catch (error: unknown) {
+      const processingTime = Date.now() - startTime;
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`[Worker] JOB ERROR feedId=${feedId} jobId=${job?.id} after ${processingTime}ms:`, errorMessage);
+      if (error instanceof Error && error.stack) {
+        console.error(`[Worker] Stack trace:`, error.stack);
+      }
+      // Save error to database
+      try {
+        // const dbTrace = traceDatabaseOperation('upsert', 'feeds', { feedId, status: 'failed' });
+        console.log(`[Worker] Upserting failed job to DB for feedId: ${feedId}`);
+        await supabase.from('feeds').upsert({
+          id: feedId,
+          filename: fileName || `${feedId}.xlsx`,
+          platform: platform,
+          status: 'failed',
+          upload_time: new Date().toISOString(),
+          summary_json: { error: errorMessage, processingTime },
+          email: email || null,
+          category: category || null
+        });
+        // dbTrace.end();
+      } catch (dbError) {
+        console.error(`[Worker] Failed to save error to database:`, dbError);
+      }
+      
+      throw new Error(errorMessage);
     }
-    
-    console.log(`[Worker] ====== JOB END feedId=${feedId} jobId=${job.id} ======`);
-    return { 
-      status: 'completed', 
-      jobId: job.id,
-      feedId,
-      processingTime,
-      transformTime,
-      outputUrl: publicUrl,
-      summary: summary
-    };
-    
-  } catch (error) {
-    const processingTime = Date.now() - startTime;
-    console.error(`[Worker] JOB ERROR feedId=${feedId} jobId=${job.id} after ${processingTime}ms:`, error);
-    if (error instanceof Error && error.stack) {
-      console.error(`[Worker] Stack trace:`, error.stack);
-    }
-    // Save error to database
-    try {
-      const REMOVED_SECRET= (await import('../supabaseClient.js')).default;
-      const dbTrace = traceDatabaseOperation('upsert', 'feeds', { feedId, status: 'failed' });
-      console.log(`[Worker] Upserting failed job to DB for feedId: ${feedId}`);
-      await supabase.from('feeds').upsert({
-        id: feedId,
-        filename: fileName || `${feedId}.xlsx`,
-        platform: platform,
-        status: 'failed',
-        upload_time: new Date().toISOString(),
-        summary_json: { error: error.message, processingTime },
-        email: email || null,
-        category: category || null
-      });
-      dbTrace.end();
-    } catch (dbError) {
-      console.error(`[Worker] Failed to save error to database:`, dbError);
-    }
-    
-    throw error;
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
   }
 }, { 
   connection,
@@ -253,11 +319,19 @@ feedWorker.on('active', (job) => {
 });
 
 feedWorker.on('completed', (job, result) => {
-  console.log(`[Worker] Job ${job.id} completed:`, result);
+  if (!job) {
+    console.log('[WORKER][EVENT] Job completed: job is undefined');
+    return;
+  }
+  console.log(`[WORKER][EVENT] Job completed: jobId=${job.id}, feedId=${job.data.feedId}, result=`, result);
 });
 
 feedWorker.on('failed', (job, err) => {
-  console.error(`[Worker] Job ${job.id} failed:`, err);
+  if (!job) {
+    console.error('[WORKER][EVENT] Job failed: job is undefined');
+    return;
+  }
+  console.error(`[WORKER][EVENT] Job failed: jobId=${job.id}, feedId=${job.data.feedId}, error=`, err);
 });
 
 // Export queue for use in API routes

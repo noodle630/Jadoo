@@ -1,208 +1,238 @@
-# Jadoo - AI-Powered Product Feed Optimization
+# Jadoo - Product Feed Transformation Platform
 
-Transform your product feeds with AI-powered enrichment and optimization for Walmart marketplace. Jadoo automatically enhances your product data with intelligent field mapping, brand detection, and marketplace optimization.
+Jadoo is a modern, AI-powered platform for transforming product data feeds across different marketplace formats. Built with a focus on data quality, scalability, and user experience.
 
-## 🚀 Latest Updates (July 6, 2024)
+## 🚀 Features
 
-### ✅ **Major Accomplishments**
+- **Multi-Platform Support**: Transform feeds for Walmart, Amazon, Meta, TikTok, and more
+- **AI-Powered Enrichment**: Intelligent field mapping and data enhancement
+- **Real-time Processing**: Background job processing with progress tracking
+- **Modern Authentication**: Supabase Auth with JWT-based security
+- **Analytics Dashboard**: Comprehensive insights into transformation performance
+- **Template Management**: Pre-built templates for different marketplaces and categories
 
-#### **Tier-Based Enrichment System**
-- **3-Tier Pricing Model**: Free (10 products), Basic ($29/month, 100 products), Premium ($99/month, 1000 products)
-- **Quality Differentiation**: 30% → 60% → 90% field completion rates
-- **Model Selection**: GPT-4o-mini vs GPT-4o based on tier requirements
-- **Smart Processing**: Parallel LLM enrichment with configurable concurrency
+## 🏗️ Architecture
 
-#### **Performance Optimization**
-- **Speed**: ~4 seconds per product (60% improvement)
-- **Parallel Processing**: 5 concurrent LLM calls
-- **Corrected Metrics**: Accurate row counting (excludes template headers)
-- **Key Field Preservation**: SKU, Price, Brand Name, Product Name, Manufacturer Name
+Jadoo follows a modern microservices architecture:
 
-#### **Enhanced Data Quality**
-- **Advanced Header Mapping**: 6-strategy approach (direct, normalized, variations, partial, fuzzy)
-- **Tier-Specific Prompts**: Optimized LLM instructions for each quality level
-- **Field Validation**: Intelligent field detection and mapping
-- **Error Handling**: Robust error recovery and logging
-
-#### **Simplified Frontend**
-- **Minimalistic UX**: Drag-and-drop upload with tier selection
-- **Progress Tracking**: Real-time processing updates
-- **Responsive Design**: Mobile-friendly interface
-- **Clean Interface**: Reduced cognitive load, maximum action items
-
-### 🔄 **Current Status**
-
-#### **Backend Performance**
-- ✅ **Processing**: Tier-based enrichment working
-- ✅ **Storage**: Supabase integration with RLS policies
-- ✅ **Queue System**: BullMQ with Redis for job management
-- ✅ **Analytics**: Comprehensive performance tracking
-- ⚠️ **Data Quality**: ~25 fields enriched out of 262 (needs optimization)
-
-#### **Frontend Status**
-- ✅ **Upload Flow**: Simplified drag-and-drop interface
-- ✅ **Tier Selection**: Clear pricing and benefits display
-- ✅ **Progress Tracking**: Real-time status updates
-- 🔄 **Results Dashboard**: In development
-
-## 🎯 **Core Features**
-
-### **AI-Powered Enrichment**
-- **Intelligent Field Mapping**: Automatically maps input fields to Walmart requirements
-- **Brand Detection**: Identifies and normalizes brand names
-- **Price Optimization**: Validates and formats pricing data
-- **SEO Enhancement**: Creates search-optimized product descriptions
-- **Category Classification**: Automatically detects product categories
-
-### **Tier-Based Quality**
-| Feature | Free | Basic | Premium |
-|---------|------|-------|---------|
-| **Products** | 10 | 100 | 1000 |
-| **Field Completion** | 30% | 60% | 90% |
-| **Model** | GPT-4o-mini | GPT-4o-mini | GPT-4o |
-| **Support** | Community | Email | Priority |
-| **Analytics** | Basic | Standard | Advanced |
-
-### **Performance & Reliability**
-- **Parallel Processing**: 5x faster with concurrent enrichment
-- **Error Recovery**: Automatic retry and fallback mechanisms
-- **Progress Tracking**: Real-time updates and detailed logging
-- **Data Validation**: Comprehensive field validation and quality scoring
-
-## 🛠 **Technical Stack**
-
-### **Backend**
-- **Runtime**: Node.js with TypeScript
-- **Framework**: Express.js
-- **Queue System**: BullMQ with Redis
-- **Database**: Supabase (PostgreSQL)
-- **Storage**: Supabase Storage
-- **AI**: OpenAI GPT-4o/GPT-4o-mini
-- **Monitoring**: Custom analytics and logging
-
-### **Frontend**
-- **Framework**: React with TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Custom design system
-- **State Management**: React hooks
-- **Build Tool**: Vite
-
-### **Infrastructure**
-- **Deployment**: Fly.io
-- **Environment**: Development/Production
-- **Monitoring**: Custom telemetry and logging
-- **Security**: Row-level security policies
-
-## 📊 **Performance Metrics**
-
-### **Current Performance**
-- **Processing Speed**: ~4 seconds per product
-- **Concurrency**: 5 parallel LLM calls
-- **Success Rate**: 100% (no processing failures)
-- **Field Mapping**: 2/262 fields successfully mapped
-- **Data Quality**: 25 fields enriched per product
-
-### **Target Metrics**
-- **Speed**: <3 seconds per product
-- **Quality**: >80% field completion (Premium tier)
-- **Accuracy**: >95% field mapping success
-- **Scalability**: 1000+ concurrent users
-
-## 🚀 **Getting Started**
-
-### **Prerequisites**
-- Node.js 18+
-- Redis server
-- Supabase account
-- OpenAI API key
-
-### **Installation**
-```bash
-# Clone the repository
-git clone <repository-url>
-cd Jadoo
-
-# Install dependencies
-   npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your credentials
-
-# Start development servers
-npm run dev
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   Backend       │    │   Infrastructure │
+│   (React/Vite)  │◄──►│   (Node.js)     │◄──►│   (Lovable)     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Supabase      │    │   Redis Queue   │    │   Cloudflare    │
+│   (Auth + DB)   │    │   (BullMQ)      │    │   (CDN)         │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### **Environment Variables**
-```env
-REDIS_URL=redis://localhost:6379
+### Tech Stack
+
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Shadcn/ui
+- **Backend**: Node.js, Express, TypeScript
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Queue System**: Redis + BullMQ
+- **File Storage**: Supabase Storage
+- **Hosting**: Lovable Platform
+- **CDN**: Cloudflare
+
+## 🛠️ Setup
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Redis instance
+- Supabase account
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
+# Supabase Configuration
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-OPENAI_API_KEY=your_openai_key
+SUPABASE_JWT_SECRET=your_jwt_secret
+
+# Redis Configuration
+REDIS_URL=your_redis_url
+
+# Server Configuration
+PORT=4000
 NODE_ENV=development
+
+# Frontend Environment Variables (client/.env)
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
 
-### **Usage**
-1. **Upload File**: Drag and drop your CSV/Excel file
-2. **Select Tier**: Choose Free, Basic, or Premium
-3. **Process**: AI automatically enriches your data
-4. **Download**: Get your optimized Walmart feed
+### Installation
 
-## 📈 **Roadmap**
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd Jadoo
+   ```
 
-### **Phase 1: Optimization (Current)**
-- [ ] Improve field mapping accuracy
-- [ ] Optimize LLM prompts for better quality
-- [ ] Add confidence scoring for enriched data
-- [ ] Implement field validation rules
+2. **Install dependencies**
+   ```bash
+   # Install backend dependencies
+   npm install
+   
+   # Install frontend dependencies
+   cd client
+   npm install
+   cd ..
+   ```
 
-### **Phase 2: Productization**
-- [ ] Add payment processing
-- [ ] Implement user authentication
-- [ ] Create advanced analytics dashboard
-- [ ] Add API access for enterprise users
+3. **Set up Supabase**
+   - Create a new Supabase project
+   - Run the migrations in `supabase-migrations/`
+   - Configure authentication settings
+   - Set up storage buckets for feeds
 
-### **Phase 3: Scale & Growth**
-- [ ] Support additional marketplaces (Amazon, eBay)
-- [ ] Add bulk processing capabilities
-- [ ] Implement machine learning for better predictions
-- [ ] Create partner integrations
+4. **Start the development servers**
+   ```bash
+   # Start backend (from root)
+   npm run dev:server
+   
+   # Start frontend (from client directory)
+   cd client
+   npm run dev
+   ```
 
-## 🤝 **Contributing**
+## 📖 Usage
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+### 1. Authentication
 
-### **Development Setup**
-```bash
-# Install dependencies
-npm install
+- Register a new account at `/register`
+- Sign in with email/password at `/login`
+- JWT tokens are automatically managed by Supabase
 
-# Start development servers
-npm run dev
+### 2. Upload and Transform
 
-# Run tests
-npm test
+1. Navigate to `/new-feed` or `/transform`
+2. Select your target marketplace (Walmart, Amazon, etc.)
+3. Upload your CSV file
+4. The system will process your data in the background
+5. Download the transformed XLSX file when ready
 
-# Build for production
-npm run build
+### 3. Monitor Progress
+
+- View real-time processing status
+- Check job progress in the dashboard
+- Download completed feeds from the history page
+
+### 4. Analytics
+
+- View transformation statistics
+- Monitor AI performance metrics
+- Track field mapping success rates
+
+## 🔧 API Endpoints
+
+### Authentication
+- `POST /api/auth/signup` - Register new user
+- `POST /api/auth/signin` - Sign in user
+- `POST /api/auth/signout` - Sign out user
+
+### Feed Management
+- `GET /api/feeds` - List all feeds
+- `POST /api/simple-upload` - Upload new feed
+- `GET /api/feeds/:id/download` - Download feed
+- `GET /api/feeds/:id/ready` - Check feed status
+- `GET /api/jobs/:id/status` - Get job status
+
+### Analytics
+- `GET /api/analytics/dashboard` - Dashboard data
+- `GET /api/analytics/jobs` - Job performance
+- `GET /api/analytics/fields` - Field mapping stats
+- `GET /api/analytics/llm` - AI performance metrics
+
+### Templates
+- `GET /api/platforms/:platform/categories` - Get categories
+
+## 🏗️ Development
+
+### Project Structure
+
+```
+Jadoo/
+├── client/                 # Frontend React app
+│   ├── src/
+│   │   ├── components/     # UI components
+│   │   ├── pages/         # Page components
+│   │   ├── contexts/      # React contexts
+│   │   ├── hooks/         # Custom hooks
+│   │   └── lib/           # Utilities
+│   └── public/            # Static assets
+├── server/                # Backend Node.js app
+│   ├── routes/            # API routes
+│   ├── utils/             # Utilities and transformers
+│   ├── queue/             # Job queue management
+│   └── storage/           # Data storage layer
+├── supabase-migrations/   # Database migrations
+├── attached_assets/       # Templates and test data
+└── docs/                  # Documentation
 ```
 
-## 📞 **Support**
+### Key Components
 
-- **Documentation**: [docs.jadoo.ai](https://docs.jadoo.ai)
-- **Email**: support@jadoo.ai
-- **Discord**: [Join our community](https://discord.gg/jadoo)
+- **Transformer Engine**: AI-powered data transformation
+- **Queue System**: Background job processing
+- **Analytics Service**: Performance tracking
+- **Template System**: Marketplace-specific configurations
 
-## 📄 **License**
+## 🚀 Deployment
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Lovable Platform
 
-## 🙏 **Acknowledgments**
+Jadoo is optimized for deployment on Lovable:
 
-- OpenAI for providing the GPT models
-- Supabase for the backend infrastructure
-- The open-source community for various tools and libraries
+1. Connect your GitHub repository
+2. Set environment variables in Lovable dashboard
+3. Deploy with automatic builds
+4. Configure custom domains
+
+### Environment Configuration
+
+Ensure all environment variables are set in production:
+- Supabase credentials
+- Redis connection
+- JWT secrets
+- Frontend environment variables
+
+## 📊 Monitoring
+
+- **Application Logs**: View in Lovable dashboard
+- **Database Monitoring**: Supabase dashboard
+- **Queue Monitoring**: Redis monitoring tools
+- **Performance**: Built-in analytics dashboard
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+- Check the documentation in `/docs`
+- Review the architecture guide
+- Contact the development team
 
 ---
 
-**Made with ❤️ by the Jadoo team**
+**Jadoo** - Transform your product feeds with AI-powered precision.

@@ -1,0 +1,61 @@
+[WORKER_DIR_CREATE] temp_uploads directory already exists
+[WORKER_DIR_CREATE] outputs directory already exists
+[WORKER_STARTUP] ENV {
+  REDIS_URL: 'redis://localhost:6379',
+  SUPABASE_URL: 'https://ycxucauqwrfmvenkpaoz.supabase.co',
+  SUPABASE_SERVICE_ROLE_KEY: '***set***',
+  NODE_ENV: 'development'
+}
+[DEBUG] REDIS_URL at queue.js: redis://localhost:6379
+[WORKER_READY] Worker startup complete, ready to process jobs.
+Loaded .env - URL: https://ycxucauqwrfmvenkpaoz.s
+Using Supabase key: eyJhbGci
+[DEBUG] REDIS_URL at index.ts: redis://localhost:6379
+[DEBUG] CWD: /Users/pratik/Desktop/Jadoo
+[DEBUG] STRIPE_SECRET_KEY: sk_live_...
+[DEBUG] STRIPE_PRICE_ID_PREMIUM: price_1RhoeP07W3rxhIX8p1uNpBOP
+[DEBUG] STRIPE_PRICE_ID_BASIC: price_1Rhocu07W3rxhIX8Zz6I79fQ
+[DEBUG] STRIPE_SUCCESS_URL: http://localhost:5173/success
+[DEBUG] STRIPE_CANCEL_URL: http://localhost:5173/cancel
+[DEBUG] __dirname: /Users/pratik/Desktop/Jadoo/server
+[DEBUG] .env file should be at: /Users/pratik/Desktop/Jadoo/.env
+[REDIS][App] Connecting to: redis://localhost:6379
+[DEBUG] Registering simple routes...
+[DEBUG] createSimpleRoutes called in simple-routes.ts
+[DEBUG] createSimpleRoutes() called in index.ts
+[DEBUG] Simple routes registered
+[ROUTE] GET /api/test
+[ROUTE] GET /api/wallet/balance
+[ROUTE] GET /api/wallet/transactions
+[ROUTE] POST /api/wallet/add
+[ROUTE] POST /api/wallet/admin/set-balance
+[ROUTE] OPTIONS *
+[ROUTE] OPTIONS /api/simple-upload
+[ROUTE] GET /api/protected
+[ROUTE] GET /api/auth/user
+[ROUTE] GET /simple-upload
+[ROUTE] POST /simple-upload
+[ROUTE] GET /simple-download/:feedId
+[ROUTE] GET /health
+[ROUTE] GET /feeds
+[ROUTE] POST /transform/csv
+[ROUTE] POST /process/:id
+[ROUTE] GET /feeds/:feedId/progress
+[ROUTE] POST /stripe/create-checkout-session
+[ROUTE] GET /download/:file
+[ROUTE] GET /platforms/:platform/categories
+[ROUTE] GET /feeds/:feedId/download
+[ROUTE] GET /feeds/:feedId/ready
+[ROUTE] GET /jobs/:feedId/status
+[ROUTE] GET /analytics/dashboard
+[ROUTE] GET /analytics/jobs
+[ROUTE] GET /analytics/fields
+[ROUTE] GET /analytics/llm
+[ROUTE] GET /analytics/recent
+[ROUTE] GET /wallet/balance
+[ROUTE] POST /wallet/add
+[ROUTE] POST /wallet/admin/set-balance
+🚀 Server running at http://localhost:4000
+[REDIS][App] Connected!
+[2025-07-09T01:47:50.159Z] GET /health
+Headers: { host: 'localhost:4000', 'user-agent': 'curl/8.7.1', accept: '*/*' }

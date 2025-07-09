@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { TierSelector } from './TierSelector';
 import { Progress } from './ui/progress';
+import Papa from 'papaparse';
 
 export function SimplifiedUpload() {
   const [selectedTier, setSelectedTier] = useState('free');
@@ -12,12 +13,19 @@ export function SimplifiedUpload() {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('idle'); // idle, uploading, success, error
+  const [rowCount, setRowCount] = useState(0);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file && file.type === 'text/csv') {
       setFile(file);
       setStatus('idle');
+      // Parse CSV to count rows
+      Papa.parse(file, {
+        complete: (results) => {
+          setRowCount(results.data.length - 1); // minus header
+        },
+      });
     } else {
       setStatus('error');
     }
@@ -68,6 +76,33 @@ export function SimplifiedUpload() {
         const result = await response.json();
         setStatus('success');
         console.log('Upload successful:', result);
+        // Trigger download if downloadUrl is present
+        if (result.downloadUrl) {
+          window.location.href = result.downloadUrl;
+          return;
+        }
+        // Stripe checkout for paid tiers
+        if (selectedTier !== 'free') {
+          const stripeRes = await fetch('/api/stripe/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: 'test@example.com',
+              plan: selectedTier,
+              rowCount: rowCount
+            })
+          });
+          if (stripeRes.ok) {
+            const { url } = await stripeRes.json();
+            if (url) {
+              window.location.href = url;
+              return;
+            }
+          } else {
+            setStatus('error');
+            throw new Error('Stripe checkout failed');
+          }
+        }
       } else {
         throw new Error('Upload failed');
       }

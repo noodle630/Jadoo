@@ -65,8 +65,8 @@ export default function SimpleTransform() {
         });
       }, 500);
       
-      // Using the direct transform API endpoint
-      const response = await fetch('/api/transform/csv', {
+      // Using the simple upload API endpoint
+      const response = await fetch('/api/simple-upload', {
         method: 'POST',
         body: formData,
       });

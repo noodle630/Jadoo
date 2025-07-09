@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
-import { Bell, Menu, User, Search, Command, FileText } from "lucide-react";
+import { Bell, Menu, User, Search, Command, FileText, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Temporary ModeToggle component until we fix the import
 const ModeToggle = () => {
@@ -28,6 +29,7 @@ interface HeaderProps {
 
 export default function Header({ onToggleSidebar }: HeaderProps) {
   const [location] = useLocation();
+  const { user, signOut } = useAuth();
   
   const getPageTitle = () => {
     switch (true) {
@@ -140,17 +142,17 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2 h-9 pl-2 pr-3" size="sm">
                 <Avatar className="h-7 w-7">
-                  <AvatarImage src="https://i.pravatar.cc/150?img=12" />
-                  <AvatarFallback>DM</AvatarFallback>
+                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium hidden sm:inline-block">demo</span>
+                <span className="text-sm font-medium hidden sm:inline-block">{user?.email || 'User'}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">demo@example.com</p>
-                  <p className="text-xs text-muted-foreground">Administrator</p>
+                  <p className="text-sm font-medium">{user?.email || 'User'}</p>
+                  <p className="text-xs text-muted-foreground">Member</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -164,7 +166,13 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                 <Badge variant="outline" className="ml-auto text-xs py-0">New</Badge>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-500 dark:text-red-400">Logout</DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-red-500 dark:text-red-400"
+                onClick={() => signOut()}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sign out</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -1,0 +1,154 @@
+
+> rest-express@1.0.0 dev:server
+> tsx server/index.ts
+
+[WORKER_DIR_CREATE] temp_uploads directory already exists
+[WORKER_DIR_CREATE] outputs directory already exists
+[WORKER_STARTUP] ENV {
+  REDIS_URL: 'redis://localhost:6379',
+  SUPABASE_URL: 'https://ycxucauqwrfmvenkpaoz.supabase.co',
+  SUPABASE_SERVICE_ROLE_KEY: '***set***',
+  NODE_ENV: 'development'
+}
+[DEBUG] REDIS_URL at queue.js: redis://localhost:6379
+[WORKER_READY] Worker startup complete, ready to process jobs.
+Loaded .env - URL: https://ycxucauqwrfmvenkpaoz.s
+Using Supabase key: eyJhbGci
+[DEBUG] REDIS_URL at index.ts: redis://localhost:6379
+[DEBUG] CWD: /Users/pratik/Desktop/Jadoo
+[DEBUG] STRIPE_SECRET_KEY: sk_live_...
+[DEBUG] STRIPE_PRICE_ID_PREMIUM: price_1RhoeP07W3rxhIX8p1uNpBOP
+[DEBUG] STRIPE_PRICE_ID_BASIC: price_1Rhocu07W3rxhIX8Zz6I79fQ
+[DEBUG] STRIPE_SUCCESS_URL: http://localhost:5173/success
+[DEBUG] STRIPE_CANCEL_URL: http://localhost:5173/cancel
+[DEBUG] __dirname: /Users/pratik/Desktop/Jadoo/server
+[DEBUG] .env file should be at: /Users/pratik/Desktop/Jadoo/.env
+[REDIS][App] Connecting to: redis://localhost:6379
+[DEBUG] Registering simple routes...
+[DEBUG] createSimpleRoutes called in simple-routes.ts
+[DEBUG] createSimpleRoutes() called in index.ts
+[DEBUG] Simple routes registered
+[ROUTE] GET /api/test
+[ROUTE] GET /api/wallet/balance
+[ROUTE] GET /api/wallet/transactions
+[ROUTE] POST /api/wallet/add
+[ROUTE] POST /api/wallet/admin/set-balance
+[ROUTE] OPTIONS *
+[ROUTE] OPTIONS /api/simple-upload
+[ROUTE] GET /api/protected
+[ROUTE] GET /api/auth/user
+[ROUTE] GET /simple-upload
+[ROUTE] POST /simple-upload
+[ROUTE] GET /simple-download/:feedId
+[ROUTE] GET /health
+[ROUTE] GET /feeds
+[ROUTE] POST /transform/csv
+[ROUTE] POST /process/:id
+[ROUTE] GET /feeds/:feedId/progress
+[ROUTE] POST /stripe/create-checkout-session
+[ROUTE] GET /download/:file
+[ROUTE] GET /platforms/:platform/categories
+[ROUTE] GET /feeds/:feedId/download
+[ROUTE] GET /feeds/:feedId/ready
+[ROUTE] GET /jobs/:feedId/status
+[ROUTE] GET /analytics/dashboard
+[ROUTE] GET /analytics/jobs
+[ROUTE] GET /analytics/fields
+[ROUTE] GET /analytics/llm
+[ROUTE] GET /analytics/recent
+[ROUTE] GET /wallet/balance
+[ROUTE] POST /wallet/add
+[ROUTE] POST /wallet/admin/set-balance
+🚀 Server running at http://localhost:4000
+[REDIS][App] Connected!
+[WALLET] /api/wallet/balance called with user_id: fb78237e-2b63-4fca-b5ce-2cc0ff73a639
+[WALLET] /api/wallet/balance called with user_id: fb78237e-2b63-4fca-b5ce-2cc0ff73a639
+[WALLET] /api/wallet/transactions called with user_id: fb78237e-2b63-4fca-b5ce-2cc0ff73a639
+[WALLET] /api/wallet/balance called with user_id: fb78237e-2b63-4fca-b5ce-2cc0ff73a639
+[WALLET] /api/wallet/transactions called with user_id: fb78237e-2b63-4fca-b5ce-2cc0ff73a639
+[WALLET] /api/wallet/transactions called with user_id: fb78237e-2b63-4fca-b5ce-2cc0ff73a639
+[2025-07-09T01:05:24.590Z] POST /api/simple-upload
+Headers: {
+  host: 'jadoo.ngrok-free.app',
+  'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  'content-length': '2085',
+  accept: '*/*',
+  'accept-encoding': 'gzip, deflate, br, zstd',
+  'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+  authorization: 'Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6InF2UjFTMnMyeGRzOEJ3VUIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3ljeHVjYXVxd3JmbXZlbmtwYW96LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmYjc4MjM3ZS0yYjYzLTRmY2EtYjVjZS0yY2MwZmY3M2E2MzkiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUyMDI2MTYxLCJpYXQiOjE3NTIwMjI1NjEsImVtYWlsIjoicHJhdGlrc2hla2hhcjAwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoicHJhdGlrc2hla2hhcjAwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmlyc3RfbmFtZSI6IlByYXRpayIsImZ1bGxfbmFtZSI6IlByYXRpayBTaGVraGFyIiwibGFzdF9uYW1lIjoiU2hla2hhciIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmI3ODIzN2UtMmI2My00ZmNhLWI1Y2UtMmNjMGZmNzNhNjM5In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NTIwMTU1ODJ9XSwic2Vzc2lvbl9pZCI6IjliYWMyYWUyLWFhM2UtNDA3Zi05YjFjLWZjNGNmYmM3ZjYxMSIsImlzX2Fub255bW91cyI6ZmFsc2V9.wkWcILJoY_6L3p7DpbP7oSnfBtM49wnLvyvQ0oDOjpQ',
+  'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryITz4UvsNII95kZ2Y',
+  'ngrok-skip-browser-warning': 'true',
+  origin: 'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app',
+  priority: 'u=1, i',
+  referer: 'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app/',
+  'sec-ch-ua': '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+  'sec-ch-ua-mobile': '?0',
+  'sec-ch-ua-platform': '"macOS"',
+  'sec-fetch-dest': 'empty',
+  'sec-fetch-mode': 'cors',
+  'sec-fetch-site': 'cross-site',
+  'x-forwarded-for': '135.84.144.58',
+  'x-forwarded-host': 'jadoo.ngrok-free.app',
+  'x-forwarded-proto': 'https'
+}
+[DEBUG] Entered POST /api/simple-upload handler
+[DEBUG] After multer in POST /api/simple-upload
+[UPLOAD] Request headers: {
+  host: 'jadoo.ngrok-free.app',
+  'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  'content-length': '2085',
+  accept: '*/*',
+  'accept-encoding': 'gzip, deflate, br, zstd',
+  'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+  authorization: 'Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6InF2UjFTMnMyeGRzOEJ3VUIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3ljeHVjYXVxd3JmbXZlbmtwYW96LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmYjc4MjM3ZS0yYjYzLTRmY2EtYjVjZS0yY2MwZmY3M2E2MzkiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUyMDI2MTYxLCJpYXQiOjE3NTIwMjI1NjEsImVtYWlsIjoicHJhdGlrc2hla2hhcjAwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoicHJhdGlrc2hla2hhcjAwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmlyc3RfbmFtZSI6IlByYXRpayIsImZ1bGxfbmFtZSI6IlByYXRpayBTaGVraGFyIiwibGFzdF9uYW1lIjoiU2hla2hhciIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmI3ODIzN2UtMmI2My00ZmNhLWI1Y2UtMmNjMGZmNzNhNjM5In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NTIwMTU1ODJ9XSwic2Vzc2lvbl9pZCI6IjliYWMyYWUyLWFhM2UtNDA3Zi05YjFjLWZjNGNmYmM3ZjYxMSIsImlzX2Fub255bW91cyI6ZmFsc2V9.wkWcILJoY_6L3p7DpbP7oSnfBtM49wnLvyvQ0oDOjpQ',
+  'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryITz4UvsNII95kZ2Y',
+  'ngrok-skip-browser-warning': 'true',
+  origin: 'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app',
+  priority: 'u=1, i',
+  referer: 'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app/',
+  'sec-ch-ua': '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+  'sec-ch-ua-mobile': '?0',
+  'sec-ch-ua-platform': '"macOS"',
+  'sec-fetch-dest': 'empty',
+  'sec-fetch-mode': 'cors',
+  'sec-fetch-site': 'cross-site',
+  'x-forwarded-for': '135.84.144.58',
+  'x-forwarded-host': 'jadoo.ngrok-free.app',
+  'x-forwarded-proto': 'https'
+}
+[UPLOAD] Request body: [Object: null prototype] {
+  platform: 'walmart',
+  tier: 'god_mode',
+  category: 'Other',
+  user_id: 'fb78237e-2b63-4fca-b5ce-2cc0ff73a639',
+  allowGrounding: 'true'
+}
+[UPLOAD] File saved as: /Users/pratik/Desktop/Jadoo/temp_uploads/feed_1752023124597_o3cm4urdwxo.csv, size: 1353 bytes
+[UPLOAD] Calling handleProcess for feedId: feed_1752023124597_o3cm4urdwxo
+[DEBUG] handleProcess CALLED
+
+[TRANSFORMER] handleProcess called for id: feed_1752023124597_o3cm4urdwxo, uploadPath: temp_uploads/feed_1752023124597_o3cm4urdwxo.csv
+
+
+
+
+2025-07-09T01:05:25.371Z [[33mwarn[39m]: Static data preloading failed {"service":"transformer","error":"End of data reached (data length = 0, asked index = 4). Corrupted zip ?"}
+[TRANSFORMER] Static data preloaded: templates=2
+[TRANSFORMER] Input file size: 1353 bytes
+
+
+
+
+
+
+[TRANSFORMER] Parsed input rows: 25
+2025-07-09T01:05:25.372Z [[32minfo[39m]: Starting category detection {"service":"transformer"}
+
+
+
+
+[TRANSFORMER] Detected category: base
+
+
+[TRANSFORMER] Template loaded for category: base
+

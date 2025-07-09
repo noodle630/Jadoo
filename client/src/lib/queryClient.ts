@@ -7,6 +7,28 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+// Environment detection and API URL configuration
+const getApiBaseUrl = () => {
+  // Check if we're on Lovable or any remote environment
+  if (window.location.hostname.includes('lovable.app') || !window.location.hostname.includes('localhost')) {
+    console.log('🌐 Detecting environment:', window.location.hostname);
+    console.log('🔧 Using ngrok backend for development');
+    return 'https://jadoo.ngrok-free.app/api';
+  }
+  // Local development
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:4000/api';
+  }
+  // Fallback
+  return 'https://jadoo.ngrok-free.app/api';
+};
+
+// DEV API BASE URL - update here for all dev/preview environments
+export const API_BASE_URL = getApiBaseUrl();
+
+// Debug logging
+console.log('🌐 Using API_BASE_URL:', API_BASE_URL);
+
 export async function apiRequest(
   url: string,
   data?: unknown | undefined,
@@ -31,8 +53,10 @@ export async function apiRequest(
     }
   }
   
-  console.log(`API Request: ${defaultOptions.method} ${url}`);
-  const res = await fetch(url, defaultOptions);
+  // Always prefix with API_BASE_URL if not already absolute
+  const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url.startsWith('/') ? url : '/' + url}`;
+  console.log(`API Request: ${defaultOptions.method} ${fullUrl}`);
+  const res = await fetch(fullUrl, defaultOptions);
 
   await throwIfResNotOk(res);
   return res;
@@ -44,7 +68,10 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    // Always prefix with API_BASE_URL if not already absolute
+    const url = queryKey[0] as string;
+    const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url.startsWith('/') ? url : '/' + url}`;
+    const res = await fetch(fullUrl, {
       credentials: "include",
     });
 
