@@ -1,7 +1,7 @@
 "use strict";
 // server/openaiClient.js
 // OpenAI credentials are loaded from .env or .env.production
-const OpenAI = require("openai");
+import OpenAI from 'openai';
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });

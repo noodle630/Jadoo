@@ -8,6 +8,7 @@ import { z } from 'zod';
 import reliableParser from './utils/reliableParser';
 import { handleProcess } from './utils/transformer';
 import { fileURLToPath } from 'url';
+import { feedQueue } from '../server/queue.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -83,7 +84,6 @@ export function createSimpleRoutes() {
       console.log(`[UPLOAD] File saved as: ${tempInputPath}, size: ${fileStats.size} bytes`);
       // Enqueue BullMQ job for async processing
       const fileBuffer = fs.readFileSync(tempInputPath);
-      const { feedQueue } = require('../server/queue.js');
       console.log(`[ENQUEUE][SIMPLE-ROUTES] Enqueuing job for feedId: ${feedId} with data:`, {
         feedId,
         fileBufferLength: fileBuffer.length,
@@ -125,20 +125,41 @@ export function createSimpleRoutes() {
   router.get('/simple-download/:feedId', async (req: Request, res: Response) => {
     console.log(`[DEBUG] /api/simple-download/:feedId handler reached for feedId: ${req.params.feedId}`);
     const { feedId } = req.params;
-    const filePath = path.join('outputs', `${feedId}_output.xlsx`);
-    console.log(`[DOWNLOAD] Attempting to download: ${filePath}`);
-    if (!fs.existsSync(filePath)) {
-      console.log(`[DOWNLOAD] File not found for feedId: ${feedId}, path: ${filePath}`);
-      return res.status(404).json({ message: 'File not found' });
-    }
-    res.setHeader('Content-Disposition', `attachment; filename="${feedId}_output.xlsx"`);
-    res.download(filePath, (err) => {
-      if (err) {
-        console.log(`[DOWNLOAD] Error serving file for feedId: ${feedId}, error:`, err);
-      } else {
-        console.log(`[DOWNLOAD] File served for feedId: ${feedId}, path: ${filePath}`);
+    const isProd = process.env.NODE_ENV === 'production' || process.env.FLY_APP_NAME;
+    if (isProd) {
+      // In production, redirect to Supabase public URL
+      try {
+        const supabase = (await import('../supabaseClient.js')).default;
+        const { data, error } = await supabase.from('feeds').select('*').eq('id', feedId).single();
+        if (error || !data || !data.output_path) {
+          console.log(`[DOWNLOAD][PROD] No output_path for feedId: ${feedId}`);
+          return res.status(404).json({ message: 'File not found' });
+        }
+        // Set Content-Disposition for nice filename
+        const filename = `${data.platform || 'feed'}_${feedId}.xlsx`;
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        return res.redirect(data.output_path);
+      } catch (err) {
+        console.error(`[DOWNLOAD][PROD] Error fetching Supabase URL for feedId: ${feedId}`, err);
+        return res.status(500).json({ message: 'Error fetching file from storage' });
       }
-    });
+    } else {
+      // In dev, serve from local disk
+      const filePath = path.join('outputs', `${feedId}_output.xlsx`);
+      console.log(`[DOWNLOAD][DEV] Attempting to download: ${filePath}`);
+      if (!fs.existsSync(filePath)) {
+        console.log(`[DOWNLOAD][DEV] File not found for feedId: ${feedId}, path: ${filePath}`);
+        return res.status(404).json({ message: 'File not found' });
+      }
+      res.setHeader('Content-Disposition', `attachment; filename="${feedId}_output.xlsx"`);
+      res.download(filePath, (err) => {
+        if (err) {
+          console.log(`[DOWNLOAD][DEV] Error serving file for feedId: ${feedId}, error:`, err);
+        } else {
+          console.log(`[DOWNLOAD][DEV] File served for feedId: ${feedId}, path: ${filePath}`);
+        }
+      });
+    }
   });
   
   return router;

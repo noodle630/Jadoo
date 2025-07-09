@@ -2,11 +2,14 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const express = require('express');
-const multer = require('multer');
-const fs = require('fs');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import multer from 'multer';
+import fs from 'fs';
+import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
+import { handleProcess } from './utils/transformer.js';
+import Stripe from 'stripe';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -75,7 +78,6 @@ const upload = multer({
 });
 
 // Import real transformer
-const { handleProcess } = require('./utils/transformer.js');
 
 // Simple upload endpoint
 app.post('/api/simple-upload', upload.single('file'), async (req, res) => {
@@ -210,7 +212,6 @@ app.get('/api/wallet/transactions', (req, res) => {
 });
 
 // Import Stripe
-const Stripe = require('stripe');
 
 // Initialize Stripe (use test key for development)
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_...');

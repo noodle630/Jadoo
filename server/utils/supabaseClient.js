@@ -23,7 +23,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv = __importStar(require("dotenv"));
+import dotenv from 'dotenv';
+dotenv.config();
 import { createClient } from '@supabase/supabase-js';
 // Supabase credentials are loaded from .env or .env.production
 const supabaseUrl = process.env.SUPABASE_URL;

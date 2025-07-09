@@ -40,10 +40,6 @@ let routes: any;
 
   // --- WALLET ENDPOINTS (HOTFIX) ---
   app.get('/api/wallet/balance', async (req: Request, res: Response) => {
-    // Add CORS headers
-    res.header('Access-Control-Allow-Origin', req.headers.origin === 'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app' ? req.headers.origin : 'https://jadoo.ngrok-free.app');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    
     const user_id = req.query.user_id;
     console.log(`[WALLET] /api/wallet/balance called with user_id: ${user_id}`);
     if (!user_id) {
@@ -85,10 +81,6 @@ let routes: any;
   });
 
   app.get('/api/wallet/transactions', async (req: Request, res: Response) => {
-    // Add CORS headers
-    res.header('Access-Control-Allow-Origin', req.headers.origin === 'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app' ? req.headers.origin : 'https://jadoo.ngrok-free.app');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    
     const user_id = req.query.user_id;
     console.log(`[WALLET] /api/wallet/transactions called with user_id: ${user_id}`);
     if (!user_id) {
@@ -113,12 +105,6 @@ let routes: any;
   });
 
   app.post('/api/wallet/add', async (req: Request, res: Response) => {
-    // Add CORS headers
-    res.header('Access-Control-Allow-Origin', req.headers.origin === 'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app' ? req.headers.origin : 'https://jadoo.ngrok-free.app');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning');
-    
     const { user_id, amount } = req.body;
     if (!user_id || typeof amount !== 'number') {
       console.error('[WALLET] Missing user_id or amount');
@@ -132,10 +118,6 @@ let routes: any;
     res.json({ balance: newBalance });
   });
   app.post('/api/wallet/admin/set-balance', async (req: Request, res: Response) => {
-    // Add CORS headers
-    res.header('Access-Control-Allow-Origin', req.headers.origin === 'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app' ? req.headers.origin : 'https://jadoo.ngrok-free.app');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    
     const { user_id, balance } = req.body;
     if (!user_id || typeof balance !== 'number') {
       console.error('[WALLET] Missing user_id or balance');
@@ -146,37 +128,26 @@ let routes: any;
     res.json({ balance });
   });
 
+  // CORS: Allow production, dev (ngrok), and local frontends
   const allowedOrigins = [
-    'https://jadoo.ngrok-free.app',
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:4000',
-    'https://lovable.dev',
-    'https://*.lovable.app',
-    'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app',
+    'https://feed-flow-ai-transform.lovable.app', // production FE
+    'https://jadoo.fly.dev',                     // direct backend access
+    'https://jadoo.ngrok-free.app',              // fixed ngrok dev URL
+    'http://localhost:5173',                     // local dev FE
+    'http://localhost:3000',                     // (optional) other local FE
   ];
 
-  app.use(cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.some(o => origin === o || (o.includes('*') && origin.endsWith(o.replace('*', ''))))) {
-        return callback(null, true);
-      }
-      return callback(new Error('Not allowed by CORS'), false);
-    },
-    credentials: true,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    allowedHeaders: "Content-Type,Authorization,X-Requested-With,ngrok-skip-browser-warning"
-  }));
-
-  app.options('*', cors());
-
-  // Guarantee CORS headers for all /api/* requests
-  app.use('/api', (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning');
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
     next();
   });
 

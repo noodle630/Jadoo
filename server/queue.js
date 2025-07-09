@@ -1,6 +1,6 @@
 // CommonJS wrapper for feedQueue from queue.ts
 import { Queue } from 'bullmq';
-const IORedis = require('ioredis');
+import IORedis from 'ioredis';
 
 const connection = new IORedis(process.env.REDIS_URL || 'redis://127.0.0.1:6379', {
   maxRetriesPerRequest: null
