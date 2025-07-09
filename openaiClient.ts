@@ -1,5 +1,5 @@
 // server/openaiClient.ts
-
+// OpenAI credentials are loaded from .env or .env.production
 import OpenAI from "openai";
 import * as dotenv from "dotenv";
 
@@ -10,7 +10,7 @@ const openai = new OpenAI({
 });
 
 if (!process.env.OPENAI_API_KEY) {
-  console.warn("[OpenAI] Missing OPENAI_API_KEY. LLM enrichment will not work.");
+  console.warn("[OpenAI] Missing OPENAI_API_KEY. LLM enrichment will not work. Set OPENAI_API_KEY in your .env");
 }
 
 export default openai;

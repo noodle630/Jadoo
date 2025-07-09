@@ -24,17 +24,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
-const supabase_js_1 = require("@supabase/supabase-js");
-dotenv.config();
-console.log("Loaded .env - URL:", process.env.SUPABASE_URL?.slice(0, 30));
+import { createClient } from '@supabase/supabase-js';
+// Supabase credentials are loaded from .env or .env.production
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-console.log("Using Supabase key:", supabaseKey?.slice(0, 8));
 if (!supabaseUrl) {
-    throw new Error('supabaseUrl is required.');
+    throw new Error('supabaseUrl is required. Set SUPABASE_URL in your .env');
 }
 if (!supabaseKey) {
-    throw new Error('supabaseKey is required.');
+    throw new Error('supabaseKey is required. Set SUPABASE_SERVICE_ROLE_KEY in your .env');
 }
-const REMOVED_SECRET= (0, supabase_js_1.createClient)(supabaseUrl, supabaseKey);
-exports.default = supabase;
+const REMOVED_SECRET= createClient(supabaseUrl, supabaseKey);
+export default supabase;
