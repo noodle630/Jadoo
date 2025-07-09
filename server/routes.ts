@@ -16,7 +16,7 @@ import type { Request, Response, NextFunction, Router } from 'express';
 import multer from 'multer';
 // @ts-ignore
 import { feedQueue } from './queue.js';
-import REMOVED_SECRETfrom "../supabaseClient.js";
+import supabase from "../supabaseClient.js";
 // @ts-ignore
 import analyticsService from './utils/analytics.js';
 import Stripe from 'stripe';

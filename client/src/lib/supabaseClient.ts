@@ -1,14 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl) {
-  throw new Error('VITE_SUPABASE_URL is required.');
-}
-
-if (!supabaseAnonKey) {
-  throw new Error('VITE_SUPABASE_ANON_KEY is required.');
-}
-
-export const REMOVED_SECRET= createClient(supabaseUrl, supabaseAnonKey); 
+// Use process.env for compatibility in Node.js and Vite builds
+const supabaseUrl = process.env.SUPABASE_URL as string;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey); 

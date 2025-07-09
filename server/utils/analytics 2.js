@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { logPerformance } from '../logger.js';
 
 // Initialize Supabase client
-const REMOVED_SECRET= createClient(
+const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
 );

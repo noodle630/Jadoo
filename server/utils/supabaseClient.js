@@ -34,5 +34,5 @@ if (!supabaseUrl) {
 if (!supabaseKey) {
     throw new Error('supabaseKey is required. Set SUPABASE_SERVICE_ROLE_KEY in your .env');
 }
-const REMOVED_SECRET= createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl, supabaseKey);
 export default supabase;

@@ -17,6 +17,5 @@ if (!supabaseKey) {
   throw new Error('supabaseKey is required.');
 }
 
-const REMOVED_SECRET= createClient(supabaseUrl, supabaseKey);
-
+const supabase = createClient(supabaseUrl, supabaseKey);
 export default supabase;

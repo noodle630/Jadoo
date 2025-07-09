@@ -11,7 +11,7 @@ import path from 'path';
 import fs from 'fs';
 import { feedQueue } from './queue.js';
 import jwt from 'jsonwebtoken';
-import REMOVED_SECRETfrom "../supabaseClient.js";
+import supabase from "../supabaseClient.js";
 
 let routes: any;
 (async () => {

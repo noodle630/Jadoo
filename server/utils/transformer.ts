@@ -3,7 +3,7 @@ import * as path from "path";
 import Papa from "papaparse";
 import ExcelJS from "exceljs";
 import { Request, Response } from "express";
-import REMOVED_SECRETfrom "../../supabaseClient.js";
+import supabase from "../../supabaseClient.js";
 import openai from "../../openaiClient.js";
 import * as winston from "winston";
 import stringSimilarity from "string-similarity";
