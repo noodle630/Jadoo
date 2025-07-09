@@ -13,3 +13,7 @@ vite.config.ts.*
 outputs/
 temp_uploads/
 logs/
+
+.env
+.env.production
+
