@@ -36,7 +36,57 @@ let routes: any;
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Body parsers already set up above
+  // CORS: Allow production, dev (ngrok), and local frontends
+  const allowedOrigins = [
+    'https://feed-flow-ai-transform.lovable.app', // production FE
+    'https://jadoo.fly.dev',                     // direct backend access
+    'https://jadoo.ngrok-free.app',              // fixed ngrok dev URL
+    'http://localhost:5173',                     // local dev FE
+    'http://localhost:3000',                     // (optional) other local FE
+    'https://id-preview--e1bdcd3b-9fd5-4cf3-9180-5129081ea9f2.lovable.app', // Added current preview domain
+  ];
+
+  // Make isLovablePreview match all preview subdomains
+  const isLovablePreview = (origin: string) => {
+    // Match any *.lovable.app with 'preview' in the subdomain
+    return /preview.*\.lovable\.app$/.test(origin) || (origin.includes('lovable.app') && origin.includes('preview'));
+  };
+
+  // Check if origin is a Lovable production domain
+  const isLovableProduction = (origin: string) => {
+    return origin.includes('lovable.app') && !origin.includes('preview');
+  };
+
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    console.log('[CORS] Request origin:', origin);
+    
+    if (origin && (allowedOrigins.includes(origin) || isLovablePreview(origin) || isLovableProduction(origin))) {
+      res.header('Access-Control-Allow-Origin', origin);
+      console.log('[CORS] Allowed origin:', origin);
+    } else {
+      console.log('[CORS] Origin not allowed:', origin);
+    }
+    
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning');
+    
+    if (req.method === 'OPTIONS') {
+      console.log('[CORS] Handling OPTIONS preflight request');
+      return res.sendStatus(204);
+    }
+    next();
+  });
+
+  // Custom CORS preflight handler for file upload
+  app.options('/api/simple-upload', (req, res) => {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning');
+    res.sendStatus(204);
+  });
 
   // --- WALLET ENDPOINTS (HOTFIX) ---
   app.get('/api/wallet/balance', async (req: Request, res: Response) => {
@@ -126,38 +176,6 @@ let routes: any;
     const { error } = await supabase.from('wallets').update({ balance }).eq('user_id', user_id);
     if (error) return res.status(500).json({ error: error.message });
     res.json({ balance });
-  });
-
-  // CORS: Allow production, dev (ngrok), and local frontends
-  const allowedOrigins = [
-    'https://feed-flow-ai-transform.lovable.app', // production FE
-    'https://jadoo.fly.dev',                     // direct backend access
-    'https://jadoo.ngrok-free.app',              // fixed ngrok dev URL
-    'http://localhost:5173',                     // local dev FE
-    'http://localhost:3000',                     // (optional) other local FE
-  ];
-
-  app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (origin && allowedOrigins.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin);
-    }
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning');
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(204);
-    }
-    next();
-  });
-
-  // Custom CORS preflight handler for file upload
-  app.options('/api/simple-upload', (req, res) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning');
-    res.sendStatus(204);
   });
 
   const redisUrl = process.env.REDIS_URL;
@@ -309,7 +327,10 @@ let routes: any;
   // Patch the error handler
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     if (req.originalUrl.startsWith('/api/')) {
-      res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+      const origin = req.headers.origin;
+      if (origin && (allowedOrigins.includes(origin) || isLovablePreview(origin) || isLovableProduction(origin))) {
+        res.header('Access-Control-Allow-Origin', origin);
+      }
       res.header('Access-Control-Allow-Credentials', 'true');
       res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning');
@@ -322,7 +343,10 @@ let routes: any;
 
   // Patch the 404 handler
   app.all('/api/*', (req, res) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    const origin = req.headers.origin;
+    if (origin && (allowedOrigins.includes(origin) || isLovablePreview(origin))) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, ngrok-skip-browser-warning');

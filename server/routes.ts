@@ -6,7 +6,7 @@ const __dirname = path.dirname(__filename);
 import express from "express";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
-import { handleProcess } from "./utils/transformer.js"; // ✅ match your tree
+import { handleProcess } from './utils/transformer 2.js';
 import Papa from 'papaparse';
 import { dirname } from 'path';
 import type { Request, Response, NextFunction, Router } from 'express';
@@ -168,6 +168,7 @@ const processingJobs = new Map();
 // Progress update endpoint
 router.get('/feeds/:feedId/progress', async (req, res) => {
   const { feedId } = req.params;
+  const userId = req.query.user_id;
   let job = processingJobs.get(feedId);
 
   if (!job) {
@@ -191,13 +192,111 @@ router.get('/feeds/:feedId/progress', async (req, res) => {
     }
   }
 
+  // If job is completed, try to get detailed stats from database
+  let summary: any = {};
+  if (job && job.status === 'completed') {
+    try {
+      const { data: feedData, error } = await supabase
+        .from('feeds')
+        .select('*')
+        .eq('id', feedId)
+        .single();
+      
+      if (!error && feedData) {
+        summary = feedData.summary_json || {};
+        // Enhance job data with detailed transformer stats using standardized fields
+        job = {
+          ...job,
+          // Basic stats - read from standardized field names
+          totalRows: summary.total_rows || summary.rowCount || 0,
+          processedRows: summary.processed_rows || summary.rowCount || 0,
+          AIEnhanced: summary.total_enriched || summary.stats?.totalEnriched || 0,
+          category: feedData.category || summary.category || 'unknown',
+          tier: summary.tier || 'free',
+          // Additional stats from transformer using standardized fields
+          totalMapped: summary.total_mapped || summary.stats?.totalMapped || 0,
+          totalLLMCalls: summary.total_llm_calls || summary.stats?.totalLLMCalls || 0,
+          totalErrors: summary.total_errors || summary.stats?.totalErrors || 0,
+          cacheHits: summary.cache_hits || summary.stats?.cacheHits || 0,
+          // File info
+          fileName: feedData.filename,
+          outputUrl: feedData.output_path,
+          downloadUrl: `/api/simple-download/${feedId}?user_id=${userId || ''}`,
+          // Timestamps
+          createdAt: feedData.upload_time,
+          completedAt: feedData.upload_time
+        };
+      }
+    } catch (dbError) {
+      console.warn(`Could not fetch detailed stats for ${feedId}:`, dbError);
+    }
+  }
+
+  // ROBUST FALLBACK: Always try to get stats from database, even if job is not completed
+  if (!summary || Object.keys(summary).length === 0) {
+    try {
+      const { data: feedData, error } = await supabase
+        .from('feeds')
+        .select('*')
+        .eq('id', feedId)
+        .single();
+      
+      if (!error && feedData && feedData.summary_json) {
+        summary = feedData.summary_json;
+        console.log(`📊 Found summary in DB for ${feedId}:`, summary);
+      }
+    } catch (dbError) {
+      console.warn(`Could not fetch summary from DB for ${feedId}:`, dbError);
+    }
+  }
+
+  // Apply stats from summary to job object with robust fallbacks
+  if (summary && Object.keys(summary).length > 0) {
+    job = {
+      ...job,
+      // Always use standardized field names with fallbacks
+      totalRows: summary.total_rows || summary.rowCount || summary.total_products || 0,
+      processedRows: summary.processed_rows || summary.rowCount || summary.total_products || 0,
+      AIEnhanced: summary.total_enriched || summary.stats?.totalEnriched || summary.llm_calls || 0,
+      totalMapped: summary.total_mapped || summary.stats?.totalMapped || 0,
+      totalLLMCalls: summary.total_llm_calls || summary.stats?.totalLLMCalls || summary.llm_calls || 0,
+      totalErrors: summary.total_errors || summary.stats?.totalErrors || summary.llm_errors || 0,
+      cacheHits: summary.cache_hits || summary.stats?.cacheHits || 0,
+      category: summary.category || 'unknown',
+      tier: summary.tier || 'free',
+      failedReason: summary.failedReason || summary.error || undefined
+    };
+  }
+
+  // If failedReason is present, always set status to 'failed' and message to 'Failed'
+  if (job && job.failedReason) {
+    job.status = 'failed';
+    job.message = 'Failed';
+  }
+  // Ensure job object exists before accessing properties
   if (!job) {
     job = {
       status: 'not_found',
       progress: 0,
-      message: 'Job not found'
+      message: 'Job not found',
+      totalRows: 0,
+      processedRows: 0,
+      AIEnhanced: 0,
+      totalMapped: 0,
+      totalLLMCalls: 0,
+      totalErrors: 0,
+      cacheHits: 0
     };
   }
+
+  // Final fallback: ensure all required fields exist
+  if (!job.totalRows) job.totalRows = 0;
+  if (!job.processedRows) job.processedRows = 0;
+  if (!job.AIEnhanced) job.AIEnhanced = 0;
+  if (!job.totalMapped) job.totalMapped = 0;
+  if (!job.totalLLMCalls) job.totalLLMCalls = 0;
+  if (!job.totalErrors) job.totalErrors = 0;
+  if (!job.cacheHits) job.cacheHits = 0;
 
   console.log(`📊 Progress check for ${feedId}:`, job);
   res.json(job);

@@ -180,29 +180,19 @@ export const productsToCategoriesRelations = relations(productsToCategories, ({ 
 
 // Feed schema - this represents a data feed the user has processed
 export const feeds = pgTable("feeds", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  name: text("name").notNull(),
-  source: text("source").notNull(), // 'csv' or 'api'
-  sourceDetails: jsonb("source_details"), // file name, API endpoint, etc.
-  marketplace: text("marketplace").notNull(), // 'amazon', 'walmart', etc.
-  status: text("status").notNull(), // 'processing', 'completed', 'failed', 'warning'
-  itemCount: integer("item_count"),
-  processedAt: timestamp("processed_at").defaultNow(),
-  aiChanges: jsonb("ai_changes"), // record of what AI changed
-  outputUrl: text("output_url"), // where the processed feed is stored
-});
-
-export const feedsRelations = relations(feeds, ({ one }) => ({
-  user: one(users, {
-    fields: [feeds.userId],
-    references: [users.id],
-  }),
-}));
-
-export const insertFeedSchema = createInsertSchema(feeds).omit({
-  id: true,
-  processedAt: true
+  id: text("id").primaryKey(),
+  filename: text("filename"),
+  platform: text("platform"),
+  status: text("status"),
+  upload_time: timestamp("upload_time"),
+  row_count: integer("row_count"),
+  output_path: text("output_path"),
+  log_path: text("log_path"),
+  summary_json: jsonb("summary_json"),
+  input_path: text("input_path"),
+  category: text("category"),
+  email: text("email"),
+  message: text("message"),
 });
 
 // Template schema - marketplace templates for feed generation
@@ -268,9 +258,6 @@ export type InsertProduct = z.infer<typeof insertProductSchema>;
 
 export type ProductCategory = typeof productCategories.$inferSelect;
 export type InsertProductCategory = z.infer<typeof insertProductCategorySchema>;
-
-export type Feed = typeof feeds.$inferSelect;
-export type InsertFeed = z.infer<typeof insertFeedSchema>;
 
 export type Template = typeof templates.$inferSelect;
 export type InsertTemplate = z.infer<typeof insertTemplateSchema>;

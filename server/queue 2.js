@@ -73,7 +73,7 @@ const feedWorker = new Worker('feed-transform', async job => {
     await job.updateProgress(20);
     
     // Import and call transformer logic
-    const { handleProcess } = await import('./utils/transformer.js');
+    const { handleProcess } = await import('./utils/transformer 2.js');
     
     // Create fake req/res objects for transformer
     const fakeReq = { params: { id: feedId } };

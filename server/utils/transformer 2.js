@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import Papa from "papaparse";
 import ExcelJS from "exceljs";
-import REMOVED_SECRETfrom "../../supabaseClient.js";
+import supabase from "../../supabaseClient.js";
 import openai from "../../openaiClient.js";
 import * as winston from "winston";
 import stringSimilarity from "string-similarity";
@@ -789,6 +789,15 @@ Response (JSON only, no explanation, no markdown, no code block):`;
             category,
             vendorFields: inputHeaders,
             rows: outputRows,
+            // Add the expected properties for the worker
+            rowCount: outputRows.length,
+            stats: {
+                totalMapped: totalMapped,
+                totalEnriched: totalEnriched,
+                totalLLMCalls: totalEnriched, // LLM calls = enriched fields
+                totalErrors: totalErrors,
+                cacheHits: llmCacheMemory.size
+            },
             summary: {
                 total: outputRows.length,
                 green: 0,
@@ -842,7 +851,11 @@ Response (JSON only, no explanation, no markdown, no code block):`;
             });
             throw new Error('Supabase upload failed: ' + ((err && typeof err === 'object' && 'message' in err) ? err.message : String(err)));
         }
-        return res.json(result);
+        if (res) {
+            return res.json(result);
+        } else {
+            return result;
+        }
     }
     catch (err) {
         const errorTime = Date.now() - startTime;
@@ -853,11 +866,35 @@ Response (JSON only, no explanation, no markdown, no code block):`;
             processingTime: errorTime
         });
         console.error('[TRANSFORMER_ERROR]', err);
-        return res.status(500).json({
-            error: errorMessage,
-            processing_time_ms: errorTime,
-            feed_id: id
-        });
+        if (res) {
+            return res.status(500).json({
+                error: errorMessage,
+                processing_time_ms: errorTime,
+                feed_id: id,
+                rowCount: 0,
+                stats: {
+                    totalMapped: 0,
+                    totalEnriched: 0,
+                    totalLLMCalls: 0,
+                    totalErrors: 1,
+                    cacheHits: 0
+                }
+            });
+        } else {
+            return {
+                error: errorMessage,
+                processing_time_ms: errorTime,
+                feed_id: id,
+                rowCount: 0,
+                stats: {
+                    totalMapped: 0,
+                    totalEnriched: 0,
+                    totalLLMCalls: 0,
+                    totalErrors: 1,
+                    cacheHits: 0
+                }
+            };
+        }
     }
 };
 // Category detection with random sampling and better prompts

@@ -8,7 +8,7 @@ import fs from 'fs';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
-import { handleProcess } from './utils/transformer.js';
+import { handleProcess } from './utils/transformer 2.js';
 import Stripe from 'stripe';
 
 const app = express();
@@ -317,56 +317,4 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
       break;
       
     default:
-      console.log(`[STRIPE] Unhandled event type: ${event.type}`);
-  }
-
-  res.json({ received: true });
-});
-
-// Feed progress endpoint (placeholder)
-app.get('/api/feeds/:id/progress', (req, res) => {
-  const { id } = req.params;
-  const userId = req.query.user_id;
-  console.log(`[FEED] Progress request for feed: ${id}, user: ${userId}`);
-  
-  // Return placeholder progress data
-  res.json({
-    feed_id: id,
-    user_id: userId,
-    status: 'completed',
-    progress: 100,
-    message: 'Feed processing completed',
-    created_at: new Date().toISOString(),
-    completed_at: new Date().toISOString(),
-    file_ready: true,
-    download_url: `/api/simple-download/${id}`
-  });
-});
-
-// Catch-all 404 handler
-app.use('*', (req, res) => {
-  console.log(`[404] Route not found: ${req.method} ${req.originalUrl}`);
-  res.status(404).json({ 
-    error: 'Route not found',
-    method: req.method,
-    url: req.originalUrl
-  });
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('[ERROR] Global error handler:', err);
-  res.status(500).json({ 
-    error: 'Internal server error',
-    message: err.message
-  });
-});
-
-app.listen(PORT, () => {
-  console.log(`🚀 Jadoo backend server running on port ${PORT}`);
-  console.log(`📁 Upload directory: ${uploadDir}`);
-  console.log(`📁 Output directory: ${outputDir}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-});
-
-module.exports = app;
+      console.log(`

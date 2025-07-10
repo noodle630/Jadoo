@@ -3,7 +3,7 @@ import multer from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
 import { storage } from './storage';
-import reliableParser from './utils/reliableParser';
+import { handleProcess } from './utils/transformer 2.js';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -51,7 +51,7 @@ export function setupDirectRoutes(app: Express) {
       let marketplace = req.body.marketplace || 'amazon';
       
       // Count rows reliably
-      const countResult = reliableParser.countCSVRows(req.file.path);
+      const countResult = handleProcess.countCSVRows(req.file.path);
       console.log('CSV row count results:', countResult);
       
       const rowCount = countResult.success ? countResult.dataRows : 0;
@@ -63,7 +63,7 @@ export function setupDirectRoutes(app: Express) {
       
       // Transform to target format
       console.log(`Transforming to ${marketplace} format, output path: ${outputFilePath}`);
-      const transformResult = await reliableParser.transformToMarketplace(
+      const transformResult = await handleProcess.transformToMarketplace(
         req.file.path,
         outputFilePath,
         marketplace

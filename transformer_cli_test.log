@@ -1,0 +1,1838 @@
+[DEBUG] handleProcess CALLED
+
+[TRANSFORMER] handleProcess called for id: quicktest_input, uploadPath: temp_uploads/quicktest_input.csv
+[TRANSFORMER][MODE] Processing mode: free
+[TRANSFORMER][TIER] Using tier: free, config: {
+  maxRows: 100,
+  importanceStrategy: { required: 'fill_all', recommended: 'fill_basic', optional: 'skip' },
+  model: 'gpt-4o-mini',
+  dataQuality: 'basic',
+  features: [ 'Product Name', 'Brand Name', 'Price', 'SKU', 'Description' ]
+}
+
+
+
+
+2025-07-10T05:19:49.171Z [[33mwarn[39m]: Static data preloading failed {"service":"transformer","error":"End of data reached (data length = 0, asked index = 4). Corrupted zip ?"}
+[TRANSFORMER] Static data preloaded: templates=2
+[CSV][DEBUG] Line 1: Reebelo RID,Product Name,Your SKU,SKU Condition,SKU Battery Health,Price,Min Price,Quantity
+[CSV][DEBUG] Line 1 char codes: 82,101,101,98,101,108,111,32,82,73,68,44,80,114,111,100,117,99,116,32,78,97,109,101,44,89,111,117,114,32,83,75,85,44,83,75,85,32,67,111,110,100,105,116,105,111,110,44,83,75,85,32,66,97,116,116,101,114,121,32,72,101,97,108,116,104,44,80,114,105,99,101,44,77,105,110,32,80,114,105,99,101,44,81,117,97,110,116,105,116,121
+[CSV][DEBUG] Line 2: 101117w5s6h2,Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Premium 90,1ea CELLR178118P,2,90,334.7,334.7,0
+[CSV][DEBUG] Line 2 char codes: 49,48,49,49,49,55,119,53,115,54,104,50,44,71,97,108,97,120,121,32,83,50,50,43,32,40,53,71,41,32,45,32,84,45,77,111,98,105,108,101,32,45,32,71,114,101,101,110,32,45,32,83,105,110,103,108,101,32,83,105,109,32,45,32,50,53,54,71,66,32,80,114,101,109,105,117,109,32,57,48,44,49,101,97,32,67,69,76,76,82,49,55,56,49,49,56,80,44,50,44,57,48,44,51,51,52,46,55,44,51,51,52,46,55,44,48
+[CSV][DEBUG] Line 3: 101117w5s6h2,Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 80,1ea CELLR178118,4,80,337.95,331.45,0
+[CSV][DEBUG] Line 3 char codes: 49,48,49,49,49,55,119,53,115,54,104,50,44,71,97,108,97,120,121,32,83,50,50,43,32,40,53,71,41,32,45,32,84,45,77,111,98,105,108,101,32,45,32,71,114,101,101,110,32,45,32,83,105,110,103,108,101,32,83,105,109,32,45,32,50,53,54,71,66,32,69,120,99,101,108,108,101,110,116,32,56,48,44,49,101,97,32,67,69,76,76,82,49,55,56,49,49,56,44,52,44,56,48,44,51,51,55,46,57,53,44,51,51,49,46,52,53,44,48
+[CSV][DEBUG] Line 4: 101117w5s6h2,Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 100,1ea CELLR178118BMP,4,100,337.95,337.95,0
+[CSV][DEBUG] Line 4 char codes: 49,48,49,49,49,55,119,53,115,54,104,50,44,71,97,108,97,120,121,32,83,50,50,43,32,40,53,71,41,32,45,32,84,45,77,111,98,105,108,101,32,45,32,71,114,101,101,110,32,45,32,83,105,110,103,108,101,32,83,105,109,32,45,32,50,53,54,71,66,32,69,120,99,101,108,108,101,110,116,32,49,48,48,44,49,101,97,32,67,69,76,76,82,49,55,56,49,49,56,66,77,80,44,52,44,49,48,48,44,51,51,55,46,57,53,44,51,51,55,46,57,53,44,48
+[CSV][DEBUG] Line 5: 101117w6x1f2,Galaxy S22+ (5G) - Verizon - Green - Single Sim - 256GB Good 80,1ea CELLR178124,5,80,286.47,280.96,0
+[CSV][DEBUG] Line 5 char codes: 49,48,49,49,49,55,119,54,120,49,102,50,44,71,97,108,97,120,121,32,83,50,50,43,32,40,53,71,41,32,45,32,86,101,114,105,122,111,110,32,45,32,71,114,101,101,110,32,45,32,83,105,110,103,108,101,32,83,105,109,32,45,32,50,53,54,71,66,32,71,111,111,100,32,56,48,44,49,101,97,32,67,69,76,76,82,49,55,56,49,50,52,44,53,44,56,48,44,50,56,54,46,52,55,44,50,56,48,46,57,54,44,48
+[DEBUG][CSV_PARSE] Parsed rows count: 5
+[DEBUG][CSV_PARSE] First row: {
+  'Reebelo RID': '101117w5s6h2',
+  'Product Name': 'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Premium 90',
+  'Your SKU': '1ea CELLR178118P',
+  'SKU Condition': '2',
+  'SKU Battery Health': '90',
+  Price: '334.7',
+  'Min Price': '334.7',
+  Quantity: '0'
+}
+[DEBUG][CSV_PARSE] Input headers: [
+  'Reebelo RID',
+  'Product Name',
+  'Your SKU',
+  'SKU Condition',
+  'SKU Battery Health',
+  'Price',
+  'Min Price',
+  'Quantity'
+]
+[DEBUG][PARSE_ERRORS] Delimiter: , Errors: []
+[DEBUG][PARSE_ERRORS] Delimiter: , Errors: []
+[DEBUG][PARSE_ERRORS] Delimiter: , Errors: []
+[DEBUG][PARSE_ERRORS] Delimiter: , Errors: []
+
+
+
+
+
+[TRANSFORMER][HEADER_ANALYSIS] Multi-row header extraction:
+[TRANSFORMER][HEADER_ANALYSIS] Found 121 columns
+[TRANSFORMER][HEADER_ANALYSIS] Sample headers with importance:
+  "sku" (SKU)
+  "specProductType" (Spec Product Type)
+  "productIdType" (Required to sell on Walmart website)
+  "productId" (Required to sell on Walmart website)
+  "productName" (Required to sell on Walmart website)
+[TRANSFORMER][LOG] Input headers: [
+  'Reebelo RID',
+  'Product Name',
+  'Your SKU',
+  'SKU Condition',
+  'SKU Battery Health',
+  'Price',
+  'Min Price',
+  'Quantity'
+]
+[TRANSFORMER][LOG] Output columns: [
+  'sku',
+  'specProductType',
+  'productIdType',
+  'productId',
+  'productName',
+  'brand',
+  'price',
+  'ShippingWeight',
+  'shortDescription',
+  'keyFeatures',
+  'keyFeatures',
+  'keyFeatures',
+  'keyFeatures',
+  'keyFeatures',
+  'mainImageUrl',
+  'countPerPack',
+  'multipackQuantity',
+  'isProp65WarningRequired',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'cellPhoneType',
+  'cellular_service_plan',
+  'color',
+  'colorCategory',
+  'condition',
+  'measure',
+  'unit',
+  'has_nrtl_listing_certification',
+  'has_written_warranty',
+  'productNetContentUnit',
+  'productNetContentMeasure',
+  'measure',
+  'unit',
+  'smallPartsWarnings',
+  'wirelessTechnologies',
+  'accessoriesIncluded',
+  'productSecondaryImageURL',
+  'productSecondaryImageURL',
+  'productSecondaryImageURL',
+  'productSecondaryImageURL',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'biometric_security_features',
+  'prop65WarningText',
+  'cellPhoneServiceProvider',
+  'character',
+  'configuration',
+  'displayTechnology',
+  'edition',
+  'measure',
+  'unit',
+  'hasFrontFacingCamera',
+  'manufacturer',
+  'manufacturerPartNumber',
+  'mobileOperatingSystem',
+  'modelName',
+  'modelNumber',
+  'nativeResolution',
+  'netContentStatement',
+  'nrtl_test_standard',
+  'nrtl_organization',
+  'pieceCount',
+  'occasion',
+  'originalProductId',
+  'originalProductIdType',
+  'phone_feature',
+  'processor_brand',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'resolution',
+  'restoredProductId',
+  'restoredProductIdType',
+  'ib_retail_packaging',
+  'series',
+  'sim_card_size',
+  'sim_card_type',
+  'single_or_dual_imei',
+  'size',
+  'sportsLeague',
+  'sportsTeam',
+  'thirdPartyAccreditationSymbolOnProductPackageCode',
+  'count',
+  'virtual_assistant',
+  'warrantyText',
+  'warrantyURL',
+  'variantGroupId',
+  'variantAttributeNames',
+  'isPrimaryVariant',
+  'swatchImageUrl',
+  'swatchVariantAttribute',
+  ... 21 more items
+]
+[DEBUG][HEADER_FALLBACK] "sku" -> "Your SKU" (fallback match)
+[DEBUG][HEADER_FALLBACK] "multipackQuantity" -> "Quantity" (fallback match)
+[DEBUG][HEADER_MAPPING] headerMapping: {
+  sku: 'Your SKU',
+  productName: 'Product Name',
+  price: 'Price',
+  multipackQuantity: 'Quantity',
+  condition: 'SKU Condition',
+  quantity: 'Quantity'
+}
+[DEBUG][HEADER_MAPPING] Total mappings: 6
+[DEBUG][HEADER_MAPPING] Sample mappings:
+  "sku" -> "Your SKU"
+  "productName" -> "Product Name"
+  "price" -> "Price"
+  "multipackQuantity" -> "Quantity"
+  "condition" -> "SKU Condition"
+[DEBUG][BATCH_PROCESS] Entering batch processing with 5 rows, 1 batches of size 5
+[TRANSFORMER] Processing batch 1/1 (5 rows)
+[DEBUG][ROW_START] Processing row 0: [
+  'Reebelo RID',
+  'Product Name',
+  'Your SKU',
+  'SKU Condition',
+  'SKU Battery Health'
+]
+[DEBUG][ROW_MAPPED] Row 0: Mapped 3/121 fields
+[DEBUG][OUTPUT_ROW_BEFORE_FILTER] Row 0: {
+  sku: '1ea CELLR178118P',
+  specProductType: '',
+  productIdType: '',
+  productId: '',
+  productName: 'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Premium 90',
+  brand: '',
+  price: '334.7',
+  ShippingWeight: '',
+  shortDescription: '',
+  keyFeatures: '',
+  mainImageUrl: '',
+  countPerPack: '',
+  multipackQuantity: '',
+  isProp65WarningRequired: '',
+  measure: '',
+  unit: '',
+  cellPhoneType: '',
+  cellular_service_plan: '',
+  color: '',
+  colorCategory: '',
+  condition: '',
+  has_nrtl_listing_certification: '',
+  has_written_warranty: '',
+  productNetContentUnit: '',
+  productNetContentMeasure: '',
+  smallPartsWarnings: '',
+  wirelessTechnologies: '',
+  accessoriesIncluded: '',
+  productSecondaryImageURL: '',
+  biometric_security_features: '',
+  prop65WarningText: '',
+  cellPhoneServiceProvider: '',
+  character: '',
+  configuration: '',
+  displayTechnology: '',
+  edition: '',
+  hasFrontFacingCamera: '',
+  manufacturer: '',
+  manufacturerPartNumber: '',
+  mobileOperatingSystem: '',
+  modelName: '',
+  modelNumber: '',
+  nativeResolution: '',
+  netContentStatement: '',
+  nrtl_test_standard: '',
+  nrtl_organization: '',
+  pieceCount: '',
+  occasion: '',
+  originalProductId: '',
+  originalProductIdType: '',
+  phone_feature: '',
+  processor_brand: '',
+  resolution: '',
+  restoredProductId: '',
+  restoredProductIdType: '',
+  ib_retail_packaging: '',
+  series: '',
+  sim_card_size: '',
+  sim_card_type: '',
+  single_or_dual_imei: '',
+  size: '',
+  sportsLeague: '',
+  sportsTeam: '',
+  thirdPartyAccreditationSymbolOnProductPackageCode: '',
+  count: '',
+  virtual_assistant: '',
+  warrantyText: '',
+  warrantyURL: '',
+  variantGroupId: '',
+  variantAttributeNames: '',
+  isPrimaryVariant: '',
+  swatchImageUrl: '',
+  swatchVariantAttribute: '',
+  states: '',
+  stateRestrictionsText: '',
+  zipCodes: '',
+  electronicsIndicator: '',
+  chemicalAerosolPesticide: '',
+  batteryTechnologyType: '',
+  fulfillmentLagTime: '',
+  shipsInOriginalPackaging: '',
+  MustShipAlone: '',
+  IsPreorder: '',
+  releaseDate: '',
+  startDate: '',
+  endDate: '',
+  quantity: '',
+  fulfillmentCenterID: '',
+  inventoryAvailabilityDate: '',
+  externalProductIdType: '',
+  externalProductId: '',
+  ProductIdUpdate: '',
+  SkuUpdate: '',
+  msrp: ''
+}
+[MAP] Row 0: Set product type to "Cell Phones" from category fallback
+[MAP] Row 0: Mapped 4/121 fields
+[MAP] Row 0: SKU=1ea CELLR178118P, Price=334.7, Product Name=Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Premium 90
+[ENRICH] Tier strategy: basic
+[ENRICH] Required fields: 25/25 (fill_all)
+[ENRICH] Recommended fields: 0/71 (fill_basic)
+[ENRICH] Optional fields: 0/21 (skip)
+[ENRICH] Total fields to enrich: 25 (limited from 30 for performance)
+[ENRICH] Row 0: Enriching 25 fields: productIdType, productId, brand, ShippingWeight, shortDescription...
+[LLM][CALL] Calling OpenAI API...
+[DEBUG][ROW_START] Processing row 1: [
+  'Reebelo RID',
+  'Product Name',
+  'Your SKU',
+  'SKU Condition',
+  'SKU Battery Health'
+]
+[DEBUG][ROW_MAPPED] Row 1: Mapped 3/121 fields
+[DEBUG][OUTPUT_ROW_BEFORE_FILTER] Row 1: {
+  sku: '1ea CELLR178118',
+  specProductType: '',
+  productIdType: '',
+  productId: '',
+  productName: 'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 80',
+  brand: '',
+  price: '337.95',
+  ShippingWeight: '',
+  shortDescription: '',
+  keyFeatures: '',
+  mainImageUrl: '',
+  countPerPack: '',
+  multipackQuantity: '',
+  isProp65WarningRequired: '',
+  measure: '',
+  unit: '',
+  cellPhoneType: '',
+  cellular_service_plan: '',
+  color: '',
+  colorCategory: '',
+  condition: '',
+  has_nrtl_listing_certification: '',
+  has_written_warranty: '',
+  productNetContentUnit: '',
+  productNetContentMeasure: '',
+  smallPartsWarnings: '',
+  wirelessTechnologies: '',
+  accessoriesIncluded: '',
+  productSecondaryImageURL: '',
+  biometric_security_features: '',
+  prop65WarningText: '',
+  cellPhoneServiceProvider: '',
+  character: '',
+  configuration: '',
+  displayTechnology: '',
+  edition: '',
+  hasFrontFacingCamera: '',
+  manufacturer: '',
+  manufacturerPartNumber: '',
+  mobileOperatingSystem: '',
+  modelName: '',
+  modelNumber: '',
+  nativeResolution: '',
+  netContentStatement: '',
+  nrtl_test_standard: '',
+  nrtl_organization: '',
+  pieceCount: '',
+  occasion: '',
+  originalProductId: '',
+  originalProductIdType: '',
+  phone_feature: '',
+  processor_brand: '',
+  resolution: '',
+  restoredProductId: '',
+  restoredProductIdType: '',
+  ib_retail_packaging: '',
+  series: '',
+  sim_card_size: '',
+  sim_card_type: '',
+  single_or_dual_imei: '',
+  size: '',
+  sportsLeague: '',
+  sportsTeam: '',
+  thirdPartyAccreditationSymbolOnProductPackageCode: '',
+  count: '',
+  virtual_assistant: '',
+  warrantyText: '',
+  warrantyURL: '',
+  variantGroupId: '',
+  variantAttributeNames: '',
+  isPrimaryVariant: '',
+  swatchImageUrl: '',
+  swatchVariantAttribute: '',
+  states: '',
+  stateRestrictionsText: '',
+  zipCodes: '',
+  electronicsIndicator: '',
+  chemicalAerosolPesticide: '',
+  batteryTechnologyType: '',
+  fulfillmentLagTime: '',
+  shipsInOriginalPackaging: '',
+  MustShipAlone: '',
+  IsPreorder: '',
+  releaseDate: '',
+  startDate: '',
+  endDate: '',
+  quantity: '',
+  fulfillmentCenterID: '',
+  inventoryAvailabilityDate: '',
+  externalProductIdType: '',
+  externalProductId: '',
+  ProductIdUpdate: '',
+  SkuUpdate: '',
+  msrp: ''
+}
+[MAP] Row 1: Set product type to "Cell Phones" from category fallback
+[MAP] Row 1: Mapped 4/121 fields
+[MAP] Row 1: SKU=1ea CELLR178118, Price=337.95, Product Name=Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 80
+[ENRICH] Tier strategy: basic
+[ENRICH] Required fields: 25/25 (fill_all)
+[ENRICH] Recommended fields: 0/71 (fill_basic)
+[ENRICH] Optional fields: 0/21 (skip)
+[ENRICH] Total fields to enrich: 25 (limited from 30 for performance)
+[ENRICH] Row 1: Enriching 25 fields: productIdType, productId, brand, ShippingWeight, shortDescription...
+[LLM][CALL] Calling OpenAI API...
+[DEBUG][ROW_START] Processing row 2: [
+  'Reebelo RID',
+  'Product Name',
+  'Your SKU',
+  'SKU Condition',
+  'SKU Battery Health'
+]
+[DEBUG][ROW_MAPPED] Row 2: Mapped 3/121 fields
+[DEBUG][OUTPUT_ROW_BEFORE_FILTER] Row 2: {
+  sku: '1ea CELLR178118BMP',
+  specProductType: '',
+  productIdType: '',
+  productId: '',
+  productName: 'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 100',
+  brand: '',
+  price: '337.95',
+  ShippingWeight: '',
+  shortDescription: '',
+  keyFeatures: '',
+  mainImageUrl: '',
+  countPerPack: '',
+  multipackQuantity: '',
+  isProp65WarningRequired: '',
+  measure: '',
+  unit: '',
+  cellPhoneType: '',
+  cellular_service_plan: '',
+  color: '',
+  colorCategory: '',
+  condition: '',
+  has_nrtl_listing_certification: '',
+  has_written_warranty: '',
+  productNetContentUnit: '',
+  productNetContentMeasure: '',
+  smallPartsWarnings: '',
+  wirelessTechnologies: '',
+  accessoriesIncluded: '',
+  productSecondaryImageURL: '',
+  biometric_security_features: '',
+  prop65WarningText: '',
+  cellPhoneServiceProvider: '',
+  character: '',
+  configuration: '',
+  displayTechnology: '',
+  edition: '',
+  hasFrontFacingCamera: '',
+  manufacturer: '',
+  manufacturerPartNumber: '',
+  mobileOperatingSystem: '',
+  modelName: '',
+  modelNumber: '',
+  nativeResolution: '',
+  netContentStatement: '',
+  nrtl_test_standard: '',
+  nrtl_organization: '',
+  pieceCount: '',
+  occasion: '',
+  originalProductId: '',
+  originalProductIdType: '',
+  phone_feature: '',
+  processor_brand: '',
+  resolution: '',
+  restoredProductId: '',
+  restoredProductIdType: '',
+  ib_retail_packaging: '',
+  series: '',
+  sim_card_size: '',
+  sim_card_type: '',
+  single_or_dual_imei: '',
+  size: '',
+  sportsLeague: '',
+  sportsTeam: '',
+  thirdPartyAccreditationSymbolOnProductPackageCode: '',
+  count: '',
+  virtual_assistant: '',
+  warrantyText: '',
+  warrantyURL: '',
+  variantGroupId: '',
+  variantAttributeNames: '',
+  isPrimaryVariant: '',
+  swatchImageUrl: '',
+  swatchVariantAttribute: '',
+  states: '',
+  stateRestrictionsText: '',
+  zipCodes: '',
+  electronicsIndicator: '',
+  chemicalAerosolPesticide: '',
+  batteryTechnologyType: '',
+  fulfillmentLagTime: '',
+  shipsInOriginalPackaging: '',
+  MustShipAlone: '',
+  IsPreorder: '',
+  releaseDate: '',
+  startDate: '',
+  endDate: '',
+  quantity: '',
+  fulfillmentCenterID: '',
+  inventoryAvailabilityDate: '',
+  externalProductIdType: '',
+  externalProductId: '',
+  ProductIdUpdate: '',
+  SkuUpdate: '',
+  msrp: ''
+}
+[MAP] Row 2: Set product type to "Cell Phones" from category fallback
+[MAP] Row 2: Mapped 4/121 fields
+[MAP] Row 2: SKU=1ea CELLR178118BMP, Price=337.95, Product Name=Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 100
+[ENRICH] Tier strategy: basic
+[ENRICH] Required fields: 25/25 (fill_all)
+[ENRICH] Recommended fields: 0/71 (fill_basic)
+[ENRICH] Optional fields: 0/21 (skip)
+[ENRICH] Total fields to enrich: 25 (limited from 30 for performance)
+[ENRICH] Row 2: Enriching 25 fields: productIdType, productId, brand, ShippingWeight, shortDescription...
+[LLM][CALL] Calling OpenAI API...
+[DEBUG][ROW_START] Processing row 3: [
+  'Reebelo RID',
+  'Product Name',
+  'Your SKU',
+  'SKU Condition',
+  'SKU Battery Health'
+]
+[DEBUG][ROW_MAPPED] Row 3: Mapped 3/121 fields
+[MAP] Row 3: Set product type to "Cell Phones" from category fallback
+[ENRICH] Tier strategy: basic
+[ENRICH] Required fields: 25/25 (fill_all)
+[ENRICH] Recommended fields: 0/71 (fill_basic)
+[ENRICH] Optional fields: 0/21 (skip)
+[ENRICH] Total fields to enrich: 25 (limited from 30 for performance)
+[ENRICH] Row 3: Enriching 25 fields: productIdType, productId, brand, ShippingWeight, shortDescription...
+[LLM][CALL] Calling OpenAI API...
+[DEBUG][ROW_START] Processing row 4: [
+  'Reebelo RID',
+  'Product Name',
+  'Your SKU',
+  'SKU Condition',
+  'SKU Battery Health'
+]
+[DEBUG][ROW_MAPPED] Row 4: Mapped 3/121 fields
+[MAP] Row 4: Set product type to "Cell Phones" from category fallback
+[ENRICH] Tier strategy: basic
+[ENRICH] Required fields: 25/25 (fill_all)
+[ENRICH] Recommended fields: 0/71 (fill_basic)
+[ENRICH] Optional fields: 0/21 (skip)
+[ENRICH] Total fields to enrich: 25 (limited from 30 for performance)
+[ENRICH] Row 4: Enriching 25 fields: productIdType, productId, brand, ShippingWeight, shortDescription...
+[LLM][CALL] Calling OpenAI API...
+[LLM][RESPONSE] Raw: ```json
+{
+  "productIdType": "UPC",
+  "productId": "123456789012",
+  "brand": "Samsung",
+  "ShippingWeight": "0.5",
+  "shortDescription": "Samsung Galaxy S22+ (5G) in Green, 256GB storage, excellent condition, compatible with T-Mobile.",
+  "keyFeatures": [
+    "5G capable for ultra-fast connectivity",
+    "256GB internal storage for ample space",
+    "Single SIM for easy network management",
+    "Excellent condition with 100% battery health",
+    "Stunning green color for a stylish look"
+  ],
+  "mainImageUrl": "https://example.com/images/galaxy_s22_plus_green.jpg",
+  "countPerPack": "1",
+  "multipackQuantity": "",
+  "isProp65WarningRequired": "false",
+  "cellPhoneType": "Smartphone",
+  "cellular_service_plan": "T-Mobile",
+  "color": "Green",
+  "colorCategory": "Green",
+  "condition": "Excellent",
+  "has_nrtl_listing_certification": "false",
+  "has_written_warranty": "true",
+  "productNetContentUnit": "GB",
+  "productNetContentMeasure": "256",
+  "smallPartsWarnings": "Not suitable for children under 3 years",
+  "wirelessTechnologies": "5G, LTE, Wi-Fi"
+}
+```
+[PERFORMANCE] Row 2: LLM enrichment took 5226ms
+[ENRICH] Row 2: Successfully enriched 24/25 fields
+[QUALITY] Row 2: Missing required fields: multipackQuantity, measure, unit, measure, unit, measure, unit, measure, unit, measure, unit
+[PERFORMANCE] Row 2: Total processing time 5229ms
+[DEBUG][ROW_FILTER] Row 2: Has data = true, filled fields = 24/94
+[DEBUG][ROW_FILTER] Row 2: Sample values: [
+  '1ea CELLR178118BMP',
+  'Cell Phones',
+  'UPC',
+  '123456789012',
+  'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 100'
+]
+[DEBUG][ROW_ACCEPTED] Row 2: Accepted for output
+[LLM][RESPONSE] Raw: ```json
+{
+  "productIdType": "UPC",
+  "productId": "123456789012",
+  "brand": "Samsung",
+  "ShippingWeight": "0.5",
+  "shortDescription": "Samsung Galaxy S22+ (5G) in Green, 256GB storage, excellent condition.",
+  "keyFeatures": [
+    "5G capable for fast connectivity",
+    "256GB internal storage for ample space",
+    "Single SIM for personal use",
+    "Excellent condition with 80% battery health",
+    "Vibrant green color for a stylish look"
+  ],
+  "mainImageUrl": "https://example.com/images/galaxy-s22-plus-green.jpg",
+  "countPerPack": "1",
+  "multipackQuantity": "1",
+  "isProp65WarningRequired": "false",
+  "cellPhoneType": "Smartphone",
+  "cellular_service_plan": "T-Mobile",
+  "color": "Green",
+  "colorCategory": "Green",
+  "condition": "Used",
+  "has_nrtl_listing_certification": "false",
+  "has_written_warranty": "false",
+  "productNetContentUnit": "GB",
+  "productNetContentMeasure": "256",
+  "smallPartsWarnings": "No small parts",
+  "wirelessTechnologies": "5G, LTE, Wi-Fi"
+}
+```
+[PERFORMANCE] Row 1: LLM enrichment took 5500ms
+[ENRICH] Row 1: Successfully enriched 25/25 fields
+[QUALITY] Row 1: Missing required fields: measure, unit, measure, unit, measure, unit, measure, unit, measure, unit
+[PERFORMANCE] Row 1: Total processing time 5505ms
+[DEBUG][ROW_FILTER] Row 1: Has data = true, filled fields = 25/94
+[DEBUG][ROW_FILTER] Row 1: Sample values: [
+  '1ea CELLR178118',
+  'Cell Phones',
+  'UPC',
+  '123456789012',
+  'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Excellent 80'
+]
+[DEBUG][ROW_ACCEPTED] Row 1: Accepted for output
+[LLM][RESPONSE] Raw: ```json
+{
+  "productIdType": "UPC",
+  "productId": "123456789012",
+  "brand": "Samsung",
+  "ShippingWeight": "0.5",
+  "shortDescription": "Samsung Galaxy S22+ (5G) in Green with 256GB storage, unlocked for T-Mobile.",
+  "keyFeatures": [
+    "6.6-inch Dynamic AMOLED 2X display",
+    "Triple rear camera system: 50MP wide, 12MP ultra-wide, 10MP telephoto",
+    "5G capable for ultra-fast connectivity",
+    "Long-lasting 4500mAh battery",
+    "256GB internal storage with expandable memory"
+  ],
+  "mainImageUrl": "https://example.com/images/galaxy-s22-plus-green.jpg",
+  "countPerPack": "1",
+  "multipackQuantity": "1",
+  "isProp65WarningRequired": "false",
+  "cellPhoneType": "Smartphone",
+  "cellular_service_plan": "T-Mobile",
+  "color": "Green",
+  "colorCategory": "Green",
+  "condition": "Used",
+  "has_nrtl_listing_certification": "false",
+  "has_written_warranty": "true",
+  "productNetContentUnit": "GB",
+  "productNetContentMeasure": "256",
+  "smallPartsWarnings": "Not suitable for children under 3 years",
+  "wirelessTechnologies": "5G, LTE, Wi-Fi"
+}
+```
+[PERFORMANCE] Row 0: LLM enrichment took 5891ms
+[ENRICH] Row 0: Successfully enriched 25/25 fields
+[QUALITY] Row 0: Missing required fields: measure, unit, measure, unit, measure, unit, measure, unit, measure, unit
+[PERFORMANCE] Row 0: Total processing time 5897ms
+[DEBUG][ROW_FILTER] Row 0: Has data = true, filled fields = 25/94
+[DEBUG][ROW_FILTER] Row 0: Sample values: [
+  '1ea CELLR178118P',
+  'Cell Phones',
+  'UPC',
+  '123456789012',
+  'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Premium 90'
+]
+[DEBUG][ROW_ACCEPTED] Row 0: Accepted for output
+[LLM][RESPONSE] Raw: ```json
+{
+  "productIdType": "UPC",
+  "productId": "123456789012",
+  "brand": "Samsung",
+  "ShippingWeight": "0.5",
+  "shortDescription": "Samsung Galaxy S22+ (5G) in Green, 256GB storage, Verizon compatible, Good condition with 80% battery health.",
+  "keyFeatures": [
+    "5G capable for fast connectivity",
+    "256GB internal storage for ample space",
+    "Single SIM for personal use",
+    "Stunning green color finish",
+    "Good condition with 80% battery health"
+  ],
+  "mainImageUrl": "https://example.com/images/galaxy-s22-plus-green.jpg",
+  "countPerPack": "1",
+  "multipackQuantity": "1",
+  "isProp65WarningRequired": "false",
+  "cellPhoneType": "Smartphone",
+  "cellular_service_plan": "Verizon",
+  "color": "Green",
+  "colorCategory": "Green",
+  "condition": "Good",
+  "has_nrtl_listing_certification": "false",
+  "has_written_warranty": "true",
+  "productNetContentUnit": "GB",
+  "productNetContentMeasure": "256",
+  "smallPartsWarnings": "Not applicable",
+  "wirelessTechnologies": "5G, LTE, GSM, CDMA"
+}
+```
+[PERFORMANCE] Row 3: LLM enrichment took 6078ms
+[ENRICH] Row 3: Successfully enriched 25/25 fields
+[QUALITY] Row 3: Missing required fields: measure, unit, measure, unit, measure, unit, measure, unit, measure, unit
+[DEBUG][ROW_FILTER] Row 3: Has data = true, filled fields = 25/94
+[DEBUG][ROW_FILTER] Row 3: Sample values: [
+  '1ea CELLR178124',
+  'Cell Phones',
+  'UPC',
+  '123456789012',
+  'Galaxy S22+ (5G) - Verizon - Green - Single Sim - 256GB Good 80'
+]
+[DEBUG][ROW_ACCEPTED] Row 3: Accepted for output
+[LLM][RESPONSE] Raw: ```json
+{
+  "productIdType": "UPC",
+  "productId": "123456789012",
+  "brand": "Samsung",
+  "ShippingWeight": "0.5",
+  "shortDescription": "Samsung Galaxy S22+ (5G) in Green with 256GB storage, compatible with Verizon.",
+  "keyFeatures": [
+    "5G capable for faster connectivity",
+    "256GB internal storage for ample space",
+    "Single SIM for easy network management",
+    "High-quality camera for stunning photos",
+    "Sleek design with a vibrant green finish"
+  ],
+  "mainImageUrl": "https://example.com/images/galaxy-s22-plus-green.jpg",
+  "countPerPack": "1",
+  "multipackQuantity": "",
+  "isProp65WarningRequired": "false",
+  "cellPhoneType": "Smartphone",
+  "cellular_service_plan": "Verizon",
+  "color": "Green",
+  "colorCategory": "Green",
+  "condition": "Acceptable",
+  "has_nrtl_listing_certification": "false",
+  "has_written_warranty": "false",
+  "productNetContentUnit": "GB",
+  "productNetContentMeasure": "256",
+  "smallPartsWarnings": "",
+  "wirelessTechnologies": "5G, LTE"
+}
+```
+[PERFORMANCE] Row 4: LLM enrichment took 8181ms
+[ENRICH] Row 4: Successfully enriched 23/25 fields
+[QUALITY] Row 4: Missing required fields: multipackQuantity, measure, unit, measure, unit, measure, unit, measure, unit, measure, unit, smallPartsWarnings
+[DEBUG][ROW_FILTER] Row 4: Has data = true, filled fields = 23/94
+[DEBUG][ROW_FILTER] Row 4: Sample values: [
+  '1ea CELLR178124-2',
+  'Cell Phones',
+  'UPC',
+  '123456789012',
+  'Galaxy S22+ (5G) - Verizon - Green - Single Sim - 256GB Acceptable 80'
+]
+[DEBUG][ROW_ACCEPTED] Row 4: Accepted for output
+[DEBUG][BATCH_RESULTS] Batch 1: 5/5 rows accepted
+[PERFORMANCE] Batch 1: Completed in 8198ms (1639.6ms per row)
+[DEBUG][FINAL_OUTPUT] Total outputRows collected: 5
+[DEBUG][FINAL_OUTPUT] Sample output row keys: [
+  'sku',
+  'specProductType',
+  'productIdType',
+  'productId',
+  'productName',
+  'brand',
+  'price',
+  'ShippingWeight',
+  'shortDescription',
+  'keyFeatures',
+  'mainImageUrl',
+  'countPerPack',
+  'multipackQuantity',
+  'isProp65WarningRequired',
+  'measure',
+  'unit',
+  'cellPhoneType',
+  'cellular_service_plan',
+  'color',
+  'colorCategory',
+  'condition',
+  'has_nrtl_listing_certification',
+  'has_written_warranty',
+  'productNetContentUnit',
+  'productNetContentMeasure',
+  'smallPartsWarnings',
+  'wirelessTechnologies',
+  'accessoriesIncluded',
+  'productSecondaryImageURL',
+  'biometric_security_features',
+  'prop65WarningText',
+  'cellPhoneServiceProvider',
+  'character',
+  'configuration',
+  'displayTechnology',
+  'edition',
+  'hasFrontFacingCamera',
+  'manufacturer',
+  'manufacturerPartNumber',
+  'mobileOperatingSystem',
+  'modelName',
+  'modelNumber',
+  'nativeResolution',
+  'netContentStatement',
+  'nrtl_test_standard',
+  'nrtl_organization',
+  'pieceCount',
+  'occasion',
+  'originalProductId',
+  'originalProductIdType',
+  'phone_feature',
+  'processor_brand',
+  'resolution',
+  'restoredProductId',
+  'restoredProductIdType',
+  'ib_retail_packaging',
+  'series',
+  'sim_card_size',
+  'sim_card_type',
+  'single_or_dual_imei',
+  'size',
+  'sportsLeague',
+  'sportsTeam',
+  'thirdPartyAccreditationSymbolOnProductPackageCode',
+  'count',
+  'virtual_assistant',
+  'warrantyText',
+  'warrantyURL',
+  'variantGroupId',
+  'variantAttributeNames',
+  'isPrimaryVariant',
+  'swatchImageUrl',
+  'swatchVariantAttribute',
+  'states',
+  'stateRestrictionsText',
+  'zipCodes',
+  'electronicsIndicator',
+  'chemicalAerosolPesticide',
+  'batteryTechnologyType',
+  'fulfillmentLagTime',
+  'shipsInOriginalPackaging',
+  'MustShipAlone',
+  'IsPreorder',
+  'releaseDate',
+  'startDate',
+  'endDate',
+  'quantity',
+  'fulfillmentCenterID',
+  'inventoryAvailabilityDate',
+  'externalProductIdType',
+  'externalProductId',
+  'ProductIdUpdate',
+  'SkuUpdate',
+  'msrp'
+]
+[DEBUG][FINAL_OUTPUT] Sample output row values: [
+  '1ea CELLR178118P',
+  'Cell Phones',
+  'UPC',
+  '123456789012',
+  'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Premium 90'
+]
+
+[TRANSFORMER] Output row count: 5
+[TRANSFORMER] Summary: 5 rows processed, 15 fields mapped, 122 fields enriched, 5 LLM calls, 0 errors
+[TRANSFORMER] Category: cell_phones, Tier: free
+[TRANSFORMER] Sample output row: SKU=undefined, Price=undefined, Product Name=undefined
+[TRANSFORMER][WORKBOOK] Loading fresh template from: attached_assets/templates/walmart/cell_phones.xlsx
+[DEBUG][HEADER_EXTRACTION] Row 5 values: [
+  <1 empty item>,
+  'Alphanumeric, 50 characters - The string of letters and/or numbers a partner uses to identify the item. Walmart includes this value in all communications regarding item information such as orders. Example: TRVAL28726',
+  'Alphanumeric, 100 characters - Select the most suitable product type associated with the item.  Example: Bicycle Tires',
+  'Closed List - UPC: GTIN-12, the 12-digit number including check-digit. If less than 12-digits, such as UPC-E which is 8-digits, add leading zeros up to 12-digits.; GTIN: GTIN-14, the 14-digit number including check-digit. If less than 14-digits add leading zeros up to 14-digits. ISBN: International Standard Book Number, the 10 or 13-digit number including check-digit.; EAN: GTIN-13, the 13-digit number including check-digit. If less than 13-digits add leading zeros up to 13-digits.',
+  "Alphanumeric, 14 characters - Provide the GTIN that identifies the product's consumable (selling) unit. Expand the GTIN to 14 digits by adding preceding zeroes and check digit. A GTIN (Global Trade Item Number) is used to identify an item at any point in the Supply Chain. A GTIN refers to the data structure (not symbology) used to identify the scannable item, case, inner pack (i.e., break pack) or pallet that make up the hierarchy. Example: 00123456781011",
+  'Alphanumeric, 199 characters - Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO). Example: Apple iPhone SE 5G 4GB (Unlocked ), Black',
+  'Alphanumeric, 60 characters - The name provided by the brand owner that is intended to be recognized by the consumer as represented on the product. If item does not have a brand, use "Unbranded".  This should be the brand ONLY, not brand + product line. Make sure brand name is spelled, punctuated & capitalized properly according to the brand itself. Example: AT&T;LG',
+  'Decimal, 16 characters - The price the customer pays for the product. Please do not use commas or currency symbols. Example: 100.33',
+  'Decimal, 16 characters - The weight  including all of its packaging materials. Example: 5',
+  "Alphanumeric, 100000 characters - Overview of the key selling points of the item, marketing content, and highlights in paragraph form. For SEO purposes, repeat the product name and relevant keywords here. Example: An all-screen design gives you a large, beautiful canvas for everything you love to do. And iPhone XS Max makes it massive, with a screen that measures 6.5 inches. The OLED panels in iPhone XS allow for an HDR display with the industry's best color accuracy, true blacks, and remarkable brightness and contrast. They're the sharpest displays, with the highest pixel density, on any Apple device. Advanced color management automatically displays your content in wide color. So everything you look at looks beautiful. With support for Dolby Vision and HDR10 titles from iTunes, Netflix, and Amazon Prime Video, movie night comes to iPhone. Wider stereo playback makes it all sound great. And your HDR photos - even those you captured before - will have a 60 percent greater dynamic range. An innovative dual-camera system integrates the ISP, the Neural Engine, and advanced algorithms to unlock creative possibilities and help you capture incredible photos. Leveraging multiple technologies - like faster sensors, an enhanced ISP, and advanced algorithms - Smart HDR brings more highlight and shadow detail to your photos. Take a great portrait and make it even more amazing with Depth Control, which lets you adjust the depth of field to blur the background as much or as little as you want. The TrueDepth camera generates a precise depth map to keep you in focus against a blurred background. Depth Control lets you adjust the depth of field after you shoot. The camera sensor features deeper, larger pixels. Deeper to improve image fidelity. And larger to allow more light to hit the sensor. The result? Even better low? Light photos. Faster sensors, Smart HDR, and zero shutter lag combine to let you freeze a moment in time with more highlight and shadow detail.",
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'URL, 2500 characters - Main image of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'Number, 10 characters - The number of identical items inside each individual package given by the "Multipack Quantity" attribute. Examples: (1) A single bottle of 50 pills has a "Count Per Pack" of 50. (2) A package containing two identical bottles of 50 pills has a "Count Per Pack" of 50. (3) A 6-pack of soda labeled for individual sale connected by plastic rings has a "Count Per Pack" of 1. (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a "Count Per Pack" of 6. (5) A gift basket of 5 different items has a "Count Per Pack" of 1. Example: 1;2;10;50',
+  'Number, 4 characters - The number of identical, individually packaged-for-sale items. If an item does not contain other items, does not contain identical items, or if the items contained within cannot be sold individually, the value for this attribute should be"1." Examples: (1) A single bottle of 50 pills has a "Multipack Quantity" of"1." (2) A package containing two identical bottles of 50 pills has a "Multipack Quantity" of 2. (3) A 6-pack of soda labelled for individual sale connected by plastic rings has a "Multipack Quantity" of"6." (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a "Multipack Quantity" of"1." (5) A gift basket of 5 different items has a "Multipack Quantity" of"1." Example: 1;2;4;6',
+  `Closed List - Selecting "Yes" indicates the product requires California's Proposition 65 special warning. Proposition 65 entitles California consumers to special warnings for products that contain chemicals known to the state of California to cause cancer and birth defects or other reproductive harm if certain criteria are met (such as quantity of chemical contained in the product). See the portions of the California Health and Safety Code related to Proposition 65 for more information.`,
+  `Decimal, 16 characters - The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product. Example: 24";3'`,
+  'Closed List - The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.',
+  `Decimal, 16 characters - The height of the fully assembled product.  Example: 2';24"`,
+  'Closed List - The height of the fully assembled product.',
+  `Decimal, 16 characters - The width of the fully assembled product.  Example: 6";2'`,
+  'Closed List - The width of the fully assembled product.',
+  'Closed List - Groupings of cell phones based on contracts, payment requirements, lock status, and variety.',
+  "Closed List - Provided as a mechanism to divide electronic devices that utilize a cellular connection by the nature of the plan with which they are initially provided. Unlocked Phones-An unlocked smartphone is a phone that isn't tied to a specific carrier or contract. A prepaid mobile device (also commonly referred to as pay-as-you-go (PAYG), pay-as-you-talk, pay and go, go-phone or prepay). Postpaid phones are inherently locked devices. Prepaid phones are inherently locked devices.",
+  'Alphanumeric, 600 characters - Color refers to the actual color defined by the manufacturer. For Example, an item may be gray and black (which are used in the Color Category attribute) but the manufacturer calls the color Space Gray. Example: Sky Blue;Wonderland White;Robin-breast Red;Yum-Yum-Yellow;Red, White & Blue;Black/Hot Pink;Black;Lime Green;Multicolor;Assorted',
+  'Closed List - Select the color from a short list that best describes the general color(s) of the item. This improves searchability as it allows customers to view items by color from the left navigation when they perform a search.\n' +
+    '\n' +
+    'Please list all colors for the item. If the item has more than one color, please select Multi-color in addition to primary colors. Don’t list more than the three main colors.',
+  'Closed List - This refers to the state of an item, indicating its level of wear, prior use (if any), appearance, and overall quality. Availability of condition types may vary by product/category as well as by Seller eligibility per program. For more details, review this Help article: https://sellerhelp.walmart.com/seller/s/guide?language=en_US&article=000011205.',
+  'Decimal, 16 characters - The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes. Example: 128;256;512',
+  'Closed List - The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.',
+  'Closed List - Indicates an item has NRTL listing certification(s). A Nationally Recognized Testing Laboratory (NRTL) is an independent organization recognized by Occupational Safety & Health Administration (OSHA) to provide evaluation, testing and certification for products within its scope of recognition for the US market.',
+  'Closed List - Indicates an item has written warranty documentation included on the product label, inside the product packaging, or a website URL or PDF available for customer review. Pursuant to California Civil Code Section 1793.01 (The Song-Beverly Consumer Warranty Act), an express warranty for consumer goods sold within California must not commence earlier than the date of delivery of the item to the consumer. If applicable, please review and update the warranty terms for this item.',
+  'Closed List - The unit of measure as defined on the product labeling. For example, a gallon of milk has 128 Fluid Ounces: Measure = 128 and Units = Fluid Ounces.\n' +
+    '\n' +
+    'Please Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.',
+  'Decimal, 16 characters - The numeric net content portion that appears on an item. \n' +
+    '\n' +
+    'Please Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each. Example: 1;12;32',
+  'Decimal, 16 characters - The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.) Example: 4.4";5.9";5.5";3";6.5";6.1";5.8";1.8";4.3"',
+  'Closed List - The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.)',
+  'Closed List - To determine if any choking warnings are applicable, check current product packaging for choking warning message(s). Please indicate the warning number (0-6). 0- No warning applicable; 1- Choking hazard is a small ball; 2- Choking hazard contains small ball; 3- Choking hazard contains small parts; 4- Choking hazard balloon; 5- Choking hazard is a marble; 6- Choking hazard contains a marble.',
+  'Alphanumeric, 500 characters - Any wireless communications standard used within or by the item. Example: NFC, 2.4 GHz;2G;3G;4G;4G LTE;5.6 GHz;5G;Bluetooth;Wi-Fi;CDMA;GSM;Wireless AX;Wireless B;Wireless G;Wireless N;USB;DECT 6.0',
+  'Alphanumeric, 4000 characters - Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.  Example: AC Adapter;Mounting Bracket',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'Decimal, 16 characters - The weight of the fully assembled product.  Example: 20 lb;40 lb',
+  'Closed List - The weight of the fully assembled product.',
+  'Decimal, 17 characters - The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential. Example: 4500 mAh;3400 mAh',
+  'Closed List - The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential.',
+  'Closed List - Describes the type of biometric security features included in a product. Fingerprint Scan: Scans a fingerprint and uses as a unique identifier as an alternative to entering a password.;;Face Recognition: Scans facial features and uses as a unique identifier as an alternative to entering a password.;;Iris Scan: Scans an iris and uses as a unique identifier as an alternative to entering a password.;;Handprint Scan: Scans a handprint and uses as a unique identifier as an alternative to entering a password.',
+  'Alphanumeric, 5000 characters - This is a particular statement legally required by the State of California for certain products to warn consumers about potential health dangers. See the portions of the California Health and Safety Code related to Proposition 65 to see what products require labels and to verify the text of your warning label. If no Prop 65 warning please leave value blank for this attribute. Example: For Example: This product can expose you to chemicals including [name of one or more chemicals], which is [are] known to the State of California to cause [list associated harm(s) e.g. cancer, birth defects or other reproductive harm, etc].',
+  "Alphanumeric, 600 characters - The company responsible for the provision of the device's cellular service. Example: AT&T;AT&T GoPhone;Black Wireless;Boost Mobile;Cricket Wireless;H2O Wireless;MetroPCS;Net10;Page Plus Cellular;PlatinumTel;Red Pocket Mobile;Republic Wireless;Simple Mobile;Sprint;Straight Talk;T-Mobile;Total Wireless;TracFone;UScellular;Verizon;Virgin Mobile;Walmart Family Mobile",
+  'Alphanumeric, 50 characters - A person or entity portrayed in print or visual media. A character might be a fictional personality or an actual living person. Example: Batman;Dora the Explorer;Hello Kitty;Jojo Siwa;Minnie Mouse;Power Rangers;Wonder Woman;SpongeBob SquarePants;Mario;Pac-Man;Elsa;Spider-Man',
+  'Alphanumeric, 400 characters - WM internal usage only.   Utilized to capture components included for Virtual Bundles.',
+  "Closed List - The primary technologies used for the item's display.",
+  "Alphanumeric, 300 characters - The specific edition of the item. Example: 1st Edition;2nd Edition;3rd Edition;Anniversary Edition;Basic Edition;Book Club Edition;Classic Edition;Co-Edition;Collector's Edition;Deluxe Edition;Digital Copy;Unabridged ;E-edition;Limited;Limited Edition;Premier Edition;Revised & Updated Edition;Revised Edition;Special Edition;Standard;Ultimate;Walmart Exclusive;Standard Edition;Gold Edition;Definitive Edition;Director's Cut;Remastered;Game of the Year Edition;MVP Edition",
+  'Decimal, 16 characters - The maximum resolution of the camera that faces the user, provided in megapixels. Example: 32 MP;8 MP',
+  'Closed List - The maximum resolution of the camera that faces the user, provided in megapixels.',
+  'Closed List - Does the item incorporate a front-facing camera?',
+  'Alphanumeric, 60 characters - The name of the manufacturer.\n' +
+    '\n' +
+    ' Example: Apple;AT&T;Samsung',
+  'Alphanumeric, 60 characters - MPN uniquely identifies the product to its manufacturer. For many products this will be identical to the model number. Some manufacturers distinguish part number from model number. Having this information allows customers to search for items on the site and informs product matching. Example: YST-MyPBX;8113120;CX500',
+  'Alphanumeric, 100 characters - Mobile device operating system titles for cellular phones, tablet computers, smart watches, etc. Example: Android;Blackberry;iOS;Windows',
+  'Alphanumeric, 800 characters - The model name of the product as commonly used in marketing communications. Example: Galaxy A12;iPhone SE',
+  'Alphanumeric, 60 characters - Model numbers allow manufacturers to keep track of each hardware device and identify or replace the proper part when needed. Model numbers are often found on the bottom, back, or side of a product. Having this information allows customers to search for items on the site and informs product matching. Example: PPRETRO25BK;1103-1WTGA;210BK;KX-TGF380M',
+  'Alphanumeric, 100 characters - The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on. Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example). Example: 248 x 68;720 x 1280',
+  'Alphanumeric, 500 characters - Complete product net content statement, as it appears on product packaging. Example: PBX System =*1.98kg(4.31LB)69OZ',
+  "Alphanumeric, 100 characters - Please provide the certified test standard number(s) in the designated text field, separated by a comma (Ex: UL 1484, ANSI Z21.1). Selecting one or more NRTL(s) indicates you are able to provide proof of listing certification(s) upon request, and you will update the certification information when there's a change in the certification.",
+  'Closed List - The Nationally Recognized Testing Laboratory (NRTL) that tested and certified your product to safety test standard(s) within its scope of OSHA recognized test standards. Please select one or more of the appropriate NRTL(s) in the drop-down menu.',
+  'Number, 17 characters - The number of small pieces, slices, or different items within the product. Piece Count applies to things such as puzzles, building block sets, and products that contain multiple different items (such as tool sets, dinnerware sets, gift baskets, art sets, makeup kits, or shaving kits.) Examples: A gift basket of 5 different items has a “Piece Count” of 5.; A 105-Piece Socket Wrench set has a "Piece Count" of 105.; A 500-piece puzzle has a “Piece Count” of 500. Example: 5;105;500',
+  'Alphanumeric, 2000 characters - The particular target time, event, or holiday for the product. Example: Birthday;Graduation;Wedding',
+  'Alphanumeric, 80 characters - For refurbished items, this is the original/new equivalent product identifier ID which is different from the restored product identifier ID.',
+  'Closed List - To be used for refurbished items: This refers to the original/new equivalent product identifier.',
+  'Closed List - Features of cellular and landline phones, as well as any other items that provide telephony function.',
+  'Alphanumeric, 50 characters - The brand of the processor. Example: Apple;Samsung',
+  'Decimal, 16 characters - Operational frequency of the central processing unit. Example: 3.00 GHz;1.60 GHz;66 MHz;2.5 GHz',
+  'Closed List - Operational frequency of the central processing unit.',
+  'Decimal, 16 characters - The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices. Example: 6 GB;8 GB;16 GB',
+  'Closed List - The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.',
+  'Decimal, 16 characters - The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device. Example: 16 MP;24 MP',
+  'Closed List - The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device.',
+  'Alphanumeric, 4000 characters - The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on.  Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example). Example: 1080p (HDTV)\n' +
+    '1080\n' +
+    '240p\n' +
+    '480i\n' +
+    '480p\n' +
+    '4K UHD\n' +
+    '576\n' +
+    '576p\n' +
+    '720i\n' +
+    '720p\n' +
+    '8K UHD',
+  'Alphanumeric, 14 characters - This code is to identify Restored Products Example: 12345678905',
+  'Closed List - To identify the type of identifier for restored products',
+  'Closed List - Descriptive terms for the way a product is packaged for sale to the customer.',
+  'Alphanumeric, 250 characters - Series is often used by manufacturers to align similar products that only vary by one or two particular characteristics. For example a series of televisions may have an identical feature list and functionality, but differ from model to model based on the screen size and whether the panel is curved or flat.  **DO NOT USE** this Attribute to indicate a movie or TV series name (e.g. Game of Thrones).\\nThis differs from Product Line which sees dissimilar products brought together but marketed with a consistent presentation. The Samsung Galaxy product line for instance, which includes smartphones, tablets, virtual reality headsets, watches and 360Â° cameras. Example: S21 FE;S22;S22+;S22 Ultra',
+  'Alphanumeric, 100 characters - The size of a SIM card item, or the size of the SIM card which a cell phone accommodates Example: Micro;Mini;Nano;Standard',
+  'Closed List - Describes the type of SIM card used in the product, specifically the serial number used to identify the SIM card itself, For example, ICCID (Integrated Circuit Card ID) is the identifier for a profile and identifies the network operator that supplied the profile. By comparison, the EID is a serial number attached to a device that uses an eSIM.',
+  'Closed List - Describes whether the cell phone has a single or dual IMEI.  The International Mobile Equipment Identity (IMEI) is a unique ID number for mobile phones which can be associated to a transaction enabling activation of a cell phone by a customer.',
+  'Alphanumeric, 500 characters - Overall dimensions of an item. Used only for products that do not already have a more specific attribute, such as ring size, clothing size, and bottled pen ink. Example: 5 oz;250 g;12 fl oz; 10 oz',
+  'Alphanumeric, 100 characters - If your item has any association with a specific sports league, enter the league name. Abbreviations are fine. NOTE: This attribute flags an item for inclusion in the online fan shop. Example: NFL;WWE;MLB;NBA;NASCAR;USA Archery',
+  'Alphanumeric, 200 characters - If your item has any association with a specific sports team, enter the team name. NOTE: This attribute flags an item for inclusion in the online fan shop. Example: San Jose Earthquakes;San Jose Sharks;Golden State Warriors;Las Vegas Raiders;San Francisco 49ers;San Francisco Giants;Stanford Cardinal;Oakland Athletics',
+  'Closed List - The code representing a symbol or marking third party accreditation on the product package.',
+  'Number, 17 characters - The total number of identical items in the package or box; a result of the multiplication of Multipack Quantity by Count Per Pack. Examples: (1) A single bottle of 50 pills has a "Total Count" of 50. (2) A package containing two identical bottles of 50 pills has a "Total Count" of 100. (3) A gift basket of 5 different items has a "Total Count" of 1. Example: 1;50;100',
+  'Alphanumeric, 100 characters - Name of the virtual assistant provided as a function of the product. Example: Siri',
+  'Alphanumeric, 20000 characters - Warranty Text (the full text of the warranty terms, including what is covered by the warranty and the duration of the warranty). NOTE: please remember to update the text of your warranty as your warranty changes. Example: This warranty covers any defects in materials or workmanship, including installation, with the exceptions of fading or discoloration caused by exposure to sunlight or chemicals. This warranty runs for five years from the date your carpet is installed. Counterpoint will either replace your carpet with new carpet of similar composition and price, or refund the full purchase price of your carpet, whichever you prefer. Contact Counterpoint at 800-867-5309.',
+  "URL, 2500 characters - The Warranty URL is the web location of the image, PDF, or link to the manufacturer's warranty page, showing the warranty and its terms, including the duration of the warranty. URLs must begin with http:// or https:// NOTE: Please remember to update the link and/or text of the warranty as the warranty changes. If supplying an image, provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required) and ends in a proper image extension. Recommended file type: JPEG Accepted file types: JPG, PNG, GIF, BMP Maximum file size: 5 MB. Example: http://www.walmart.com/warranty_info.pdf",
+  'Alphanumeric, 300 characters - Required if item is a variant. Make up a number and/or letter code for "Variant Group ID" and add this to all variations of the same product. Partners must ensure uniqueness of their Variant Group IDs. Example: HANESV025',
+  'Closed List - The designated attribute by which an item is varying.',
+  'Closed List - Note whether item is intended as the main variant in a variant grouping. The primary variant will appear as the image when customers search and the first image displayed on the item page. This should be set as "Yes" for only one item in a group of variants.',
+  'URL, 2500 characters - URL of the color or pattern swatch image. This is required for products with visual variations and will be shown as a small circle on the item page. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 100px x 100px. Resolution: 300 ppi. Maximum file size: 5MB. Recommended File Naming: GTIN-14 digit. Provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required.) Example: http://www.walmart.com/somepath/some-image.jpg',
+  ... 22 more items
+]
+[DEBUG][HEADER_EXTRACTION] Extracted headerOrder: [
+  'Alphanumeric, 50 characters - The string of letters and/or numbers a partner uses to identify the item. Walmart includes this value in all communications regarding item information such as orders. Example: TRVAL28726',
+  'Alphanumeric, 100 characters - Select the most suitable product type associated with the item.  Example: Bicycle Tires',
+  'Closed List - UPC: GTIN-12, the 12-digit number including check-digit. If less than 12-digits, such as UPC-E which is 8-digits, add leading zeros up to 12-digits.; GTIN: GTIN-14, the 14-digit number including check-digit. If less than 14-digits add leading zeros up to 14-digits. ISBN: International Standard Book Number, the 10 or 13-digit number including check-digit.; EAN: GTIN-13, the 13-digit number including check-digit. If less than 13-digits add leading zeros up to 13-digits.',
+  "Alphanumeric, 14 characters - Provide the GTIN that identifies the product's consumable (selling) unit. Expand the GTIN to 14 digits by adding preceding zeroes and check digit. A GTIN (Global Trade Item Number) is used to identify an item at any point in the Supply Chain. A GTIN refers to the data structure (not symbology) used to identify the scannable item, case, inner pack (i.e., break pack) or pallet that make up the hierarchy. Example: 00123456781011",
+  'Alphanumeric, 199 characters - Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO). Example: Apple iPhone SE 5G 4GB (Unlocked ), Black',
+  'Alphanumeric, 60 characters - The name provided by the brand owner that is intended to be recognized by the consumer as represented on the product. If item does not have a brand, use "Unbranded".  This should be the brand ONLY, not brand + product line. Make sure brand name is spelled, punctuated & capitalized properly according to the brand itself. Example: AT&T;LG',
+  'Decimal, 16 characters - The price the customer pays for the product. Please do not use commas or currency symbols. Example: 100.33',
+  'Decimal, 16 characters - The weight  including all of its packaging materials. Example: 5',
+  "Alphanumeric, 100000 characters - Overview of the key selling points of the item, marketing content, and highlights in paragraph form. For SEO purposes, repeat the product name and relevant keywords here. Example: An all-screen design gives you a large, beautiful canvas for everything you love to do. And iPhone XS Max makes it massive, with a screen that measures 6.5 inches. The OLED panels in iPhone XS allow for an HDR display with the industry's best color accuracy, true blacks, and remarkable brightness and contrast. They're the sharpest displays, with the highest pixel density, on any Apple device. Advanced color management automatically displays your content in wide color. So everything you look at looks beautiful. With support for Dolby Vision and HDR10 titles from iTunes, Netflix, and Amazon Prime Video, movie night comes to iPhone. Wider stereo playback makes it all sound great. And your HDR photos - even those you captured before - will have a 60 percent greater dynamic range. An innovative dual-camera system integrates the ISP, the Neural Engine, and advanced algorithms to unlock creative possibilities and help you capture incredible photos. Leveraging multiple technologies - like faster sensors, an enhanced ISP, and advanced algorithms - Smart HDR brings more highlight and shadow detail to your photos. Take a great portrait and make it even more amazing with Depth Control, which lets you adjust the depth of field to blur the background as much or as little as you want. The TrueDepth camera generates a precise depth map to keep you in focus against a blurred background. Depth Control lets you adjust the depth of field after you shoot. The camera sensor features deeper, larger pixels. Deeper to improve image fidelity. And larger to allow more light to hit the sensor. The result? Even better low? Light photos. Faster sensors, Smart HDR, and zero shutter lag combine to let you freeze a moment in time with more highlight and shadow detail.",
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'URL, 2500 characters - Main image of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'Number, 10 characters - The number of identical items inside each individual package given by the "Multipack Quantity" attribute. Examples: (1) A single bottle of 50 pills has a "Count Per Pack" of 50. (2) A package containing two identical bottles of 50 pills has a "Count Per Pack" of 50. (3) A 6-pack of soda labeled for individual sale connected by plastic rings has a "Count Per Pack" of 1. (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a "Count Per Pack" of 6. (5) A gift basket of 5 different items has a "Count Per Pack" of 1. Example: 1;2;10;50',
+  'Number, 4 characters - The number of identical, individually packaged-for-sale items. If an item does not contain other items, does not contain identical items, or if the items contained within cannot be sold individually, the value for this attribute should be"1." Examples: (1) A single bottle of 50 pills has a "Multipack Quantity" of"1." (2) A package containing two identical bottles of 50 pills has a "Multipack Quantity" of 2. (3) A 6-pack of soda labelled for individual sale connected by plastic rings has a "Multipack Quantity" of"6." (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a "Multipack Quantity" of"1." (5) A gift basket of 5 different items has a "Multipack Quantity" of"1." Example: 1;2;4;6',
+  `Closed List - Selecting "Yes" indicates the product requires California's Proposition 65 special warning. Proposition 65 entitles California consumers to special warnings for products that contain chemicals known to the state of California to cause cancer and birth defects or other reproductive harm if certain criteria are met (such as quantity of chemical contained in the product). See the portions of the California Health and Safety Code related to Proposition 65 for more information.`,
+  `Decimal, 16 characters - The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product. Example: 24";3'`,
+  'Closed List - The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.',
+  `Decimal, 16 characters - The height of the fully assembled product.  Example: 2';24"`,
+  'Closed List - The height of the fully assembled product.',
+  `Decimal, 16 characters - The width of the fully assembled product.  Example: 6";2'`,
+  'Closed List - The width of the fully assembled product.',
+  'Closed List - Groupings of cell phones based on contracts, payment requirements, lock status, and variety.',
+  "Closed List - Provided as a mechanism to divide electronic devices that utilize a cellular connection by the nature of the plan with which they are initially provided. Unlocked Phones-An unlocked smartphone is a phone that isn't tied to a specific carrier or contract. A prepaid mobile device (also commonly referred to as pay-as-you-go (PAYG), pay-as-you-talk, pay and go, go-phone or prepay). Postpaid phones are inherently locked devices. Prepaid phones are inherently locked devices.",
+  'Alphanumeric, 600 characters - Color refers to the actual color defined by the manufacturer. For Example, an item may be gray and black (which are used in the Color Category attribute) but the manufacturer calls the color Space Gray. Example: Sky Blue;Wonderland White;Robin-breast Red;Yum-Yum-Yellow;Red, White & Blue;Black/Hot Pink;Black;Lime Green;Multicolor;Assorted',
+  'Closed List - Select the color from a short list that best describes the general color(s) of the item. This improves searchability as it allows customers to view items by color from the left navigation when they perform a search.\n' +
+    '\n' +
+    'Please list all colors for the item. If the item has more than one color, please select Multi-color in addition to primary colors. Don’t list more than the three main colors.',
+  'Closed List - This refers to the state of an item, indicating its level of wear, prior use (if any), appearance, and overall quality. Availability of condition types may vary by product/category as well as by Seller eligibility per program. For more details, review this Help article: https://sellerhelp.walmart.com/seller/s/guide?language=en_US&article=000011205.',
+  'Decimal, 16 characters - The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes. Example: 128;256;512',
+  'Closed List - The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.',
+  'Closed List - Indicates an item has NRTL listing certification(s). A Nationally Recognized Testing Laboratory (NRTL) is an independent organization recognized by Occupational Safety & Health Administration (OSHA) to provide evaluation, testing and certification for products within its scope of recognition for the US market.',
+  'Closed List - Indicates an item has written warranty documentation included on the product label, inside the product packaging, or a website URL or PDF available for customer review. Pursuant to California Civil Code Section 1793.01 (The Song-Beverly Consumer Warranty Act), an express warranty for consumer goods sold within California must not commence earlier than the date of delivery of the item to the consumer. If applicable, please review and update the warranty terms for this item.',
+  'Closed List - The unit of measure as defined on the product labeling. For example, a gallon of milk has 128 Fluid Ounces: Measure = 128 and Units = Fluid Ounces.\n' +
+    '\n' +
+    'Please Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.',
+  'Decimal, 16 characters - The numeric net content portion that appears on an item. \n' +
+    '\n' +
+    'Please Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each. Example: 1;12;32',
+  'Decimal, 16 characters - The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.) Example: 4.4";5.9";5.5";3";6.5";6.1";5.8";1.8";4.3"',
+  'Closed List - The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.)',
+  'Closed List - To determine if any choking warnings are applicable, check current product packaging for choking warning message(s). Please indicate the warning number (0-6). 0- No warning applicable; 1- Choking hazard is a small ball; 2- Choking hazard contains small ball; 3- Choking hazard contains small parts; 4- Choking hazard balloon; 5- Choking hazard is a marble; 6- Choking hazard contains a marble.',
+  'Alphanumeric, 500 characters - Any wireless communications standard used within or by the item. Example: NFC, 2.4 GHz;2G;3G;4G;4G LTE;5.6 GHz;5G;Bluetooth;Wi-Fi;CDMA;GSM;Wireless AX;Wireless B;Wireless G;Wireless N;USB;DECT 6.0',
+  'Alphanumeric, 4000 characters - Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.  Example: AC Adapter;Mounting Bracket',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'Decimal, 16 characters - The weight of the fully assembled product.  Example: 20 lb;40 lb',
+  'Closed List - The weight of the fully assembled product.',
+  'Decimal, 17 characters - The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential. Example: 4500 mAh;3400 mAh',
+  'Closed List - The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential.',
+  'Closed List - Describes the type of biometric security features included in a product. Fingerprint Scan: Scans a fingerprint and uses as a unique identifier as an alternative to entering a password.;;Face Recognition: Scans facial features and uses as a unique identifier as an alternative to entering a password.;;Iris Scan: Scans an iris and uses as a unique identifier as an alternative to entering a password.;;Handprint Scan: Scans a handprint and uses as a unique identifier as an alternative to entering a password.',
+  'Alphanumeric, 5000 characters - This is a particular statement legally required by the State of California for certain products to warn consumers about potential health dangers. See the portions of the California Health and Safety Code related to Proposition 65 to see what products require labels and to verify the text of your warning label. If no Prop 65 warning please leave value blank for this attribute. Example: For Example: This product can expose you to chemicals including [name of one or more chemicals], which is [are] known to the State of California to cause [list associated harm(s) e.g. cancer, birth defects or other reproductive harm, etc].',
+  "Alphanumeric, 600 characters - The company responsible for the provision of the device's cellular service. Example: AT&T;AT&T GoPhone;Black Wireless;Boost Mobile;Cricket Wireless;H2O Wireless;MetroPCS;Net10;Page Plus Cellular;PlatinumTel;Red Pocket Mobile;Republic Wireless;Simple Mobile;Sprint;Straight Talk;T-Mobile;Total Wireless;TracFone;UScellular;Verizon;Virgin Mobile;Walmart Family Mobile",
+  'Alphanumeric, 50 characters - A person or entity portrayed in print or visual media. A character might be a fictional personality or an actual living person. Example: Batman;Dora the Explorer;Hello Kitty;Jojo Siwa;Minnie Mouse;Power Rangers;Wonder Woman;SpongeBob SquarePants;Mario;Pac-Man;Elsa;Spider-Man',
+  'Alphanumeric, 400 characters - WM internal usage only.   Utilized to capture components included for Virtual Bundles.',
+  "Closed List - The primary technologies used for the item's display.",
+  "Alphanumeric, 300 characters - The specific edition of the item. Example: 1st Edition;2nd Edition;3rd Edition;Anniversary Edition;Basic Edition;Book Club Edition;Classic Edition;Co-Edition;Collector's Edition;Deluxe Edition;Digital Copy;Unabridged ;E-edition;Limited;Limited Edition;Premier Edition;Revised & Updated Edition;Revised Edition;Special Edition;Standard;Ultimate;Walmart Exclusive;Standard Edition;Gold Edition;Definitive Edition;Director's Cut;Remastered;Game of the Year Edition;MVP Edition",
+  'Decimal, 16 characters - The maximum resolution of the camera that faces the user, provided in megapixels. Example: 32 MP;8 MP',
+  'Closed List - The maximum resolution of the camera that faces the user, provided in megapixels.',
+  'Closed List - Does the item incorporate a front-facing camera?',
+  'Alphanumeric, 60 characters - The name of the manufacturer.\n' +
+    '\n' +
+    ' Example: Apple;AT&T;Samsung',
+  'Alphanumeric, 60 characters - MPN uniquely identifies the product to its manufacturer. For many products this will be identical to the model number. Some manufacturers distinguish part number from model number. Having this information allows customers to search for items on the site and informs product matching. Example: YST-MyPBX;8113120;CX500',
+  'Alphanumeric, 100 characters - Mobile device operating system titles for cellular phones, tablet computers, smart watches, etc. Example: Android;Blackberry;iOS;Windows',
+  'Alphanumeric, 800 characters - The model name of the product as commonly used in marketing communications. Example: Galaxy A12;iPhone SE',
+  'Alphanumeric, 60 characters - Model numbers allow manufacturers to keep track of each hardware device and identify or replace the proper part when needed. Model numbers are often found on the bottom, back, or side of a product. Having this information allows customers to search for items on the site and informs product matching. Example: PPRETRO25BK;1103-1WTGA;210BK;KX-TGF380M',
+  'Alphanumeric, 100 characters - The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on. Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example). Example: 248 x 68;720 x 1280',
+  'Alphanumeric, 500 characters - Complete product net content statement, as it appears on product packaging. Example: PBX System =*1.98kg(4.31LB)69OZ',
+  "Alphanumeric, 100 characters - Please provide the certified test standard number(s) in the designated text field, separated by a comma (Ex: UL 1484, ANSI Z21.1). Selecting one or more NRTL(s) indicates you are able to provide proof of listing certification(s) upon request, and you will update the certification information when there's a change in the certification.",
+  'Closed List - The Nationally Recognized Testing Laboratory (NRTL) that tested and certified your product to safety test standard(s) within its scope of OSHA recognized test standards. Please select one or more of the appropriate NRTL(s) in the drop-down menu.',
+  'Number, 17 characters - The number of small pieces, slices, or different items within the product. Piece Count applies to things such as puzzles, building block sets, and products that contain multiple different items (such as tool sets, dinnerware sets, gift baskets, art sets, makeup kits, or shaving kits.) Examples: A gift basket of 5 different items has a “Piece Count” of 5.; A 105-Piece Socket Wrench set has a "Piece Count" of 105.; A 500-piece puzzle has a “Piece Count” of 500. Example: 5;105;500',
+  'Alphanumeric, 2000 characters - The particular target time, event, or holiday for the product. Example: Birthday;Graduation;Wedding',
+  'Alphanumeric, 80 characters - For refurbished items, this is the original/new equivalent product identifier ID which is different from the restored product identifier ID.',
+  'Closed List - To be used for refurbished items: This refers to the original/new equivalent product identifier.',
+  'Closed List - Features of cellular and landline phones, as well as any other items that provide telephony function.',
+  'Alphanumeric, 50 characters - The brand of the processor. Example: Apple;Samsung',
+  'Decimal, 16 characters - Operational frequency of the central processing unit. Example: 3.00 GHz;1.60 GHz;66 MHz;2.5 GHz',
+  'Closed List - Operational frequency of the central processing unit.',
+  'Decimal, 16 characters - The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices. Example: 6 GB;8 GB;16 GB',
+  'Closed List - The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.',
+  'Decimal, 16 characters - The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device. Example: 16 MP;24 MP',
+  'Closed List - The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device.',
+  'Alphanumeric, 4000 characters - The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on.  Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example). Example: 1080p (HDTV)\n' +
+    '1080\n' +
+    '240p\n' +
+    '480i\n' +
+    '480p\n' +
+    '4K UHD\n' +
+    '576\n' +
+    '576p\n' +
+    '720i\n' +
+    '720p\n' +
+    '8K UHD',
+  'Alphanumeric, 14 characters - This code is to identify Restored Products Example: 12345678905',
+  'Closed List - To identify the type of identifier for restored products',
+  'Closed List - Descriptive terms for the way a product is packaged for sale to the customer.',
+  'Alphanumeric, 250 characters - Series is often used by manufacturers to align similar products that only vary by one or two particular characteristics. For example a series of televisions may have an identical feature list and functionality, but differ from model to model based on the screen size and whether the panel is curved or flat.  **DO NOT USE** this Attribute to indicate a movie or TV series name (e.g. Game of Thrones).\\nThis differs from Product Line which sees dissimilar products brought together but marketed with a consistent presentation. The Samsung Galaxy product line for instance, which includes smartphones, tablets, virtual reality headsets, watches and 360Â° cameras. Example: S21 FE;S22;S22+;S22 Ultra',
+  'Alphanumeric, 100 characters - The size of a SIM card item, or the size of the SIM card which a cell phone accommodates Example: Micro;Mini;Nano;Standard',
+  'Closed List - Describes the type of SIM card used in the product, specifically the serial number used to identify the SIM card itself, For example, ICCID (Integrated Circuit Card ID) is the identifier for a profile and identifies the network operator that supplied the profile. By comparison, the EID is a serial number attached to a device that uses an eSIM.',
+  'Closed List - Describes whether the cell phone has a single or dual IMEI.  The International Mobile Equipment Identity (IMEI) is a unique ID number for mobile phones which can be associated to a transaction enabling activation of a cell phone by a customer.',
+  'Alphanumeric, 500 characters - Overall dimensions of an item. Used only for products that do not already have a more specific attribute, such as ring size, clothing size, and bottled pen ink. Example: 5 oz;250 g;12 fl oz; 10 oz',
+  'Alphanumeric, 100 characters - If your item has any association with a specific sports league, enter the league name. Abbreviations are fine. NOTE: This attribute flags an item for inclusion in the online fan shop. Example: NFL;WWE;MLB;NBA;NASCAR;USA Archery',
+  'Alphanumeric, 200 characters - If your item has any association with a specific sports team, enter the team name. NOTE: This attribute flags an item for inclusion in the online fan shop. Example: San Jose Earthquakes;San Jose Sharks;Golden State Warriors;Las Vegas Raiders;San Francisco 49ers;San Francisco Giants;Stanford Cardinal;Oakland Athletics',
+  'Closed List - The code representing a symbol or marking third party accreditation on the product package.',
+  'Number, 17 characters - The total number of identical items in the package or box; a result of the multiplication of Multipack Quantity by Count Per Pack. Examples: (1) A single bottle of 50 pills has a "Total Count" of 50. (2) A package containing two identical bottles of 50 pills has a "Total Count" of 100. (3) A gift basket of 5 different items has a "Total Count" of 1. Example: 1;50;100',
+  'Alphanumeric, 100 characters - Name of the virtual assistant provided as a function of the product. Example: Siri',
+  'Alphanumeric, 20000 characters - Warranty Text (the full text of the warranty terms, including what is covered by the warranty and the duration of the warranty). NOTE: please remember to update the text of your warranty as your warranty changes. Example: This warranty covers any defects in materials or workmanship, including installation, with the exceptions of fading or discoloration caused by exposure to sunlight or chemicals. This warranty runs for five years from the date your carpet is installed. Counterpoint will either replace your carpet with new carpet of similar composition and price, or refund the full purchase price of your carpet, whichever you prefer. Contact Counterpoint at 800-867-5309.',
+  "URL, 2500 characters - The Warranty URL is the web location of the image, PDF, or link to the manufacturer's warranty page, showing the warranty and its terms, including the duration of the warranty. URLs must begin with http:// or https:// NOTE: Please remember to update the link and/or text of the warranty as the warranty changes. If supplying an image, provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required) and ends in a proper image extension. Recommended file type: JPEG Accepted file types: JPG, PNG, GIF, BMP Maximum file size: 5 MB. Example: http://www.walmart.com/warranty_info.pdf",
+  'Alphanumeric, 300 characters - Required if item is a variant. Make up a number and/or letter code for "Variant Group ID" and add this to all variations of the same product. Partners must ensure uniqueness of their Variant Group IDs. Example: HANESV025',
+  'Closed List - The designated attribute by which an item is varying.',
+  'Closed List - Note whether item is intended as the main variant in a variant grouping. The primary variant will appear as the image when customers search and the first image displayed on the item page. This should be set as "Yes" for only one item in a group of variants.',
+  'URL, 2500 characters - URL of the color or pattern swatch image. This is required for products with visual variations and will be shown as a small circle on the item page. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 100px x 100px. Resolution: 300 ppi. Maximum file size: 5MB. Recommended File Naming: GTIN-14 digit. Provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required.) Example: http://www.walmart.com/somepath/some-image.jpg',
+  'Closed List - Attribute name corresponding to the swatch.',
+  ... 21 more items
+]
+[TRANSFORMER][DEBUG] outputRows.length: 5
+[TRANSFORMER][DEBUG] Sample output row: {
+  sku: '1ea CELLR178118P',
+  specProductType: 'Cell Phones',
+  productIdType: 'UPC',
+  productId: '123456789012',
+  productName: 'Galaxy S22+ (5G) - T-Mobile - Green - Single Sim - 256GB Premium 90',
+  brand: 'Samsung',
+  price: '334.7',
+  ShippingWeight: '0.5',
+  shortDescription: 'Samsung Galaxy S22+ (5G) in Green with 256GB storage, unlocked for T-Mobile.',
+  keyFeatures: [
+    '6.6-inch Dynamic AMOLED 2X display',
+    'Triple rear camera system: 50MP wide, 12MP ultra-wide, 10MP telephoto',
+    '5G capable for ultra-fast connectivity',
+    'Long-lasting 4500mAh battery',
+    '256GB internal storage with expandable memory'
+  ],
+  mainImageUrl: 'https://example.com/images/galaxy-s22-plus-green.jpg',
+  countPerPack: '1',
+  multipackQuantity: '1',
+  isProp65WarningRequired: 'false',
+  measure: '',
+  unit: '',
+  cellPhoneType: 'Smartphone',
+  cellular_service_plan: 'T-Mobile',
+  color: 'Green',
+  colorCategory: 'Green',
+  condition: 'Used',
+  has_nrtl_listing_certification: 'false',
+  has_written_warranty: 'true',
+  productNetContentUnit: 'GB',
+  productNetContentMeasure: '256',
+  smallPartsWarnings: 'Not suitable for children under 3 years',
+  wirelessTechnologies: '5G, LTE, Wi-Fi',
+  accessoriesIncluded: '',
+  productSecondaryImageURL: '',
+  biometric_security_features: '',
+  prop65WarningText: '',
+  cellPhoneServiceProvider: '',
+  character: '',
+  configuration: '',
+  displayTechnology: '',
+  edition: '',
+  hasFrontFacingCamera: '',
+  manufacturer: '',
+  manufacturerPartNumber: '',
+  mobileOperatingSystem: '',
+  modelName: '',
+  modelNumber: '',
+  nativeResolution: '',
+  netContentStatement: '',
+  nrtl_test_standard: '',
+  nrtl_organization: '',
+  pieceCount: '',
+  occasion: '',
+  originalProductId: '',
+  originalProductIdType: '',
+  phone_feature: '',
+  processor_brand: '',
+  resolution: '',
+  restoredProductId: '',
+  restoredProductIdType: '',
+  ib_retail_packaging: '',
+  series: '',
+  sim_card_size: '',
+  sim_card_type: '',
+  single_or_dual_imei: '',
+  size: '',
+  sportsLeague: '',
+  sportsTeam: '',
+  thirdPartyAccreditationSymbolOnProductPackageCode: '',
+  count: '',
+  virtual_assistant: '',
+  warrantyText: '',
+  warrantyURL: '',
+  variantGroupId: '',
+  variantAttributeNames: '',
+  isPrimaryVariant: '',
+  swatchImageUrl: '',
+  swatchVariantAttribute: '',
+  states: '',
+  stateRestrictionsText: '',
+  zipCodes: '',
+  electronicsIndicator: '',
+  chemicalAerosolPesticide: '',
+  batteryTechnologyType: '',
+  fulfillmentLagTime: '',
+  shipsInOriginalPackaging: '',
+  MustShipAlone: '',
+  IsPreorder: '',
+  releaseDate: '',
+  startDate: '',
+  endDate: '',
+  quantity: '',
+  fulfillmentCenterID: '',
+  inventoryAvailabilityDate: '',
+  externalProductIdType: '',
+  externalProductId: '',
+  ProductIdUpdate: '',
+  SkuUpdate: '',
+  msrp: ''
+}
+[DEBUG][WORKSHEET] Header order length: 121
+[DEBUG][WORKSHEET] Header order sample: [
+  'Alphanumeric, 50 characters - The string of letters and/or numbers a partner uses to identify the item. Walmart includes this value in all communications regarding item information such as orders. Example: TRVAL28726',
+  'Alphanumeric, 100 characters - Select the most suitable product type associated with the item.  Example: Bicycle Tires',
+  'Closed List - UPC: GTIN-12, the 12-digit number including check-digit. If less than 12-digits, such as UPC-E which is 8-digits, add leading zeros up to 12-digits.; GTIN: GTIN-14, the 14-digit number including check-digit. If less than 14-digits add leading zeros up to 14-digits. ISBN: International Standard Book Number, the 10 or 13-digit number including check-digit.; EAN: GTIN-13, the 13-digit number including check-digit. If less than 13-digits add leading zeros up to 13-digits.',
+  "Alphanumeric, 14 characters - Provide the GTIN that identifies the product's consumable (selling) unit. Expand the GTIN to 14 digits by adding preceding zeroes and check digit. A GTIN (Global Trade Item Number) is used to identify an item at any point in the Supply Chain. A GTIN refers to the data structure (not symbology) used to identify the scannable item, case, inner pack (i.e., break pack) or pallet that make up the hierarchy. Example: 00123456781011",
+  'Alphanumeric, 199 characters - Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO). Example: Apple iPhone SE 5G 4GB (Unlocked ), Black'
+]
+[DEBUG][WORKSHEET] Adding row 0: [ undefined, undefined, undefined, undefined, undefined ]
+[DEBUG][WORKSHEET] Adding row 1: [ undefined, undefined, undefined, undefined, undefined ]
+[DEBUG][WORKSHEET] Adding row 2: [ undefined, undefined, undefined, undefined, undefined ]
+[DEBUG][WORKSHEET] Adding row 3: [ undefined, undefined, undefined, undefined, undefined ]
+[DEBUG][WORKSHEET] Adding row 4: [ undefined, undefined, undefined, undefined, undefined ]
+[DEBUG][WORKSHEET] After adding rows, worksheet row count: 10
+[DEBUG][WORKSHEET] After adding rows, worksheet actual row count: 5
+[TRANSFORMER][OUTPUT] Output file written with new workbook: outputs/quicktest_input_output.xlsx
+[TRANSFORMER][OUTPUT] Verified output file actual row count: 5
+[TRANSFORMER][DEBUG] Output row 1: [
+  <1 empty item>,
+  'Alphanumeric, 50 characters - The string of letters and/or numbers a partner uses to identify the item. Walmart includes this value in all communications regarding item information such as orders. Example: TRVAL28726',
+  'Alphanumeric, 100 characters - Select the most suitable product type associated with the item.  Example: Bicycle Tires',
+  'Closed List - UPC: GTIN-12, the 12-digit number including check-digit. If less than 12-digits, such as UPC-E which is 8-digits, add leading zeros up to 12-digits.; GTIN: GTIN-14, the 14-digit number including check-digit. If less than 14-digits add leading zeros up to 14-digits. ISBN: International Standard Book Number, the 10 or 13-digit number including check-digit.; EAN: GTIN-13, the 13-digit number including check-digit. If less than 13-digits add leading zeros up to 13-digits.',
+  "Alphanumeric, 14 characters - Provide the GTIN that identifies the product's consumable (selling) unit. Expand the GTIN to 14 digits by adding preceding zeroes and check digit. A GTIN (Global Trade Item Number) is used to identify an item at any point in the Supply Chain. A GTIN refers to the data structure (not symbology) used to identify the scannable item, case, inner pack (i.e., break pack) or pallet that make up the hierarchy. Example: 00123456781011",
+  'Alphanumeric, 199 characters - Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO). Example: Apple iPhone SE 5G 4GB (Unlocked ), Black',
+  'Alphanumeric, 60 characters - The name provided by the brand owner that is intended to be recognized by the consumer as represented on the product. If item does not have a brand, use "Unbranded".  This should be the brand ONLY, not brand + product line. Make sure brand name is spelled, punctuated & capitalized properly according to the brand itself. Example: AT&T;LG',
+  'Decimal, 16 characters - The price the customer pays for the product. Please do not use commas or currency symbols. Example: 100.33',
+  'Decimal, 16 characters - The weight  including all of its packaging materials. Example: 5',
+  "Alphanumeric, 100000 characters - Overview of the key selling points of the item, marketing content, and highlights in paragraph form. For SEO purposes, repeat the product name and relevant keywords here. Example: An all-screen design gives you a large, beautiful canvas for everything you love to do. And iPhone XS Max makes it massive, with a screen that measures 6.5 inches. The OLED panels in iPhone XS allow for an HDR display with the industry's best color accuracy, true blacks, and remarkable brightness and contrast. They're the sharpest displays, with the highest pixel density, on any Apple device. Advanced color management automatically displays your content in wide color. So everything you look at looks beautiful. With support for Dolby Vision and HDR10 titles from iTunes, Netflix, and Amazon Prime Video, movie night comes to iPhone. Wider stereo playback makes it all sound great. And your HDR photos - even those you captured before - will have a 60 percent greater dynamic range. An innovative dual-camera system integrates the ISP, the Neural Engine, and advanced algorithms to unlock creative possibilities and help you capture incredible photos. Leveraging multiple technologies - like faster sensors, an enhanced ISP, and advanced algorithms - Smart HDR brings more highlight and shadow detail to your photos. Take a great portrait and make it even more amazing with Depth Control, which lets you adjust the depth of field to blur the background as much or as little as you want. The TrueDepth camera generates a precise depth map to keep you in focus against a blurred background. Depth Control lets you adjust the depth of field after you shoot. The camera sensor features deeper, larger pixels. Deeper to improve image fidelity. And larger to allow more light to hit the sensor. The result? Even better low? Light photos. Faster sensors, Smart HDR, and zero shutter lag combine to let you freeze a moment in time with more highlight and shadow detail.",
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'URL, 2500 characters - Main image of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'Number, 10 characters - The number of identical items inside each individual package given by the "Multipack Quantity" attribute. Examples: (1) A single bottle of 50 pills has a "Count Per Pack" of 50. (2) A package containing two identical bottles of 50 pills has a "Count Per Pack" of 50. (3) A 6-pack of soda labeled for individual sale connected by plastic rings has a "Count Per Pack" of 1. (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a "Count Per Pack" of 6. (5) A gift basket of 5 different items has a "Count Per Pack" of 1. Example: 1;2;10;50',
+  'Number, 4 characters - The number of identical, individually packaged-for-sale items. If an item does not contain other items, does not contain identical items, or if the items contained within cannot be sold individually, the value for this attribute should be"1." Examples: (1) A single bottle of 50 pills has a "Multipack Quantity" of"1." (2) A package containing two identical bottles of 50 pills has a "Multipack Quantity" of 2. (3) A 6-pack of soda labelled for individual sale connected by plastic rings has a "Multipack Quantity" of"6." (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a "Multipack Quantity" of"1." (5) A gift basket of 5 different items has a "Multipack Quantity" of"1." Example: 1;2;4;6',
+  `Closed List - Selecting "Yes" indicates the product requires California's Proposition 65 special warning. Proposition 65 entitles California consumers to special warnings for products that contain chemicals known to the state of California to cause cancer and birth defects or other reproductive harm if certain criteria are met (such as quantity of chemical contained in the product). See the portions of the California Health and Safety Code related to Proposition 65 for more information.`,
+  `Decimal, 16 characters - The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product. Example: 24";3'`,
+  'Closed List - The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.',
+  `Decimal, 16 characters - The height of the fully assembled product.  Example: 2';24"`,
+  'Closed List - The height of the fully assembled product.',
+  `Decimal, 16 characters - The width of the fully assembled product.  Example: 6";2'`,
+  'Closed List - The width of the fully assembled product.',
+  'Closed List - Groupings of cell phones based on contracts, payment requirements, lock status, and variety.',
+  "Closed List - Provided as a mechanism to divide electronic devices that utilize a cellular connection by the nature of the plan with which they are initially provided. Unlocked Phones-An unlocked smartphone is a phone that isn't tied to a specific carrier or contract. A prepaid mobile device (also commonly referred to as pay-as-you-go (PAYG), pay-as-you-talk, pay and go, go-phone or prepay). Postpaid phones are inherently locked devices. Prepaid phones are inherently locked devices.",
+  'Alphanumeric, 600 characters - Color refers to the actual color defined by the manufacturer. For Example, an item may be gray and black (which are used in the Color Category attribute) but the manufacturer calls the color Space Gray. Example: Sky Blue;Wonderland White;Robin-breast Red;Yum-Yum-Yellow;Red, White & Blue;Black/Hot Pink;Black;Lime Green;Multicolor;Assorted',
+  'Closed List - Select the color from a short list that best describes the general color(s) of the item. This improves searchability as it allows customers to view items by color from the left navigation when they perform a search.\n' +
+    '\n' +
+    'Please list all colors for the item. If the item has more than one color, please select Multi-color in addition to primary colors. Don’t list more than the three main colors.',
+  'Closed List - This refers to the state of an item, indicating its level of wear, prior use (if any), appearance, and overall quality. Availability of condition types may vary by product/category as well as by Seller eligibility per program. For more details, review this Help article: https://sellerhelp.walmart.com/seller/s/guide?language=en_US&article=000011205.',
+  'Decimal, 16 characters - The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes. Example: 128;256;512',
+  'Closed List - The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.',
+  'Closed List - Indicates an item has NRTL listing certification(s). A Nationally Recognized Testing Laboratory (NRTL) is an independent organization recognized by Occupational Safety & Health Administration (OSHA) to provide evaluation, testing and certification for products within its scope of recognition for the US market.',
+  'Closed List - Indicates an item has written warranty documentation included on the product label, inside the product packaging, or a website URL or PDF available for customer review. Pursuant to California Civil Code Section 1793.01 (The Song-Beverly Consumer Warranty Act), an express warranty for consumer goods sold within California must not commence earlier than the date of delivery of the item to the consumer. If applicable, please review and update the warranty terms for this item.',
+  'Closed List - The unit of measure as defined on the product labeling. For example, a gallon of milk has 128 Fluid Ounces: Measure = 128 and Units = Fluid Ounces.\n' +
+    '\n' +
+    'Please Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.',
+  'Decimal, 16 characters - The numeric net content portion that appears on an item. \n' +
+    '\n' +
+    'Please Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each. Example: 1;12;32',
+  'Decimal, 16 characters - The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.) Example: 4.4";5.9";5.5";3";6.5";6.1";5.8";1.8";4.3"',
+  'Closed List - The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.)',
+  'Closed List - To determine if any choking warnings are applicable, check current product packaging for choking warning message(s). Please indicate the warning number (0-6). 0- No warning applicable; 1- Choking hazard is a small ball; 2- Choking hazard contains small ball; 3- Choking hazard contains small parts; 4- Choking hazard balloon; 5- Choking hazard is a marble; 6- Choking hazard contains a marble.',
+  'Alphanumeric, 500 characters - Any wireless communications standard used within or by the item. Example: NFC, 2.4 GHz;2G;3G;4G;4G LTE;5.6 GHz;5G;Bluetooth;Wi-Fi;CDMA;GSM;Wireless AX;Wireless B;Wireless G;Wireless N;USB;DECT 6.0',
+  'Alphanumeric, 4000 characters - Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.  Example: AC Adapter;Mounting Bracket',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'Decimal, 16 characters - The weight of the fully assembled product.  Example: 20 lb;40 lb',
+  'Closed List - The weight of the fully assembled product.',
+  'Decimal, 17 characters - The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential. Example: 4500 mAh;3400 mAh',
+  'Closed List - The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential.',
+  'Closed List - Describes the type of biometric security features included in a product. Fingerprint Scan: Scans a fingerprint and uses as a unique identifier as an alternative to entering a password.;;Face Recognition: Scans facial features and uses as a unique identifier as an alternative to entering a password.;;Iris Scan: Scans an iris and uses as a unique identifier as an alternative to entering a password.;;Handprint Scan: Scans a handprint and uses as a unique identifier as an alternative to entering a password.',
+  'Alphanumeric, 5000 characters - This is a particular statement legally required by the State of California for certain products to warn consumers about potential health dangers. See the portions of the California Health and Safety Code related to Proposition 65 to see what products require labels and to verify the text of your warning label. If no Prop 65 warning please leave value blank for this attribute. Example: For Example: This product can expose you to chemicals including [name of one or more chemicals], which is [are] known to the State of California to cause [list associated harm(s) e.g. cancer, birth defects or other reproductive harm, etc].',
+  "Alphanumeric, 600 characters - The company responsible for the provision of the device's cellular service. Example: AT&T;AT&T GoPhone;Black Wireless;Boost Mobile;Cricket Wireless;H2O Wireless;MetroPCS;Net10;Page Plus Cellular;PlatinumTel;Red Pocket Mobile;Republic Wireless;Simple Mobile;Sprint;Straight Talk;T-Mobile;Total Wireless;TracFone;UScellular;Verizon;Virgin Mobile;Walmart Family Mobile",
+  'Alphanumeric, 50 characters - A person or entity portrayed in print or visual media. A character might be a fictional personality or an actual living person. Example: Batman;Dora the Explorer;Hello Kitty;Jojo Siwa;Minnie Mouse;Power Rangers;Wonder Woman;SpongeBob SquarePants;Mario;Pac-Man;Elsa;Spider-Man',
+  'Alphanumeric, 400 characters - WM internal usage only.   Utilized to capture components included for Virtual Bundles.',
+  "Closed List - The primary technologies used for the item's display.",
+  "Alphanumeric, 300 characters - The specific edition of the item. Example: 1st Edition;2nd Edition;3rd Edition;Anniversary Edition;Basic Edition;Book Club Edition;Classic Edition;Co-Edition;Collector's Edition;Deluxe Edition;Digital Copy;Unabridged ;E-edition;Limited;Limited Edition;Premier Edition;Revised & Updated Edition;Revised Edition;Special Edition;Standard;Ultimate;Walmart Exclusive;Standard Edition;Gold Edition;Definitive Edition;Director's Cut;Remastered;Game of the Year Edition;MVP Edition",
+  'Decimal, 16 characters - The maximum resolution of the camera that faces the user, provided in megapixels. Example: 32 MP;8 MP',
+  'Closed List - The maximum resolution of the camera that faces the user, provided in megapixels.',
+  'Closed List - Does the item incorporate a front-facing camera?',
+  'Alphanumeric, 60 characters - The name of the manufacturer.\n' +
+    '\n' +
+    ' Example: Apple;AT&T;Samsung',
+  'Alphanumeric, 60 characters - MPN uniquely identifies the product to its manufacturer. For many products this will be identical to the model number. Some manufacturers distinguish part number from model number. Having this information allows customers to search for items on the site and informs product matching. Example: YST-MyPBX;8113120;CX500',
+  'Alphanumeric, 100 characters - Mobile device operating system titles for cellular phones, tablet computers, smart watches, etc. Example: Android;Blackberry;iOS;Windows',
+  'Alphanumeric, 800 characters - The model name of the product as commonly used in marketing communications. Example: Galaxy A12;iPhone SE',
+  'Alphanumeric, 60 characters - Model numbers allow manufacturers to keep track of each hardware device and identify or replace the proper part when needed. Model numbers are often found on the bottom, back, or side of a product. Having this information allows customers to search for items on the site and informs product matching. Example: PPRETRO25BK;1103-1WTGA;210BK;KX-TGF380M',
+  'Alphanumeric, 100 characters - The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on. Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example). Example: 248 x 68;720 x 1280',
+  'Alphanumeric, 500 characters - Complete product net content statement, as it appears on product packaging. Example: PBX System =*1.98kg(4.31LB)69OZ',
+  "Alphanumeric, 100 characters - Please provide the certified test standard number(s) in the designated text field, separated by a comma (Ex: UL 1484, ANSI Z21.1). Selecting one or more NRTL(s) indicates you are able to provide proof of listing certification(s) upon request, and you will update the certification information when there's a change in the certification.",
+  'Closed List - The Nationally Recognized Testing Laboratory (NRTL) that tested and certified your product to safety test standard(s) within its scope of OSHA recognized test standards. Please select one or more of the appropriate NRTL(s) in the drop-down menu.',
+  'Number, 17 characters - The number of small pieces, slices, or different items within the product. Piece Count applies to things such as puzzles, building block sets, and products that contain multiple different items (such as tool sets, dinnerware sets, gift baskets, art sets, makeup kits, or shaving kits.) Examples: A gift basket of 5 different items has a “Piece Count” of 5.; A 105-Piece Socket Wrench set has a "Piece Count" of 105.; A 500-piece puzzle has a “Piece Count” of 500. Example: 5;105;500',
+  'Alphanumeric, 2000 characters - The particular target time, event, or holiday for the product. Example: Birthday;Graduation;Wedding',
+  'Alphanumeric, 80 characters - For refurbished items, this is the original/new equivalent product identifier ID which is different from the restored product identifier ID.',
+  'Closed List - To be used for refurbished items: This refers to the original/new equivalent product identifier.',
+  'Closed List - Features of cellular and landline phones, as well as any other items that provide telephony function.',
+  'Alphanumeric, 50 characters - The brand of the processor. Example: Apple;Samsung',
+  'Decimal, 16 characters - Operational frequency of the central processing unit. Example: 3.00 GHz;1.60 GHz;66 MHz;2.5 GHz',
+  'Closed List - Operational frequency of the central processing unit.',
+  'Decimal, 16 characters - The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices. Example: 6 GB;8 GB;16 GB',
+  'Closed List - The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.',
+  'Decimal, 16 characters - The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device. Example: 16 MP;24 MP',
+  'Closed List - The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device.',
+  'Alphanumeric, 4000 characters - The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on.  Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example). Example: 1080p (HDTV)\n' +
+    '1080\n' +
+    '240p\n' +
+    '480i\n' +
+    '480p\n' +
+    '4K UHD\n' +
+    '576\n' +
+    '576p\n' +
+    '720i\n' +
+    '720p\n' +
+    '8K UHD',
+  'Alphanumeric, 14 characters - This code is to identify Restored Products Example: 12345678905',
+  'Closed List - To identify the type of identifier for restored products',
+  'Closed List - Descriptive terms for the way a product is packaged for sale to the customer.',
+  'Alphanumeric, 250 characters - Series is often used by manufacturers to align similar products that only vary by one or two particular characteristics. For example a series of televisions may have an identical feature list and functionality, but differ from model to model based on the screen size and whether the panel is curved or flat.  **DO NOT USE** this Attribute to indicate a movie or TV series name (e.g. Game of Thrones).\\nThis differs from Product Line which sees dissimilar products brought together but marketed with a consistent presentation. The Samsung Galaxy product line for instance, which includes smartphones, tablets, virtual reality headsets, watches and 360Â° cameras. Example: S21 FE;S22;S22+;S22 Ultra',
+  'Alphanumeric, 100 characters - The size of a SIM card item, or the size of the SIM card which a cell phone accommodates Example: Micro;Mini;Nano;Standard',
+  'Closed List - Describes the type of SIM card used in the product, specifically the serial number used to identify the SIM card itself, For example, ICCID (Integrated Circuit Card ID) is the identifier for a profile and identifies the network operator that supplied the profile. By comparison, the EID is a serial number attached to a device that uses an eSIM.',
+  'Closed List - Describes whether the cell phone has a single or dual IMEI.  The International Mobile Equipment Identity (IMEI) is a unique ID number for mobile phones which can be associated to a transaction enabling activation of a cell phone by a customer.',
+  'Alphanumeric, 500 characters - Overall dimensions of an item. Used only for products that do not already have a more specific attribute, such as ring size, clothing size, and bottled pen ink. Example: 5 oz;250 g;12 fl oz; 10 oz',
+  'Alphanumeric, 100 characters - If your item has any association with a specific sports league, enter the league name. Abbreviations are fine. NOTE: This attribute flags an item for inclusion in the online fan shop. Example: NFL;WWE;MLB;NBA;NASCAR;USA Archery',
+  'Alphanumeric, 200 characters - If your item has any association with a specific sports team, enter the team name. NOTE: This attribute flags an item for inclusion in the online fan shop. Example: San Jose Earthquakes;San Jose Sharks;Golden State Warriors;Las Vegas Raiders;San Francisco 49ers;San Francisco Giants;Stanford Cardinal;Oakland Athletics',
+  'Closed List - The code representing a symbol or marking third party accreditation on the product package.',
+  'Number, 17 characters - The total number of identical items in the package or box; a result of the multiplication of Multipack Quantity by Count Per Pack. Examples: (1) A single bottle of 50 pills has a "Total Count" of 50. (2) A package containing two identical bottles of 50 pills has a "Total Count" of 100. (3) A gift basket of 5 different items has a "Total Count" of 1. Example: 1;50;100',
+  'Alphanumeric, 100 characters - Name of the virtual assistant provided as a function of the product. Example: Siri',
+  'Alphanumeric, 20000 characters - Warranty Text (the full text of the warranty terms, including what is covered by the warranty and the duration of the warranty). NOTE: please remember to update the text of your warranty as your warranty changes. Example: This warranty covers any defects in materials or workmanship, including installation, with the exceptions of fading or discoloration caused by exposure to sunlight or chemicals. This warranty runs for five years from the date your carpet is installed. Counterpoint will either replace your carpet with new carpet of similar composition and price, or refund the full purchase price of your carpet, whichever you prefer. Contact Counterpoint at 800-867-5309.',
+  "URL, 2500 characters - The Warranty URL is the web location of the image, PDF, or link to the manufacturer's warranty page, showing the warranty and its terms, including the duration of the warranty. URLs must begin with http:// or https:// NOTE: Please remember to update the link and/or text of the warranty as the warranty changes. If supplying an image, provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required) and ends in a proper image extension. Recommended file type: JPEG Accepted file types: JPG, PNG, GIF, BMP Maximum file size: 5 MB. Example: http://www.walmart.com/warranty_info.pdf",
+  'Alphanumeric, 300 characters - Required if item is a variant. Make up a number and/or letter code for "Variant Group ID" and add this to all variations of the same product. Partners must ensure uniqueness of their Variant Group IDs. Example: HANESV025',
+  'Closed List - The designated attribute by which an item is varying.',
+  'Closed List - Note whether item is intended as the main variant in a variant grouping. The primary variant will appear as the image when customers search and the first image displayed on the item page. This should be set as "Yes" for only one item in a group of variants.',
+  'URL, 2500 characters - URL of the color or pattern swatch image. This is required for products with visual variations and will be shown as a small circle on the item page. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 100px x 100px. Resolution: 300 ppi. Maximum file size: 5MB. Recommended File Naming: GTIN-14 digit. Provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required.) Example: http://www.walmart.com/somepath/some-image.jpg',
+  ... 22 more items
+]
+[TRANSFORMER][DEBUG] Output row 2: [
+  <1 empty item>,
+  'SKU',
+  'Spec Product Type',
+  'Product Identifiers (productIdentifiers)',
+  'Product Identifiers (productIdentifiers)',
+  <14 empty items>,
+  'Assembled Product Depth (assembledProductLength)',
+  'Assembled Product Depth (assembledProductLength)',
+  'Assembled Product Height (assembledProductHeight)',
+  'Assembled Product Height (assembledProductHeight)',
+  'Assembled Product Width (assembledProductWidth)',
+  'Assembled Product Width (assembledProductWidth)',
+  <5 empty items>,
+  'Hard Drive Capacity (hardDriveCapacity)',
+  'Hard Drive Capacity (hardDriveCapacity)',
+  <2 empty items>,
+  'Net Content (netContent)',
+  'Net Content (netContent)',
+  'Screen Size (screenSize)',
+  'Screen Size (screenSize)',
+  <7 empty items>,
+  'Assembled Product Weight (assembledProductWeight)',
+  'Assembled Product Weight (assembledProductWeight)',
+  'Battery Capacity (batteryCapacity)',
+  'Battery Capacity (batteryCapacity)',
+  <7 empty items>,
+  'Front-Facing Camera Megapixels (frontFacingCameraMegapixels)',
+  'Front-Facing Camera Megapixels (frontFacingCameraMegapixels)',
+  <8 empty items>,
+  'NRTL Information (nrtl_information) (+)',
+  'NRTL Information (nrtl_information) (+)',
+  <2 empty items>,
+  'Original/New Equivalent Product Identifier (originalNewEquivalentProductIdentifier)',
+  'Original/New Equivalent Product Identifier (originalNewEquivalentProductIdentifier)',
+  <2 empty items>,
+  'Processor Speed (processorSpeed)',
+  'Processor Speed (processorSpeed)',
+  'RAM Memory (ramMemory)',
+  'RAM Memory (ramMemory)',
+  'Rear-Facing Camera Megapixels (rearCameraMegapixels)',
+  'Rear-Facing Camera Megapixels (rearCameraMegapixels)',
+  <1 empty item>,
+  'Restored Product Identifier (restoredProductIdentifier)',
+  'Restored Product Identifier (restoredProductIdentifier)',
+  <16 empty items>,
+  'Swatch Images (swatchImages) (+)',
+  'Swatch Images (swatchImages) (+)',
+  'State Restrictions (stateRestrictions) (+)',
+  'State Restrictions (stateRestrictions) (+)',
+  'State Restrictions (stateRestrictions) (+)',
+  <13 empty items>,
+  'External Product Identifier (externalProductIdentifier) (+)',
+  'External Product Identifier (externalProductIdentifier) (+)'
+]
+[TRANSFORMER][DEBUG] Output row 3: [
+  <1 empty item>,
+  'SKU',
+  'Spec Product Type',
+  'Product ID Type',
+  'Product ID',
+  'Product Name',
+  'Brand Name',
+  'Selling Price',
+  'Shipping Weight (lbs)',
+  'Site Description',
+  'Key Features (+)',
+  'Key Features 1 (+)',
+  'Key Features 2 (+)',
+  'Key Features 3 (+)',
+  'Key Features 4 (+)',
+  'Main Image URL',
+  'Count Per Pack',
+  'Multipack Quantity',
+  'Is Prop 65 Warning Required',
+  'Measure',
+  'Unit',
+  'Measure',
+  'Unit',
+  'Measure',
+  'Unit',
+  'Cell Phone Type',
+  'Cellular Service Plan',
+  'Color',
+  'Color Category (+)',
+  'Condition',
+  'Measure',
+  'Unit',
+  'Has NRTL Listing Certification',
+  'Has Written Warranty',
+  'Unit',
+  'Measure',
+  'Measure',
+  'Unit',
+  'Small Parts Warning Code (+)',
+  'Wireless Technologies (+)',
+  'Accessories Included (+)',
+  'Additional Image URL (+)',
+  'Additional Image URL 1 (+)',
+  'Additional Image URL 2 (+)',
+  'Additional Image URL 3 (+)',
+  'Measure',
+  'Unit',
+  'Measure',
+  'Unit',
+  'Biometric Security Features (+)',
+  'California Prop 65 Warning Text',
+  'Cell Phone Service Provider (+)',
+  'Character (+)',
+  'Configuration',
+  'Display Technology',
+  'Edition',
+  'Measure',
+  'Unit',
+  'Has Front-Facing Camera',
+  'Manufacturer Name',
+  'Manufacturer Part Number',
+  'Mobile Operating System (+)',
+  'Model Name',
+  'Model Number',
+  'Native Resolution',
+  'Net Content Statement',
+  'NRTL Test Standard',
+  'NRTL Organization',
+  'Number of Pieces',
+  'Occasion (+)',
+  'Original Product ID',
+  'Original Product ID Type',
+  'Phone Feature (+)',
+  'Processor Brand',
+  'Measure',
+  'Unit',
+  'Measure',
+  'Unit',
+  'Measure',
+  'Unit',
+  'Resolution',
+  'Restored Product ID',
+  'Restored Product ID Type',
+  'Retail Packaging',
+  'Series',
+  'SIM Card Size',
+  'SIM Card Type',
+  'Single or Dual IMEI',
+  'Size',
+  'Sports League (+)',
+  'Sports Team (+)',
+  'Third Party Accreditation Symbol on Product Package Code (+)',
+  'Total Count',
+  'Virtual Assistant (+)',
+  'Warranty Text',
+  'Warranty URL',
+  'Variant Group ID',
+  'Variant Attribute Names (+)',
+  'Is Primary Variant',
+  'Swatch Image URL',
+  ... 22 more items
+]
+[TRANSFORMER][DEBUG] Output row 4: [
+  <1 empty item>,
+  'sku',
+  'specProductType',
+  'productIdType',
+  'productId',
+  'productName',
+  'brand',
+  'price',
+  'ShippingWeight',
+  'shortDescription',
+  'keyFeatures',
+  'keyFeatures',
+  'keyFeatures',
+  'keyFeatures',
+  'keyFeatures',
+  'mainImageUrl',
+  'countPerPack',
+  'multipackQuantity',
+  'isProp65WarningRequired',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'cellPhoneType',
+  'cellular_service_plan',
+  'color',
+  'colorCategory',
+  'condition',
+  'measure',
+  'unit',
+  'has_nrtl_listing_certification',
+  'has_written_warranty',
+  'productNetContentUnit',
+  'productNetContentMeasure',
+  'measure',
+  'unit',
+  'smallPartsWarnings',
+  'wirelessTechnologies',
+  'accessoriesIncluded',
+  'productSecondaryImageURL',
+  'productSecondaryImageURL',
+  'productSecondaryImageURL',
+  'productSecondaryImageURL',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'biometric_security_features',
+  'prop65WarningText',
+  'cellPhoneServiceProvider',
+  'character',
+  'configuration',
+  'displayTechnology',
+  'edition',
+  'measure',
+  'unit',
+  'hasFrontFacingCamera',
+  'manufacturer',
+  'manufacturerPartNumber',
+  'mobileOperatingSystem',
+  'modelName',
+  'modelNumber',
+  'nativeResolution',
+  'netContentStatement',
+  'nrtl_test_standard',
+  'nrtl_organization',
+  'pieceCount',
+  'occasion',
+  'originalProductId',
+  'originalProductIdType',
+  'phone_feature',
+  'processor_brand',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'measure',
+  'unit',
+  'resolution',
+  'restoredProductId',
+  'restoredProductIdType',
+  'ib_retail_packaging',
+  'series',
+  'sim_card_size',
+  'sim_card_type',
+  'single_or_dual_imei',
+  'size',
+  'sportsLeague',
+  'sportsTeam',
+  'thirdPartyAccreditationSymbolOnProductPackageCode',
+  'count',
+  'virtual_assistant',
+  'warrantyText',
+  'warrantyURL',
+  'variantGroupId',
+  'variantAttributeNames',
+  'isPrimaryVariant',
+  'swatchImageUrl',
+  ... 22 more items
+]
+[TRANSFORMER][DEBUG] Output row 5: [
+  <1 empty item>,
+  'Alphanumeric, 50 characters - The string of letters and/or numbers a partner uses to identify the item. Walmart includes this value in all communications regarding item information such as orders. Example: TRVAL28726',
+  'Alphanumeric, 100 characters - Select the most suitable product type associated with the item.  Example: Bicycle Tires',
+  'Closed List - UPC: GTIN-12, the 12-digit number including check-digit. If less than 12-digits, such as UPC-E which is 8-digits, add leading zeros up to 12-digits.; GTIN: GTIN-14, the 14-digit number including check-digit. If less than 14-digits add leading zeros up to 14-digits. ISBN: International Standard Book Number, the 10 or 13-digit number including check-digit.; EAN: GTIN-13, the 13-digit number including check-digit. If less than 13-digits add leading zeros up to 13-digits.',
+  "Alphanumeric, 14 characters - Provide the GTIN that identifies the product's consumable (selling) unit. Expand the GTIN to 14 digits by adding preceding zeroes and check digit. A GTIN (Global Trade Item Number) is used to identify an item at any point in the Supply Chain. A GTIN refers to the data structure (not symbology) used to identify the scannable item, case, inner pack (i.e., break pack) or pallet that make up the hierarchy. Example: 00123456781011",
+  'Alphanumeric, 199 characters - Title of the product to be displayed on the Item Page. Your title should ideally be under 90 Characters, Maximum 100 Characters.  Anything over 90 characters will negatively impact your Search Engine Optimization (SEO). Example: Apple iPhone SE 5G 4GB (Unlocked ), Black',
+  'Alphanumeric, 60 characters - The name provided by the brand owner that is intended to be recognized by the consumer as represented on the product. If item does not have a brand, use "Unbranded".  This should be the brand ONLY, not brand + product line. Make sure brand name is spelled, punctuated & capitalized properly according to the brand itself. Example: AT&T;LG',
+  'Decimal, 16 characters - The price the customer pays for the product. Please do not use commas or currency symbols. Example: 100.33',
+  'Decimal, 16 characters - The weight  including all of its packaging materials. Example: 5',
+  "Alphanumeric, 100000 characters - Overview of the key selling points of the item, marketing content, and highlights in paragraph form. For SEO purposes, repeat the product name and relevant keywords here. Example: An all-screen design gives you a large, beautiful canvas for everything you love to do. And iPhone XS Max makes it massive, with a screen that measures 6.5 inches. The OLED panels in iPhone XS allow for an HDR display with the industry's best color accuracy, true blacks, and remarkable brightness and contrast. They're the sharpest displays, with the highest pixel density, on any Apple device. Advanced color management automatically displays your content in wide color. So everything you look at looks beautiful. With support for Dolby Vision and HDR10 titles from iTunes, Netflix, and Amazon Prime Video, movie night comes to iPhone. Wider stereo playback makes it all sound great. And your HDR photos - even those you captured before - will have a 60 percent greater dynamic range. An innovative dual-camera system integrates the ISP, the Neural Engine, and advanced algorithms to unlock creative possibilities and help you capture incredible photos. Leveraging multiple technologies - like faster sensors, an enhanced ISP, and advanced algorithms - Smart HDR brings more highlight and shadow detail to your photos. Take a great portrait and make it even more amazing with Depth Control, which lets you adjust the depth of field to blur the background as much or as little as you want. The TrueDepth camera generates a precise depth map to keep you in focus against a blurred background. Depth Control lets you adjust the depth of field after you shoot. The camera sensor features deeper, larger pixels. Deeper to improve image fidelity. And larger to allow more light to hit the sensor. The result? Even better low? Light photos. Faster sensors, Smart HDR, and zero shutter lag combine to let you freeze a moment in time with more highlight and shadow detail.",
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'Alphanumeric, 10000 characters - Key features will appear as bulleted text on the item page and in search results. Key features help the user understand the benefits of the product with a simple and clean format.  Example: •;Custom-built OLED;•;HDR10 and wider stereo sound;•;Water resistance;•;Sharper action shots;•;Adjustable depth of field;•;Enhanced Portrait mode selfies;•;4K video',
+  'URL, 2500 characters - Main image of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'Number, 10 characters - The number of identical items inside each individual package given by the "Multipack Quantity" attribute. Examples: (1) A single bottle of 50 pills has a "Count Per Pack" of 50. (2) A package containing two identical bottles of 50 pills has a "Count Per Pack" of 50. (3) A 6-pack of soda labeled for individual sale connected by plastic rings has a "Count Per Pack" of 1. (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a "Count Per Pack" of 6. (5) A gift basket of 5 different items has a "Count Per Pack" of 1. Example: 1;2;10;50',
+  'Number, 4 characters - The number of identical, individually packaged-for-sale items. If an item does not contain other items, does not contain identical items, or if the items contained within cannot be sold individually, the value for this attribute should be"1." Examples: (1) A single bottle of 50 pills has a "Multipack Quantity" of"1." (2) A package containing two identical bottles of 50 pills has a "Multipack Quantity" of 2. (3) A 6-pack of soda labelled for individual sale connected by plastic rings has a "Multipack Quantity" of"6." (4) A 6-pack of soda in a box whose cans are not marked for individual sale has a "Multipack Quantity" of"1." (5) A gift basket of 5 different items has a "Multipack Quantity" of"1." Example: 1;2;4;6',
+  `Closed List - Selecting "Yes" indicates the product requires California's Proposition 65 special warning. Proposition 65 entitles California consumers to special warnings for products that contain chemicals known to the state of California to cause cancer and birth defects or other reproductive harm if certain criteria are met (such as quantity of chemical contained in the product). See the portions of the California Health and Safety Code related to Proposition 65 for more information.`,
+  `Decimal, 16 characters - The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product. Example: 24";3'`,
+  'Closed List - The depth of the fully assembled product. NOTE: This information is shown on the item page as length of the product.',
+  `Decimal, 16 characters - The height of the fully assembled product.  Example: 2';24"`,
+  'Closed List - The height of the fully assembled product.',
+  `Decimal, 16 characters - The width of the fully assembled product.  Example: 6";2'`,
+  'Closed List - The width of the fully assembled product.',
+  'Closed List - Groupings of cell phones based on contracts, payment requirements, lock status, and variety.',
+  "Closed List - Provided as a mechanism to divide electronic devices that utilize a cellular connection by the nature of the plan with which they are initially provided. Unlocked Phones-An unlocked smartphone is a phone that isn't tied to a specific carrier or contract. A prepaid mobile device (also commonly referred to as pay-as-you-go (PAYG), pay-as-you-talk, pay and go, go-phone or prepay). Postpaid phones are inherently locked devices. Prepaid phones are inherently locked devices.",
+  'Alphanumeric, 600 characters - Color refers to the actual color defined by the manufacturer. For Example, an item may be gray and black (which are used in the Color Category attribute) but the manufacturer calls the color Space Gray. Example: Sky Blue;Wonderland White;Robin-breast Red;Yum-Yum-Yellow;Red, White & Blue;Black/Hot Pink;Black;Lime Green;Multicolor;Assorted',
+  'Closed List - Select the color from a short list that best describes the general color(s) of the item. This improves searchability as it allows customers to view items by color from the left navigation when they perform a search.\n' +
+    '\n' +
+    'Please list all colors for the item. If the item has more than one color, please select Multi-color in addition to primary colors. Don’t list more than the three main colors.',
+  'Closed List - This refers to the state of an item, indicating its level of wear, prior use (if any), appearance, and overall quality. Availability of condition types may vary by product/category as well as by Seller eligibility per program. For more details, review this Help article: https://sellerhelp.walmart.com/seller/s/guide?language=en_US&article=000011205.',
+  'Decimal, 16 characters - The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes. Example: 128;256;512',
+  'Closed List - The amount of storage on a hard disk for retrieving and storing digital information, typically measured in megabytes, gigabytes, and terabytes.',
+  'Closed List - Indicates an item has NRTL listing certification(s). A Nationally Recognized Testing Laboratory (NRTL) is an independent organization recognized by Occupational Safety & Health Administration (OSHA) to provide evaluation, testing and certification for products within its scope of recognition for the US market.',
+  'Closed List - Indicates an item has written warranty documentation included on the product label, inside the product packaging, or a website URL or PDF available for customer review. Pursuant to California Civil Code Section 1793.01 (The Song-Beverly Consumer Warranty Act), an express warranty for consumer goods sold within California must not commence earlier than the date of delivery of the item to the consumer. If applicable, please review and update the warranty terms for this item.',
+  'Closed List - The unit of measure as defined on the product labeling. For example, a gallon of milk has 128 Fluid Ounces: Measure = 128 and Units = Fluid Ounces.\n' +
+    '\n' +
+    'Please Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each.',
+  'Decimal, 16 characters - The numeric net content portion that appears on an item. \n' +
+    '\n' +
+    'Please Note: If your item includes multiple items with the same UOM, add them together to get the total measurement. If the item is a set with multiple items that do not share the same UOM, list as 1 Each. Example: 1;12;32',
+  'Decimal, 16 characters - The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.) Example: 4.4";5.9";5.5";3";6.5";6.1";5.8";1.8";4.3"',
+  'Closed List - The viewable display/screen size of the product typically measured on the diagonal in inches. Use for products that actually have a screen (TVs, Tablets, Computers, Projector Screens, etc.)',
+  'Closed List - To determine if any choking warnings are applicable, check current product packaging for choking warning message(s). Please indicate the warning number (0-6). 0- No warning applicable; 1- Choking hazard is a small ball; 2- Choking hazard contains small ball; 3- Choking hazard contains small parts; 4- Choking hazard balloon; 5- Choking hazard is a marble; 6- Choking hazard contains a marble.',
+  'Alphanumeric, 500 characters - Any wireless communications standard used within or by the item. Example: NFC, 2.4 GHz;2G;3G;4G;4G LTE;5.6 GHz;5G;Bluetooth;Wi-Fi;CDMA;GSM;Wireless AX;Wireless B;Wireless G;Wireless N;USB;DECT 6.0',
+  'Alphanumeric, 4000 characters - Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.  Example: AC Adapter;Mounting Bracket',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'URL, 2500 characters - Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\n' +
+    'Image URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image',
+  'Decimal, 16 characters - The weight of the fully assembled product.  Example: 20 lb;40 lb',
+  'Closed List - The weight of the fully assembled product.',
+  'Decimal, 17 characters - The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential. Example: 4500 mAh;3400 mAh',
+  'Closed List - The measurement of the current a battery can deliver over time, generally expressed in ampere-hours (Ah or mAh) however watt hours (Wh) is often used for mobile computing devices and provides a calculated energy capacity figure using the voltage and current potential.',
+  'Closed List - Describes the type of biometric security features included in a product. Fingerprint Scan: Scans a fingerprint and uses as a unique identifier as an alternative to entering a password.;;Face Recognition: Scans facial features and uses as a unique identifier as an alternative to entering a password.;;Iris Scan: Scans an iris and uses as a unique identifier as an alternative to entering a password.;;Handprint Scan: Scans a handprint and uses as a unique identifier as an alternative to entering a password.',
+  'Alphanumeric, 5000 characters - This is a particular statement legally required by the State of California for certain products to warn consumers about potential health dangers. See the portions of the California Health and Safety Code related to Proposition 65 to see what products require labels and to verify the text of your warning label. If no Prop 65 warning please leave value blank for this attribute. Example: For Example: This product can expose you to chemicals including [name of one or more chemicals], which is [are] known to the State of California to cause [list associated harm(s) e.g. cancer, birth defects or other reproductive harm, etc].',
+  "Alphanumeric, 600 characters - The company responsible for the provision of the device's cellular service. Example: AT&T;AT&T GoPhone;Black Wireless;Boost Mobile;Cricket Wireless;H2O Wireless;MetroPCS;Net10;Page Plus Cellular;PlatinumTel;Red Pocket Mobile;Republic Wireless;Simple Mobile;Sprint;Straight Talk;T-Mobile;Total Wireless;TracFone;UScellular;Verizon;Virgin Mobile;Walmart Family Mobile",
+  'Alphanumeric, 50 characters - A person or entity portrayed in print or visual media. A character might be a fictional personality or an actual living person. Example: Batman;Dora the Explorer;Hello Kitty;Jojo Siwa;Minnie Mouse;Power Rangers;Wonder Woman;SpongeBob SquarePants;Mario;Pac-Man;Elsa;Spider-Man',
+  'Alphanumeric, 400 characters - WM internal usage only.   Utilized to capture components included for Virtual Bundles.',
+  "Closed List - The primary technologies used for the item's display.",
+  "Alphanumeric, 300 characters - The specific edition of the item. Example: 1st Edition;2nd Edition;3rd Edition;Anniversary Edition;Basic Edition;Book Club Edition;Classic Edition;Co-Edition;Collector's Edition;Deluxe Edition;Digital Copy;Unabridged ;E-edition;Limited;Limited Edition;Premier Edition;Revised & Updated Edition;Revised Edition;Special Edition;Standard;Ultimate;Walmart Exclusive;Standard Edition;Gold Edition;Definitive Edition;Director's Cut;Remastered;Game of the Year Edition;MVP Edition",
+  'Decimal, 16 characters - The maximum resolution of the camera that faces the user, provided in megapixels. Example: 32 MP;8 MP',
+  'Closed List - The maximum resolution of the camera that faces the user, provided in megapixels.',
+  'Closed List - Does the item incorporate a front-facing camera?',
+  'Alphanumeric, 60 characters - The name of the manufacturer.\n' +
+    '\n' +
+    ' Example: Apple;AT&T;Samsung',
+  'Alphanumeric, 60 characters - MPN uniquely identifies the product to its manufacturer. For many products this will be identical to the model number. Some manufacturers distinguish part number from model number. Having this information allows customers to search for items on the site and informs product matching. Example: YST-MyPBX;8113120;CX500',
+  'Alphanumeric, 100 characters - Mobile device operating system titles for cellular phones, tablet computers, smart watches, etc. Example: Android;Blackberry;iOS;Windows',
+  'Alphanumeric, 800 characters - The model name of the product as commonly used in marketing communications. Example: Galaxy A12;iPhone SE',
+  'Alphanumeric, 60 characters - Model numbers allow manufacturers to keep track of each hardware device and identify or replace the proper part when needed. Model numbers are often found on the bottom, back, or side of a product. Having this information allows customers to search for items on the site and informs product matching. Example: PPRETRO25BK;1103-1WTGA;210BK;KX-TGF380M',
+  'Alphanumeric, 100 characters - The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on. Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example). Example: 248 x 68;720 x 1280',
+  'Alphanumeric, 500 characters - Complete product net content statement, as it appears on product packaging. Example: PBX System =*1.98kg(4.31LB)69OZ',
+  "Alphanumeric, 100 characters - Please provide the certified test standard number(s) in the designated text field, separated by a comma (Ex: UL 1484, ANSI Z21.1). Selecting one or more NRTL(s) indicates you are able to provide proof of listing certification(s) upon request, and you will update the certification information when there's a change in the certification.",
+  'Closed List - The Nationally Recognized Testing Laboratory (NRTL) that tested and certified your product to safety test standard(s) within its scope of OSHA recognized test standards. Please select one or more of the appropriate NRTL(s) in the drop-down menu.',
+  'Number, 17 characters - The number of small pieces, slices, or different items within the product. Piece Count applies to things such as puzzles, building block sets, and products that contain multiple different items (such as tool sets, dinnerware sets, gift baskets, art sets, makeup kits, or shaving kits.) Examples: A gift basket of 5 different items has a “Piece Count” of 5.; A 105-Piece Socket Wrench set has a "Piece Count" of 105.; A 500-piece puzzle has a “Piece Count” of 500. Example: 5;105;500',
+  'Alphanumeric, 2000 characters - The particular target time, event, or holiday for the product. Example: Birthday;Graduation;Wedding',
+  'Alphanumeric, 80 characters - For refurbished items, this is the original/new equivalent product identifier ID which is different from the restored product identifier ID.',
+  'Closed List - To be used for refurbished items: This refers to the original/new equivalent product identifier.',
+  'Closed List - Features of cellular and landline phones, as well as any other items that provide telephony function.',
+  'Alphanumeric, 50 characters - The brand of the processor. Example: Apple;Samsung',
+  'Decimal, 16 characters - Operational frequency of the central processing unit. Example: 3.00 GHz;1.60 GHz;66 MHz;2.5 GHz',
+  'Closed List - Operational frequency of the central processing unit.',
+  'Decimal, 16 characters - The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices. Example: 6 GB;8 GB;16 GB',
+  'Closed List - The amount of RAM preinstalled in the product. Random Access Memory is a type of computer data storage that allows information to be accessed rapidly. RAM is the most common type of memory found in computers, cellphones, and other devices.',
+  'Decimal, 16 characters - The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device. Example: 16 MP;24 MP',
+  'Closed List - The maximum resolution of the camera that faces away from the user, provided in megapixels. Typically used for cameras in a smartphone, tablet or other portable device.',
+  'Alphanumeric, 4000 characters - The commonly used resolution category of best fit for the panel. 1080p for a native resolution of 1920 x 1080, 4K for a native resolution of 4096 x 2160, and so on.  Or the upper-bound resolution of the video output capability of an item (on a BluRay player or streaming media device for example). Example: 1080p (HDTV)\n' +
+    '1080\n' +
+    '240p\n' +
+    '480i\n' +
+    '480p\n' +
+    '4K UHD\n' +
+    '576\n' +
+    '576p\n' +
+    '720i\n' +
+    '720p\n' +
+    '8K UHD',
+  'Alphanumeric, 14 characters - This code is to identify Restored Products Example: 12345678905',
+  'Closed List - To identify the type of identifier for restored products',
+  'Closed List - Descriptive terms for the way a product is packaged for sale to the customer.',
+  'Alphanumeric, 250 characters - Series is often used by manufacturers to align similar products that only vary by one or two particular characteristics. For example a series of televisions may have an identical feature list and functionality, but differ from model to model based on the screen size and whether the panel is curved or flat.  **DO NOT USE** this Attribute to indicate a movie or TV series name (e.g. Game of Thrones).\\nThis differs from Product Line which sees dissimilar products brought together but marketed with a consistent presentation. The Samsung Galaxy product line for instance, which includes smartphones, tablets, virtual reality headsets, watches and 360Â° cameras. Example: S21 FE;S22;S22+;S22 Ultra',
+  'Alphanumeric, 100 characters - The size of a SIM card item, or the size of the SIM card which a cell phone accommodates Example: Micro;Mini;Nano;Standard',
+  'Closed List - Describes the type of SIM card used in the product, specifically the serial number used to identify the SIM card itself, For example, ICCID (Integrated Circuit Card ID) is the identifier for a profile and identifies the network operator that supplied the profile. By comparison, the EID is a serial number attached to a device that uses an eSIM.',
+  'Closed List - Describes whether the cell phone has a single or dual IMEI.  The International Mobile Equipment Identity (IMEI) is a unique ID number for mobile phones which can be associated to a transaction enabling activation of a cell phone by a customer.',
+  'Alphanumeric, 500 characters - Overall dimensions of an item. Used only for products that do not already have a more specific attribute, such as ring size, clothing size, and bottled pen ink. Example: 5 oz;250 g;12 fl oz; 10 oz',
+  'Alphanumeric, 100 characters - If your item has any association with a specific sports league, enter the league name. Abbreviations are fine. NOTE: This attribute flags an item for inclusion in the online fan shop. Example: NFL;WWE;MLB;NBA;NASCAR;USA Archery',
+  'Alphanumeric, 200 characters - If your item has any association with a specific sports team, enter the team name. NOTE: This attribute flags an item for inclusion in the online fan shop. Example: San Jose Earthquakes;San Jose Sharks;Golden State Warriors;Las Vegas Raiders;San Francisco 49ers;San Francisco Giants;Stanford Cardinal;Oakland Athletics',
+  'Closed List - The code representing a symbol or marking third party accreditation on the product package.',
+  'Number, 17 characters - The total number of identical items in the package or box; a result of the multiplication of Multipack Quantity by Count Per Pack. Examples: (1) A single bottle of 50 pills has a "Total Count" of 50. (2) A package containing two identical bottles of 50 pills has a "Total Count" of 100. (3) A gift basket of 5 different items has a "Total Count" of 1. Example: 1;50;100',
+  'Alphanumeric, 100 characters - Name of the virtual assistant provided as a function of the product. Example: Siri',
+  'Alphanumeric, 20000 characters - Warranty Text (the full text of the warranty terms, including what is covered by the warranty and the duration of the warranty). NOTE: please remember to update the text of your warranty as your warranty changes. Example: This warranty covers any defects in materials or workmanship, including installation, with the exceptions of fading or discoloration caused by exposure to sunlight or chemicals. This warranty runs for five years from the date your carpet is installed. Counterpoint will either replace your carpet with new carpet of similar composition and price, or refund the full purchase price of your carpet, whichever you prefer. Contact Counterpoint at 800-867-5309.',
+  "URL, 2500 characters - The Warranty URL is the web location of the image, PDF, or link to the manufacturer's warranty page, showing the warranty and its terms, including the duration of the warranty. URLs must begin with http:// or https:// NOTE: Please remember to update the link and/or text of the warranty as the warranty changes. If supplying an image, provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required) and ends in a proper image extension. Recommended file type: JPEG Accepted file types: JPG, PNG, GIF, BMP Maximum file size: 5 MB. Example: http://www.walmart.com/warranty_info.pdf",
+  'Alphanumeric, 300 characters - Required if item is a variant. Make up a number and/or letter code for "Variant Group ID" and add this to all variations of the same product. Partners must ensure uniqueness of their Variant Group IDs. Example: HANESV025',
+  'Closed List - The designated attribute by which an item is varying.',
+  'Closed List - Note whether item is intended as the main variant in a variant grouping. The primary variant will appear as the image when customers search and the first image displayed on the item page. This should be set as "Yes" for only one item in a group of variants.',
+  'URL, 2500 characters - URL of the color or pattern swatch image. This is required for products with visual variations and will be shown as a small circle on the item page. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 100px x 100px. Resolution: 300 ppi. Maximum file size: 5MB. Recommended File Naming: GTIN-14 digit. Provide the final destination image URL (no-redirects) that is publicly accessible (no username/password required.) Example: http://www.walmart.com/somepath/some-image.jpg',
+  ... 22 more items
+]
+
+[CLI] Output written to: outputs/quicktest_input_output.xlsx
+[QUALITY_SCORE] Looking for field definitions at: grounding/walmart/cell_phones/field_definitions.json
+[QUALITY_SCORE] Loaded field definitions with 88 fields
+[QUALITY_SCORE] Field "Product ID Type": {
+  "description": "Type of unique product identifier.",
+  "product_type": "ALL",
+  "allowed_values": [
+    "EAN",
+    "GTIN",
+    "ISBN",
+    "UPC"
+  ]
+}
+[QUALITY_SCORE] Field "Accessories Included": {
+  "description": "Listing of any supplementary items that come with the product. Important information for consumers because accessories typically provide additional convenience, utility, attractiveness or safety to or for a product.",
+  "product_type": "Cell Phones",
+  "examples": [
+    "AC Adapter",
+    "Mounting Bracket"
+  ],
+  "min_characters": 1,
+  "max_characters": 4000,
+  "min_values": 0,
+  "recommended_values": null
+}
+[QUALITY_SCORE] Field "Additional Image URL": {
+  "description": "Secondary images of the item. File Format: JPEG (.jpg). Recommended Pixel Dimensions: 2200px x 2200px. Minimum Pixel Dimensions for Zoom 1500px x 1500px. Resolution: 300 ppi. Maximum file size: 5MB. Aspect Ratio: 1:1 (Square). Recommended File Naming: GTIN-14 digit\nImage URLs should end in an image file type (.jpg) to follow best practices. They must link to a public image file that loads as an image",
+  "product_type": "Cell Phones",
+  "examples": [
+    "nan"
+  ],
+  "min_characters": 1,
+  "max_characters": 2500,
+  "min_values": 4,
+  "recommended_values": 9
+}
+
+[QUALITY SCORE]
+  Total fields: 0
+  Filled fields: 0 (NaN%)
+  Required fields: 0
+  Required filled: 0 (N/A%)
+  Allowed value violations: 0
+  === Data Quality Score: NaN/100 ===
+[CLI] Stats: {
+  totalMapped: 15,
+  totalEnriched: 122,
+  totalLLMCalls: 5,
+  totalErrors: 0,
+  cacheHits: 0
+}

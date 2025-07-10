@@ -6,7 +6,7 @@ import { fromZodError } from 'zod-validation-error';
 import { storage } from './storage';
 import { z } from 'zod';
 import reliableParser from './utils/reliableParser';
-import { handleProcess } from './utils/transformer';
+import { handleProcess } from './utils/transformer 2.js';
 import { fileURLToPath } from 'url';
 import { feedQueue } from '../server/queue.js';
 const __filename = fileURLToPath(import.meta.url);
@@ -126,39 +126,74 @@ export function createSimpleRoutes() {
     console.log(`[DEBUG] /api/simple-download/:feedId handler reached for feedId: ${req.params.feedId}`);
     const { feedId } = req.params;
     const isProd = process.env.NODE_ENV === 'production' || process.env.FLY_APP_NAME;
-    if (isProd) {
-      // In production, redirect to Supabase public URL
-      try {
+    
+    try {
+      if (isProd) {
+        // In production, redirect to Supabase public URL
+        console.log(`[DOWNLOAD][PROD] Fetching Supabase data for feedId: ${feedId}`);
         const supabase = (await import('../supabaseClient.js')).default;
         const { data, error } = await supabase.from('feeds').select('*').eq('id', feedId).single();
-        if (error || !data || !data.output_path) {
-          console.log(`[DOWNLOAD][PROD] No output_path for feedId: ${feedId}`);
-          return res.status(404).json({ message: 'File not found' });
+        
+        console.log(`[DOWNLOAD][PROD] Supabase response for ${feedId}:`, { data, error });
+        
+        if (error) {
+          console.log(`[DOWNLOAD][PROD] Supabase error for feedId: ${feedId}:`, error);
+          return res.status(404).json({ message: 'Feed not found in database' });
         }
+        
+        if (!data) {
+          console.log(`[DOWNLOAD][PROD] No data found for feedId: ${feedId}`);
+          return res.status(404).json({ message: 'Feed not found' });
+        }
+        
+        if (!data.output_path) {
+          console.log(`[DOWNLOAD][PROD] No output_path for feedId: ${feedId}`);
+          return res.status(404).json({ message: 'Output file not found' });
+        }
+        
+        console.log(`[DOWNLOAD][PROD] Redirecting to: ${data.output_path}`);
         // Set Content-Disposition for nice filename
         const filename = `${data.platform || 'feed'}_${feedId}.xlsx`;
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         return res.redirect(data.output_path);
-      } catch (err) {
-        console.error(`[DOWNLOAD][PROD] Error fetching Supabase URL for feedId: ${feedId}`, err);
-        return res.status(500).json({ message: 'Error fetching file from storage' });
-      }
-    } else {
-      // In dev, serve from local disk
-      const filePath = path.join('outputs', `${feedId}_output.xlsx`);
-      console.log(`[DOWNLOAD][DEV] Attempting to download: ${filePath}`);
-      if (!fs.existsSync(filePath)) {
-        console.log(`[DOWNLOAD][DEV] File not found for feedId: ${feedId}, path: ${filePath}`);
-        return res.status(404).json({ message: 'File not found' });
-      }
-      res.setHeader('Content-Disposition', `attachment; filename="${feedId}_output.xlsx"`);
-      res.download(filePath, (err) => {
-        if (err) {
-          console.log(`[DOWNLOAD][DEV] Error serving file for feedId: ${feedId}, error:`, err);
-        } else {
-          console.log(`[DOWNLOAD][DEV] File served for feedId: ${feedId}, path: ${filePath}`);
+      } else {
+        // In dev, serve from local disk
+        const filePath = path.join('outputs', `${feedId}_output.xlsx`);
+        console.log(`[DOWNLOAD][DEV] Attempting to download: ${filePath}`);
+        
+        if (!fs.existsSync(filePath)) {
+          console.log(`[DOWNLOAD][DEV] File not found for feedId: ${feedId}, path: ${filePath}`);
+          
+          // Check if the file exists in the database and has a different path
+          try {
+            const supabase = (await import('../supabaseClient.js')).default;
+            const { data, error } = await supabase.from('feeds').select('*').eq('id', feedId).single();
+            
+            if (!error && data && data.output_path) {
+              console.log(`[DOWNLOAD][DEV] Found Supabase URL for ${feedId}: ${data.output_path}`);
+              const filename = `${data.platform || 'feed'}_${feedId}.xlsx`;
+              res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+              return res.redirect(data.output_path);
+            }
+          } catch (dbError) {
+            console.log(`[DOWNLOAD][DEV] Could not check database for ${feedId}:`, dbError);
+          }
+          
+          return res.status(404).json({ message: 'File not found' });
         }
-      });
+        
+        res.setHeader('Content-Disposition', `attachment; filename="${feedId}_output.xlsx"`);
+        res.download(filePath, (err) => {
+          if (err) {
+            console.log(`[DOWNLOAD][DEV] Error serving file for feedId: ${feedId}, error:`, err);
+          } else {
+            console.log(`[DOWNLOAD][DEV] File served for feedId: ${feedId}, path: ${filePath}`);
+          }
+        });
+      }
+    } catch (err) {
+      console.error(`[DOWNLOAD] Error in download handler for feedId: ${feedId}`, err);
+      return res.status(500).json({ message: 'Error fetching file from storage' });
     }
   });
   
